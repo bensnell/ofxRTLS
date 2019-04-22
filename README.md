@@ -10,7 +10,10 @@ xxx
 
 ### Dependencies
 
-1. xxx
+Follow the instructions in each addon to include the relevant dependencies:
+
+- ofxOpenVRTracker
+- ofxMotive
 
 #### Installation
 

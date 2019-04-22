@@ -1,10 +1,10 @@
 #pragma once
 
+// Define which tracking system we're going to use
+#define RTLS_MOTIVE
 
 #include "ofMain.h"
-#include "ofxRemoteUIServer.h"
-#include "ofxMotive.h"
-
+#include "ofxRTLS.h"
 
 class ofApp: public ofBaseApp{
 	public:
@@ -22,5 +22,5 @@ class ofApp: public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 		
-		ofxMotive motive;
+		ofxRTLS tracker;
 };

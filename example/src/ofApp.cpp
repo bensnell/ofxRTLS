@@ -7,25 +7,15 @@ void ofApp::setup(){
 	ofSetFrameRate(120);
 
 	RUI_SETUP();
-	motive.setupParams();
+	tracker.setupParams();
 	RUI_LOAD_FROM_XML();
 	
-
-	motive.setCalibrationPath(ofToDataPath("6c_20190418.cal"));
-	motive.setProfilePath(ofToDataPath("6c_20190418.motive"));
-	motive.start();
+	tracker.start();
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
 
-	vector<MotiveOutput> out = motive.get3DPoints();
-	stringstream ss;
-	ss << "Motive Output\n";
-	for (int i = 0; i < out.size(); i++) {
-		ss << "\t" << out[i].position << "\n";
-	}
-	if (out.size() > 0) cout << ss.str() << endl;
 
 }
 
