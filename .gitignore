@@ -11,8 +11,6 @@ docs/tagfile.xml
 # for bin folder in root
 /bin/*
 !/bin/data/
-!/bin/data/example.cal
-!/bin/data/example.motive
 
 [Bb]uild/
 [Oo]bj/
@@ -116,6 +114,8 @@ Desktop.ini
 # Libs for motive in the bin folder of any examples
 /example*/bin/
 /example/bin/
+!*/example/bin/data/example.cal
+!*/example/bin/data/example.motive
 *.VC.db
 *.VC.opendb
 /.vs/*
