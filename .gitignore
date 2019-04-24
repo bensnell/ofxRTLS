@@ -113,7 +113,7 @@ Desktop.ini
 
 # Libs for motive in the bin folder of any examples
 /example*/bin/
-/example/bin/
+/example/bin/*
 !*/example/bin/data/example.cal
 !*/example/bin/data/example.motive
 *.VC.db
