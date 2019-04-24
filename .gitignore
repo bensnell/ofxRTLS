@@ -11,6 +11,8 @@ docs/tagfile.xml
 # for bin folder in root
 /bin/*
 !/bin/data/
+!/bin/data/example.cal
+!/bin/data/example.motive
 
 [Bb]uild/
 [Oo]bj/
