@@ -23,8 +23,8 @@ void ofxRTLS::setupParams() {
 	
 #endif
 #ifdef RTLS_MOTIVE
-	motive.setCalibrationPath(ofToDataPath("6c_20190418.cal"));
-	motive.setProfilePath(ofToDataPath("6c_20190418.motive"));
+	motive.setCalibrationPath(ofToDataPath("example.cal"));
+	motive.setProfilePath(ofToDataPath("example.motive"));
 	motive.setupParams();
 #endif
 }

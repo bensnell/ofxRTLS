@@ -5,12 +5,12 @@
 docs/html
 docs/tagfile.xml
 
-*/bin/*
-!*/bin/data/
+#*/bin/*
+#!*/bin/data/
 
 # for bin folder in root
-/bin/*
-!/bin/data/
+#/bin/*
+#!/bin/data/
 
 [Bb]uild/
 [Oo]bj/
@@ -112,10 +112,11 @@ Desktop.ini
 
 
 # Libs for motive in the bin folder of any examples
-/example*/bin/
-/example/bin/*
+#/example*/bin/
+#/example/bin/*
 !*/example/bin/data/example.cal
 !*/example/bin/data/example.motive
+/example/bin/*
 *.VC.db
 *.VC.opendb
 /.vs/*
