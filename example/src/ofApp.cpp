@@ -24,6 +24,9 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
 
+	ofBackground(200);
+
+	ofSetColor(0);
 	tracker.drawStatus(10, 20);
 
 }
