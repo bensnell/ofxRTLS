@@ -90,10 +90,11 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 		// should this send time?
 		
 		sender.sendMessage(m, false);
+
+		// Log this data
+		lastSend = ofGetElapsedTimeMillis();
 	}
 
-	// Log this data
-	lastSend = ofGetElapsedTimeMillis();
 	// Save this message
 	lastMessage = m;
 }
