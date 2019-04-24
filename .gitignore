@@ -115,3 +115,6 @@ Desktop.ini
 /example*/bin/
 /example/bin/
 *.VC.db
+*.VC.opendb
+/.vs/*
+*.VC.*

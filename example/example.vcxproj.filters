@@ -106,18 +106,6 @@
 		<ClCompile Include="..\..\..\ExternalAddons\ofxMotive\src\Reconstruction.cpp">
 			<Filter>local_addons\ofxMotive\src</Filter>
 		</ClCompile>
-		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\Device.cpp">
-			<Filter>local_addons\ofxOpenVRTracker\src</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\DeviceList.cpp">
-			<Filter>local_addons\ofxOpenVRTracker\src</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\ofxOpenVRTracker.cpp">
-			<Filter>local_addons\ofxOpenVRTracker\src</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\Utilities.cpp">
-			<Filter>local_addons\ofxOpenVRTracker\src</Filter>
-		</ClCompile>
 		<ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLS.cpp">
 			<Filter>local_addons\ofxRTLS\src</Filter>
 		</ClCompile>
@@ -182,12 +170,6 @@
 		</Filter>
 		<Filter Include="local_addons\ofxMotive\src">
 			<UniqueIdentifier>{4CE75907-060E-5C70-DE78-C272}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="local_addons\ofxOpenVRTracker">
-			<UniqueIdentifier>{6C15F835-D142-A705-253C-2C4E}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="local_addons\ofxOpenVRTracker\src">
-			<UniqueIdentifier>{CCDE2D78-982F-6A51-D5E0-17A9}</UniqueIdentifier>
 		</Filter>
 		<Filter Include="local_addons\ofxRTLS">
 			<UniqueIdentifier>{C74CF183-644B-C1F4-D712-6172}</UniqueIdentifier>
@@ -325,18 +307,6 @@
 		</ClInclude>
 		<ClInclude Include="..\..\..\ExternalAddons\ofxMotive\src\Reconstruction.h">
 			<Filter>local_addons\ofxMotive\src</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\Device.hpp">
-			<Filter>local_addons\ofxOpenVRTracker\src</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\DeviceList.hpp">
-			<Filter>local_addons\ofxOpenVRTracker\src</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\ofxOpenVRTracker.h">
-			<Filter>local_addons\ofxOpenVRTracker\src</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\Utilities.hpp">
-			<Filter>local_addons\ofxOpenVRTracker\src</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLS.h">
 			<Filter>local_addons\ofxRTLS\src</Filter>

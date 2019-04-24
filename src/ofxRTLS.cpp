@@ -7,7 +7,7 @@ ofxRTLS::ofxRTLS() {
 
 // --------------------------------------------------------------
 ofxRTLS::~ofxRTLS() {
-
+	stopThread();
 }
 
 // --------------------------------------------------------------
@@ -23,6 +23,8 @@ void ofxRTLS::setupParams() {
 	
 #endif
 #ifdef RTLS_MOTIVE
+	motive.setCalibrationPath(ofToDataPath("6c_20190418.cal"));
+	motive.setProfilePath(ofToDataPath("6c_20190418.motive"));
 	motive.setupParams();
 #endif
 }
@@ -38,9 +40,10 @@ void ofxRTLS::setup() {
 
 #endif
 #ifdef RTLS_MOTIVE
-	ofAddListener(motive.newDataReceived, this, ofxRTLS::motiveDataReceived);
+	ofAddListener(motive.newDataReceived, this, &ofxRTLS::motiveDataReceived);
 #endif
 
+	startThread();
 }
 
 // --------------------------------------------------------------
@@ -72,9 +75,10 @@ void ofxRTLS::stop() {
 void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 
 	// Send each identified point
+	ofxOscMessage m;
 	for (int i = 0; i < args.markers.size(); i++) {
 
-		ofxOscMessage m;
+		m.clear();
 		m.setAddress(messageAddress);
 
 		m.addIntArg(args.markers[i].ID);
@@ -87,14 +91,52 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 		
 		sender.sendMessage(m, false);
 	}
+
+	// Log this data
+	lastSend = ofGetElapsedTimeMillis();
+	// Save this message
+	lastMessage = m;
 }
 
 #endif
 // --------------------------------------------------------------
+void ofxRTLS::drawStatus(int x, int y) {
+
+	stringstream ss;
+	ss << "Sending OSC over " << oscHost << " : " << ofToString(oscPort) << "\n";
+	ss << "Message address: \"" << messageAddress << "\"\n";
+	ss << "Sending?\t" << (isSending ? "TRUE" : "FALSE") << "\n";
+	//if (isSending) { // throws errors
+	//	ofxOscMessage tmp = lastMessage;
+	//	ss << "Last Message:\n";
+	//	for (int i = 0; i < tmp.getNumArgs(); i++) {
+	//		ss << "\t" << tmp.getArgAsString(i);
+	//	}
+	//	ss << "\n";
+	//}
+	ofDrawBitmapString(ss.str(), x, y);
+}
 
 // --------------------------------------------------------------
+void ofxRTLS::threadedFunction() {
+
+	while (isThreadRunning()) {
+
+		// Determine whether we are actively sending any messages in the last
+		// stopGap milliseconds
+		isSending = ofGetElapsedTimeMillis() - lastSend < stopGap;
+
+	}
+}
 
 // --------------------------------------------------------------
+void ofxRTLS::exit() {
+
+#ifdef RTLS_MOTIVE
+	ofRemoveListener(motive.newDataReceived, this, &ofxRTLS::motiveDataReceived);
+#endif
+
+}
 
 // --------------------------------------------------------------
 

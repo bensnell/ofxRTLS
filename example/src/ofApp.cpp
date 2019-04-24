@@ -10,6 +10,8 @@ void ofApp::setup(){
 	tracker.setupParams();
 	RUI_LOAD_FROM_XML();
 	
+	tracker.setup();
+
 	tracker.start();
 }
 
@@ -21,6 +23,15 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+
+	tracker.drawStatus(10, 20);
+
+}
+
+void ofApp::exit() {
+
+	tracker.exit();
+
 
 }
 

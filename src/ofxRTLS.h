@@ -1,5 +1,7 @@
 #pragma once
 
+#define RTLS_MOTIVE
+
 #include "ofMain.h"
 #include "ofxRemoteUIServer.h"
 #include "ofxOsc.h"
@@ -11,7 +13,7 @@
 #include "ofxMotive.h"
 #endif
 
-class ofxRTLS {
+class ofxRTLS : public ofThread {
 public:
 
 	/// \brief Create an object to connect with motive's cameras. There should only be one per program.
@@ -30,6 +32,11 @@ public:
 	/// \brief Stop streaming and reconstructing
 	void stop();
 
+	/// \brief Draw the status of this addon
+	void drawStatus(int x, int y);
+
+	void exit();
+
 
 private:
 
@@ -46,6 +53,12 @@ private:
 	//bool bForceSendID = false;
 	//bool bForceSendPosition = false;
 	//bool bForceSendOrientation = false;
+
+	void threadedFunction();
+	uint64_t lastSend = 0;
+	int stopGap = 100; // number of milliseconds before we decide no data is being sent
+	bool isSending = false;
+	ofxOscMessage lastMessage;
 
 #ifdef RTLS_VIVE
 	ofxOpenVRTracker vive;
