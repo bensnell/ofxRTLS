@@ -37,6 +37,16 @@ public:
 
 	void exit();
 
+	bool isConnected();
+
+
+#ifdef RTLS_VIVE
+	ofxOpenVRTracker vive;
+#endif
+#ifdef RTLS_MOTIVE
+	ofxMotive motive;
+	void motiveDataReceived(MotiveEventArgs& args);
+#endif
 
 private:
 
@@ -60,13 +70,7 @@ private:
 	bool isSending = false;
 	ofxOscMessage lastMessage;
 
-#ifdef RTLS_VIVE
-	ofxOpenVRTracker vive;
-#endif
-#ifdef RTLS_MOTIVE
-	ofxMotive motive;
-	void motiveDataReceived(MotiveEventArgs& args);
-#endif
+
 
 
 };

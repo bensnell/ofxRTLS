@@ -23,8 +23,8 @@ void ofxRTLS::setupParams() {
 	
 #endif
 #ifdef RTLS_MOTIVE
-	motive.setCalibrationPath(ofToDataPath("example.cal"));
-	motive.setProfilePath(ofToDataPath("example.motive"));
+	motive.setCalibrationPath(ofToDataPath("6c_20190425.cal"));
+	motive.setProfilePath(ofToDataPath("6c_20190425.motive"));
 	motive.setupParams();
 #endif
 }
@@ -106,6 +106,7 @@ void ofxRTLS::drawStatus(int x, int y) {
 	stringstream ss;
 	ss << "Sending OSC over " << oscHost << " : " << ofToString(oscPort) << "\n";
 	ss << "Message address: \"" << messageAddress << "\"\n";
+	ss << "Connected?\t" << (isConnected() ? "TRUE" : "FALSE") << "\n";
 	ss << "Sending?\t" << (isSending ? "TRUE" : "FALSE") << "\n";
 	//if (isSending) { // throws errors
 	//	ofxOscMessage tmp = lastMessage;
@@ -140,5 +141,14 @@ void ofxRTLS::exit() {
 }
 
 // --------------------------------------------------------------
+bool ofxRTLS::isConnected() {
+
+#ifdef RTLS_MOTIVE
+	return motive.isConnected();
+#endif
+
+
+	return false;
+}
 
 // --------------------------------------------------------------
