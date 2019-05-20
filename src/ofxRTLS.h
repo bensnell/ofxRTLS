@@ -1,6 +1,6 @@
 #pragma once
 
-#define RTLS_MOTIVE
+//#define RTLS_VIVE
 
 #include "ofMain.h"
 #include "ofxRemoteUIServer.h"
@@ -39,9 +39,12 @@ public:
 
 	bool isConnected();
 
+	void setOscEnabled(bool _bOscEnabled);
+
 
 #ifdef RTLS_VIVE
 	ofxOpenVRTracker vive;
+	void openvrDataReceived(ofxOpenVRTrackerEventArgs& args);
 #endif
 #ifdef RTLS_MOTIVE
 	ofxMotive motive;
@@ -70,7 +73,7 @@ private:
 	bool isSending = false;
 	ofxOscMessage lastMessage;
 
-
+	bool bOscEnabled = true;
 
 
 };
