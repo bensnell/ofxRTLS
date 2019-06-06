@@ -164,7 +164,7 @@ void ofxRTLS::drawStatus(int x, int y) {
 	//	}
 	//	ss << "\n";
 	//}
-	ofDrawBitmapString(ss.str(), x, y);
+	ofDrawBitmapStringHighlight(ss.str(), x, y);
 }
 
 // --------------------------------------------------------------
