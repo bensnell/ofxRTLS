@@ -38,8 +38,17 @@ public:
 	void exit();
 
 	bool isConnected();
+	bool isReceivingData();
+
+	bool isOscEnabled();
+	bool isOscSending();
 
 	void setOscEnabled(bool _bOscEnabled);
+
+	/// \brief Get OSC information
+	string getOscHostAddress();
+	int getOscPort();
+	string getOscMessageAddress();
 
 
 #ifdef RTLS_VIVE
@@ -70,10 +79,12 @@ private:
 	void threadedFunction();
 	uint64_t lastSend = 0;
 	int stopGap = 100; // number of milliseconds before we decide no data is being sent
-	bool isSending = false;
+	bool bSending = false;
 	ofxOscMessage lastMessage;
 
 	bool bOscEnabled = true;
 
-
+	// last time a packet of data was received
+	bool bReceivingData = false;
+	uint64_t lastReceive = 0;
 };

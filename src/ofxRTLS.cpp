@@ -76,6 +76,7 @@ void ofxRTLS::stop() {
 
 void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 
+	lastReceive = ofGetElapsedTimeMillis();
 	if (!bOscEnabled) return;
 
 	// Send each identified point
@@ -110,6 +111,7 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 
 void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 
+	lastReceive = ofGetElapsedTimeMillis();
 	if (!bOscEnabled) return;
 
 	// Send each identified point
@@ -155,8 +157,8 @@ void ofxRTLS::drawStatus(int x, int y) {
 	ss << "Sending OSC over " << oscHost << " : " << ofToString(oscPort) << "\n";
 	ss << "Message address: \"" << messageAddress << "\"\n";
 	ss << "Connected?\t" << (isConnected() ? "TRUE" : "FALSE") << "\n";
-	ss << "Sending?\t" << (isSending ? "TRUE" : "FALSE") << "\n";
-	//if (isSending) { // throws errors
+	ss << "Sending?\t" << (bSending ? "TRUE" : "FALSE") << "\n";
+	//if (bSending) { // throws errors
 	//	ofxOscMessage tmp = lastMessage;
 	//	ss << "Last Message:\n";
 	//	for (int i = 0; i < tmp.getNumArgs(); i++) {
@@ -174,7 +176,9 @@ void ofxRTLS::threadedFunction() {
 
 		// Determine whether we are actively sending any messages in the last
 		// stopGap milliseconds
-		isSending = ofGetElapsedTimeMillis() - lastSend < stopGap;
+		bSending = ofGetElapsedTimeMillis() - lastSend < stopGap;
+
+		bReceivingData = ofGetElapsedTimeMillis() - lastReceive < stopGap;
 
 	}
 }
@@ -211,9 +215,39 @@ void ofxRTLS::setOscEnabled(bool _bOscEnabled) {
 }
 
 // --------------------------------------------------------------
+bool ofxRTLS::isOscSending() {
+	return bSending;
+}
 
+// --------------------------------------------------------------
+string ofxRTLS::getOscHostAddress() {
+	return oscHost;
+}
+
+// --------------------------------------------------------------
+int ofxRTLS::getOscPort() {
+	return oscPort;
+}
+
+// --------------------------------------------------------------
+string ofxRTLS::getOscMessageAddress() {
+	return messageAddress;
+}
+
+// --------------------------------------------------------------
+bool ofxRTLS::isOscEnabled() {
+	return bOscEnabled;
+}
+
+// --------------------------------------------------------------
+bool ofxRTLS::isReceivingData() {
+	return bReceivingData; // no need to lock for a bool
+}
 
 // --------------------------------------------------------------
 
+// --------------------------------------------------------------
+
+// --------------------------------------------------------------
 
 // --------------------------------------------------------------
