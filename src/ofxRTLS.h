@@ -1,6 +1,10 @@
 #pragma once
 
 //#define RTLS_VIVE
+#if !defined(RTLS_VIVE) && !defined(RTLS_MOTIVE)
+#error "ofxRTLS: Please add one of the following definitions to your project RTLS_VIVE, RTLS_MOTIVE"
+#endif
+
 
 #include "ofMain.h"
 #include "ofxRemoteUIServer.h"
