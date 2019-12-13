@@ -8,7 +8,9 @@
 
 #include "ofMain.h"
 #include "ofxRemoteUIServer.h"
-#include "ofxOsc.h"
+#include "Trackable.pb.h"
+
+using namespace RTLSProtocol;
 
 #ifdef RTLS_VIVE 
 #include "ofxOpenVRTracker.h"
@@ -16,6 +18,12 @@
 #ifdef RTLS_MOTIVE
 #include "ofxMotive.h"
 #endif
+
+// The event args output
+class RTLSEventArgs : public ofEventArgs {
+public:
+	TrackableFrame frame;
+};
 
 class ofxRTLS : public ofThread {
 public:
@@ -36,23 +44,13 @@ public:
 	/// \brief Stop streaming and reconstructing
 	void stop();
 
-	/// \brief Draw the status of this addon
-	void drawStatus(int x, int y);
-
 	void exit();
 
 	bool isConnected();
 	bool isReceivingData();
 
-	bool isOscEnabled();
-	bool isOscSending();
-
-	void setOscEnabled(bool _bOscEnabled);
-
-	/// \brief Get OSC information
-	string getOscHostAddress();
-	int getOscPort();
-	string getOscMessageAddress();
+	// Event that occurs when new data is received
+	ofEvent< RTLSEventArgs > newFrameReceived;
 
 
 #ifdef RTLS_VIVE
@@ -65,30 +63,16 @@ public:
 #endif
 
 private:
-
-	// OSC Sender
-	ofxOscSender sender;
-	string oscHost = "127.0.0.1";
-	int oscPort = 8282;
-	string messageAddress = "/rtls";
-
 	//string positionOrder = "xyz";
 	//string orientationOrder = "wxyz";
 	//string order = "ipo";
 
-	//bool bForceSendID = false;
-	//bool bForceSendPosition = false;
-	//bool bForceSendOrientation = false;
+	TrackableFrame lastFrame;
 
 	void threadedFunction();
-	uint64_t lastSend = 0;
-	int stopGap = 100; // number of milliseconds before we decide no data is being sent
-	bool bSending = false;
-	ofxOscMessage lastMessage;
-
-	bool bOscEnabled = true;
 
 	// last time a packet of data was received
 	bool bReceivingData = false;
 	uint64_t lastReceive = 0;
+	int stopGap = 100; // number of milliseconds before we decide no data is being received
 };

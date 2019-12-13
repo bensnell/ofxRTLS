@@ -109,6 +109,9 @@
 		<ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLS.cpp">
 			<Filter>local_addons\ofxRTLS\src</Filter>
 		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\Trackable.pb.cc">
+			<Filter>local_addons\ofxRTLS\src</Filter>
+		</ClCompile>
 	</ItemGroup>
 	<ItemGroup>
 		<Filter Include="src">
@@ -309,6 +312,9 @@
 			<Filter>local_addons\ofxMotive\src</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLS.h">
+			<Filter>local_addons\ofxRTLS\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\Trackable.pb.h">
 			<Filter>local_addons\ofxRTLS\src</Filter>
 		</ClInclude>
 	</ItemGroup>

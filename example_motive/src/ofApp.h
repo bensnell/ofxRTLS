@@ -5,6 +5,8 @@
 
 #include "ofMain.h"
 #include "ofxRTLS.h"
+#include "ofxOsc.h"
+#include "ofxRemoteUIServer.h"
 
 class ofApp: public ofBaseApp{
 	public:
@@ -22,6 +24,41 @@ class ofApp: public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+
+		void RTLSFrameReceived(RTLSEventArgs& args);
+
+		/// \brief Draw the status of OSC
+		void drawStatus(int x, int y);
+
+		bool isOscEnabled();
+		bool isOscSending();
+
+		void setOscEnabled(bool _bOscEnabled);
+
+		/// \brief Get OSC information
+		string getOscHostAddress();
+		int getOscPort();
+		string getOscMessageAddress();
 		
 		ofxRTLS tracker;
+
+	private:
+		// OSC Sender
+		ofxOscSender sender;
+		string oscHost = "127.0.0.1";
+		int oscPort = 8282;
+		string messageAddress = "/rtls";
+
+		//bool bForceSendID = false;
+		//bool bForceSendPosition = false;
+		//bool bForceSendOrientation = false;
+
+		// TODO add back thread functionality?
+		// void threadedFunction();
+		uint64_t lastSend = 0;
+		int stopGap = 100; // number of milliseconds before we decide no data is being sent
+		bool bSending = false;
+		ofxOscMessage lastMessage;
+
+		bool bOscEnabled = true;
 };

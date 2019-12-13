@@ -14,29 +14,22 @@ ofxRTLS::~ofxRTLS() {
 void ofxRTLS::setupParams() {
 
 	RUI_NEW_GROUP("ofxRTLS");
-	RUI_SHARE_PARAM_WCN("Enable Osc", bOscEnabled);
-	RUI_SHARE_PARAM_WCN("OSC Host", oscHost);
-	RUI_SHARE_PARAM_WCN("OSC Port", oscPort, 0, 9999);
-	RUI_SHARE_PARAM_WCN("Message Address", messageAddress);
 
 	// Setup RUI Params
+
 #ifdef RTLS_VIVE
 	// Are there any params?
 
 #endif
 #ifdef RTLS_MOTIVE
-	motive.setCalibrationPath(ofToDataPath("6c_20190425.cal"));
-	motive.setProfilePath(ofToDataPath("6c_20190425.motive"));
+	motive.setCalibrationPath(ofToDataPath("calibration.cal"));
+	motive.setProfilePath(ofToDataPath("profile.motive"));
 	motive.setupParams();
 #endif
 }
 
 // --------------------------------------------------------------
 void ofxRTLS::setup() {
-
-	// Setup OSC
-	sender.setup(oscHost, oscPort);
-
 	// Add listeners for new data
 #ifdef RTLS_VIVE
 	ofAddListener(vive.newDataReceived, this, &ofxRTLS::openvrDataReceived);
@@ -77,31 +70,24 @@ void ofxRTLS::stop() {
 void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 
 	lastReceive = ofGetElapsedTimeMillis();
-	if (!bOscEnabled) return;
 
 	// Send each identified point
-	ofxOscMessage m;
+	RTLSEventArgs outArgs;
+	outArgs.frame.set_frame_id(1);
 	for (int i = 0; i < args.markers.size(); i++) {
-
-		m.clear();
-		m.setAddress(messageAddress);
-
-		m.addIntArg(args.markers[i].ID);
-		m.addFloatArg(args.markers[i].position.x);
-		m.addFloatArg(args.markers[i].position.y);
-		m.addFloatArg(args.markers[i].position.z);
 		
-		// should this also send whether it's new data or old data? (keep alive)
-		// should this send time?
-		
-		sender.sendMessage(m, false);
-
-		// Log this data
-		lastSend = ofGetElapsedTimeMillis();
+		Trackable* trackable = outArgs.frame.add_trackables();
+		//trackable->set_cuid(args.markers[i].cuid.HighBits());
+		Trackable::Position* position = trackable->mutable_position();
+		position->set_x(args.markers[i].position.x);
+		position->set_y(args.markers[i].position.y);
+		position->set_z(args.markers[i].position.z);
 	}
 
-	// Save this message
-	lastMessage = m;
+	ofNotifyEvent(newFrameReceived, outArgs);
+
+	// Save this frame
+	lastFrame = outArgs.frame;
 }
 
 #endif
@@ -151,33 +137,12 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 #endif
 
 // --------------------------------------------------------------
-void ofxRTLS::drawStatus(int x, int y) {
-
-	stringstream ss;
-	ss << "Sending OSC over " << oscHost << " : " << ofToString(oscPort) << "\n";
-	ss << "Message address: \"" << messageAddress << "\"\n";
-	ss << "Connected?\t" << (isConnected() ? "TRUE" : "FALSE") << "\n";
-	ss << "Sending?\t" << (bSending ? "TRUE" : "FALSE") << "\n";
-	//if (bSending) { // throws errors
-	//	ofxOscMessage tmp = lastMessage;
-	//	ss << "Last Message:\n";
-	//	for (int i = 0; i < tmp.getNumArgs(); i++) {
-	//		ss << "\t" << tmp.getArgAsString(i);
-	//	}
-	//	ss << "\n";
-	//}
-	ofDrawBitmapStringHighlight(ss.str(), x, y);
-}
-
-// --------------------------------------------------------------
 void ofxRTLS::threadedFunction() {
 
 	while (isThreadRunning()) {
 
-		// Determine whether we are actively sending any messages in the last
+		// Determine whether we are actively receiving any messages in the last
 		// stopGap milliseconds
-		bSending = ofGetElapsedTimeMillis() - lastSend < stopGap;
-
 		bReceivingData = ofGetElapsedTimeMillis() - lastReceive < stopGap;
 
 	}
@@ -210,44 +175,7 @@ bool ofxRTLS::isConnected() {
 }
 
 // --------------------------------------------------------------
-void ofxRTLS::setOscEnabled(bool _bOscEnabled) {
-	bOscEnabled = _bOscEnabled;
-}
-
-// --------------------------------------------------------------
-bool ofxRTLS::isOscSending() {
-	return bSending;
-}
-
-// --------------------------------------------------------------
-string ofxRTLS::getOscHostAddress() {
-	return oscHost;
-}
-
-// --------------------------------------------------------------
-int ofxRTLS::getOscPort() {
-	return oscPort;
-}
-
-// --------------------------------------------------------------
-string ofxRTLS::getOscMessageAddress() {
-	return messageAddress;
-}
-
-// --------------------------------------------------------------
-bool ofxRTLS::isOscEnabled() {
-	return bOscEnabled;
-}
-
-// --------------------------------------------------------------
 bool ofxRTLS::isReceivingData() {
 	return bReceivingData; // no need to lock for a bool
 }
 
-// --------------------------------------------------------------
-
-// --------------------------------------------------------------
-
-// --------------------------------------------------------------
-
-// --------------------------------------------------------------
