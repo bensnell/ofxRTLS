@@ -1,8 +1,12 @@
 #include "ofApp.h"
 
-
 //--------------------------------------------------------------
-void ofApp::setup(){
+void ofApp::setup() {
+	oscThread.setup();
+	oscThread.startThread();
+}
+//--------------------------------------------------------------
+void OSCThread::setup(){
 
 	ofSetFrameRate(120);
 	RUI_SHARE_PARAM_WCN("Enable Osc", bOscEnabled);
@@ -21,7 +25,7 @@ void ofApp::setup(){
 
 	tracker.start();
 
-	ofAddListener(tracker.newFrameReceived, this, &ofApp::RTLSFrameReceived);
+	ofAddListener(tracker.newFrameReceived, this, &OSCThread::RTLSFrameReceived);
 }
 
 //--------------------------------------------------------------
@@ -36,17 +40,19 @@ void ofApp::draw(){
 	ofBackground(200);
 
 	ofSetColor(0);
-	drawStatus(10, 20);
+	oscThread.drawStatus(10, 20);
 
 }
 
 void ofApp::exit() {
 
-	tracker.exit();
+	oscThread.exit();
 
 }
 
-void ofApp::RTLSFrameReceived(RTLSEventArgs& args) {
+void OSCThread::RTLSFrameReceived(RTLSEventArgs& args) {
+
+	// cout << args.frame.DebugString() << endl;
 
 	if (!bOscEnabled) return;
 
@@ -57,17 +63,24 @@ void ofApp::RTLSFrameReceived(RTLSEventArgs& args) {
 		m.clear();
 		m.setAddress(messageAddress);
 
-		//m.addInt64Arg(args.frame.trackables(i).cuid());
+		// Arg defaults to empty or 0 if not set
+		m.addStringArg(args.frame.trackables(i).name());
+		m.addInt64Arg(((uint64_t*)args.frame.trackables(i).cuid().c_str())[0]);
+		m.addInt64Arg(((uint64_t*)args.frame.trackables(i).cuid().c_str())[1]);
 		m.addFloatArg(args.frame.trackables(i).position().x());
 		m.addFloatArg(args.frame.trackables(i).position().y());
 		m.addFloatArg(args.frame.trackables(i).position().z());
+		m.addFloatArg(args.frame.trackables(i).orientation().w());
+		m.addFloatArg(args.frame.trackables(i).orientation().x());
+		m.addFloatArg(args.frame.trackables(i).orientation().y());
+		m.addFloatArg(args.frame.trackables(i).orientation().z());
+
+		//cout << m << endl;
 
 		// should this also send whether it's new data or old data? (keep alive)
 		// should this send time?
 
 		sender.sendMessage(m, false);
-
-		cout << m << endl;
 
 		// Log this data
 		lastSend = ofGetElapsedTimeMillis();
@@ -78,7 +91,7 @@ void ofApp::RTLSFrameReceived(RTLSEventArgs& args) {
 }
 
 // --------------------------------------------------------------
-void ofApp::drawStatus(int x, int y) {
+void OSCThread::drawStatus(int x, int y) {
 
 	stringstream ss;
 	ss << "Sending OSC over " << oscHost << " : " << ofToString(oscPort) << "\n";
@@ -97,45 +110,52 @@ void ofApp::drawStatus(int x, int y) {
 }
 
 // --------------------------------------------------------------
-//void ofApp::threadedFunction() {
-//
-//	while (isThreadRunning()) {
-//
-//		// Determine whether we are actively sending any messages in the last
-//		// stopGap milliseconds
-//		bSending = ofGetElapsedTimeMillis() - lastSend < stopGap;
-//
-//	}
-//}
+void OSCThread::threadedFunction() {
+
+	while (isThreadRunning()) {
+
+		// Determine whether we are actively sending any messages in the last
+		// stopGap milliseconds
+		bSending = ofGetElapsedTimeMillis() - lastSend < stopGap;
+
+	}
+}
 
 // --------------------------------------------------------------
-void ofApp::setOscEnabled(bool _bOscEnabled) {
+void OSCThread::setOscEnabled(bool _bOscEnabled) {
 	bOscEnabled = _bOscEnabled;
 }
 
 // --------------------------------------------------------------
-bool ofApp::isOscSending() {
+bool OSCThread::isOscSending() {
 	return bSending;
 }
 
 // --------------------------------------------------------------
-string ofApp::getOscHostAddress() {
+string OSCThread::getOscHostAddress() {
 	return oscHost;
 }
 
 // --------------------------------------------------------------
-int ofApp::getOscPort() {
+int OSCThread::getOscPort() {
 	return oscPort;
 }
 
 // --------------------------------------------------------------
-string ofApp::getOscMessageAddress() {
+string OSCThread::getOscMessageAddress() {
 	return messageAddress;
 }
 
 // --------------------------------------------------------------
-bool ofApp::isOscEnabled() {
+bool OSCThread::isOscEnabled() {
 	return bOscEnabled;
+}
+
+void OSCThread::exit() {
+
+	stopThread();
+	tracker.exit();
+
 }
 
 //--------------------------------------------------------------

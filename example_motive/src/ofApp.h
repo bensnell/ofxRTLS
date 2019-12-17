@@ -8,24 +8,12 @@
 #include "ofxOsc.h"
 #include "ofxRemoteUIServer.h"
 
-class ofApp: public ofBaseApp{
+class OSCThread : public ofThread {
 	public:
 		void setup();
-		void update();
-		void draw();
-		void exit();
-		
-		void keyPressed(int key);
-		void keyReleased(int key);
-		void mouseMoved(int x, int y);
-		void mouseDragged(int x, int y, int button);
-		void mousePressed(int x, int y, int button);
-		void mouseReleased(int x, int y, int button);
-		void windowResized(int w, int h);
-		void dragEvent(ofDragInfo dragInfo);
-		void gotMessage(ofMessage msg);
-
 		void RTLSFrameReceived(RTLSEventArgs& args);
+
+		void exit();
 
 		/// \brief Draw the status of OSC
 		void drawStatus(int x, int y);
@@ -53,12 +41,32 @@ class ofApp: public ofBaseApp{
 		//bool bForceSendPosition = false;
 		//bool bForceSendOrientation = false;
 
-		// TODO add back thread functionality?
-		// void threadedFunction();
+		void threadedFunction();
 		uint64_t lastSend = 0;
 		int stopGap = 100; // number of milliseconds before we decide no data is being sent
 		bool bSending = false;
 		ofxOscMessage lastMessage;
 
 		bool bOscEnabled = true;
+};
+
+class ofApp : public ofBaseApp {
+public:
+	void setup();
+	void update();
+	void draw();
+	void exit();
+
+	void keyPressed(int key);
+	void keyReleased(int key);
+	void mouseMoved(int x, int y);
+	void mouseDragged(int x, int y, int button);
+	void mousePressed(int x, int y, int button);
+	void mouseReleased(int x, int y, int button);
+	void windowResized(int w, int h);
+	void dragEvent(ofDragInfo dragInfo);
+	void gotMessage(ofMessage msg);
+
+private:
+	OSCThread oscThread;
 };
