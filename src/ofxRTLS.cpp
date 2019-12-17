@@ -99,40 +99,32 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 
 	lastReceive = ofGetElapsedTimeMillis();
-	if (!bOscEnabled) return;
 
 	// Send each identified point
-	ofxOscMessage m;
-
+	RTLSEventArgs outArgs;
+	outArgs.frame.set_frame_id(1);
 	for (int i = 0; i < (*args.devices->getTrackers()).size(); i++) {
 
 		Device* tkr = (*args.devices->getTrackers())[i];
 		if (tkr->isActive()) {
-
-			m.clear();
-			m.setAddress(messageAddress);
-
-			m.addStringArg(tkr->serialNumber);
-			m.addFloatArg(tkr->position.x);
-			m.addFloatArg(tkr->position.y);
-			m.addFloatArg(tkr->position.z);
-			m.addFloatArg(tkr->quaternion.w);
-			m.addFloatArg(tkr->quaternion.x);
-			m.addFloatArg(tkr->quaternion.y);
-			m.addFloatArg(tkr->quaternion.z);
-
-			// should this also send whether it's new data or old data? (keep alive)
-			// should this send time?
-
-			sender.sendMessage(m, false);
-
-			// Log this data
-			lastSend = ofGetElapsedTimeMillis();
+			Trackable* trackable = outArgs.frame.add_trackables();
+			trackable->set_name(tkr->serialNumber);
+			Trackable::Position* position = trackable->mutable_position();
+			position->set_x(tkr->position.x);
+			position->set_y(tkr->position.y);
+			position->set_z(tkr->position.z);
+			Trackable::Orientation* orientation = trackable->mutable_orientation();
+			orientation->set_w(tkr->quaternion.w);
+			orientation->set_x(tkr->quaternion.x);
+			orientation->set_y(tkr->quaternion.y);
+			orientation->set_z(tkr->quaternion.z);
 		}
 	}
 
-	// Save this message
-	lastMessage = m;
+	ofNotifyEvent(newFrameReceived, outArgs);
+
+	// Save this frame
+	lastFrame = outArgs.frame;
 }
 
 #endif
