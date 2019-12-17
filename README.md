@@ -2,12 +2,8 @@
 
 ## Introduction
 
-This addon is intended to act as a manager for any RealTime Location System and as an OSC sender of 3D tracking data. Currently, this addon only integrates Optitrack Motive's API.
+This addon is intended to act as a manager for any "Real Time Location System" and exports tracking information in a standardized format via the [`rtls-protocol`](https://github.com/local-projects/rtls-protocol). Currently, this addon supports Optitrack Motive's API and the OpenVR API.
 
-An attempt was made to integrate Vive Tracking, but proved unsuccessful for a few reasons:
-
-1. Optitrack's dlls and Vive's dlls must be in the same directory as the executable; however, they require different versions of the same dlls, which produces conflicts (Entry Point errors).
-2. Vive loads libraries twice -- this seems less a problem with inegration with RTLS and more a problem with the addon ofxOpenVRTracker itself.
 
 ### Systems
 
@@ -17,8 +13,11 @@ This requires Windows 10, x64 computer since Optitrack maintains these requireme
 
 Follow the instructions in each addon to include the relevant dependencies:
 
-- ofxMotive
-- ofxOpenVRTracker
+- [ofxMotive](https://github.com/local-projects/ofxMotive)
+- [ofxOpenVRTracker](https://github.com/local-projects/ofxOpenVRTracker)
+- [rtls-protocol (C++)](https://github.com/local-projects/rtls-protocol/tree/master/c%2B%2B)
+    - Follow the Windows(x64) installation instructions to install the `protobuf` libraries system-wide.
+    - The C++ headers are already copied into the `src` folder of this addon, but you may have to regenerate the headers if the version of `protobuf` that was installed is ahead of the version used to generate the headers (v3.11).
 
 #### Installation
 
