@@ -22,8 +22,6 @@ void ofxRTLS::setupParams() {
 
 #endif
 #ifdef RTLS_MOTIVE
-	motive.setCalibrationPath(ofToDataPath("calibration.cal"));
-	motive.setProfilePath(ofToDataPath("profile.motive"));
 	motive.setupParams();
 #endif
 }
@@ -75,9 +73,12 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 	RTLSEventArgs outArgs;
 	outArgs.frame.set_frame_id(1);
 	for (int i = 0; i < args.markers.size(); i++) {
-		
+
 		Trackable* trackable = outArgs.frame.add_trackables();
-		//trackable->set_cuid(args.markers[i].cuid.HighBits());
+		char byte_array[16];
+		((uint64_t*)byte_array)[0] = args.markers[i].cuid.HighBits();
+		((uint64_t*)byte_array)[1] = args.markers[i].cuid.LowBits();
+		trackable->set_cuid(byte_array, 16);
 		Trackable::Position* position = trackable->mutable_position();
 		position->set_x(args.markers[i].position.x);
 		position->set_y(args.markers[i].position.y);
