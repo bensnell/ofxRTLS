@@ -31,8 +31,11 @@ See the examples provided for instructions on how to use this with each tracking
 
 In order to declare which version of this addon you're using, declare one of the following in this Project's Preprocessor Definitions in the Property Sheets > C/C++ section:
 
-- RTLS_VIVE
+- RTLS_OPENVR
 - RTLS_MOTIVE
+
+## Example
+The example is setup to use `RTLS_OPENVR`, but this can be easily changed by changing the Preprocessor Definitions (see above) and changing the defined constant in `example/src/ofApp.h`. You may have to troubleshoot further (see the [ofxMotive](https://github.com/local-projects/ofxMotive) README for help) and potentially regenerate project files. It may help, for example, to edit `addons.make` to remove the ofxOpenVRTracker addon since that isn't needed for ofxMotive.
 
 ## Troubleshooting
 

@@ -1,8 +1,7 @@
 #pragma once
 
-//#define RTLS_VIVE
-#if !defined(RTLS_VIVE) && !defined(RTLS_MOTIVE)
-#error "ofxRTLS: Please add one of the following definitions to your project RTLS_VIVE, RTLS_MOTIVE"
+#if !defined(RTLS_OPENVR) && !defined(RTLS_MOTIVE)
+#error "ofxRTLS: Please add one of the following definitions to your project RTLS_OPENVR, RTLS_MOTIVE"
 #endif
 
 
@@ -12,7 +11,7 @@
 
 using namespace RTLSProtocol;
 
-#ifdef RTLS_VIVE 
+#ifdef RTLS_OPENVR
 #include "ofxOpenVRTracker.h"
 #endif
 #ifdef RTLS_MOTIVE
@@ -53,7 +52,7 @@ public:
 	ofEvent< RTLSEventArgs > newFrameReceived;
 
 
-#ifdef RTLS_VIVE
+#ifdef RTLS_OPENVR
 	ofxOpenVRTracker vive;
 	void openvrDataReceived(ofxOpenVRTrackerEventArgs& args);
 #endif

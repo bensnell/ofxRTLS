@@ -17,7 +17,7 @@ void ofxRTLS::setupParams() {
 
 	// Setup RUI Params
 
-#ifdef RTLS_VIVE
+#ifdef RTLS_OPENVR
 	// Are there any params?
 
 #endif
@@ -29,7 +29,7 @@ void ofxRTLS::setupParams() {
 // --------------------------------------------------------------
 void ofxRTLS::setup() {
 	// Add listeners for new data
-#ifdef RTLS_VIVE
+#ifdef RTLS_OPENVR
 	ofAddListener(vive.newDataReceived, this, &ofxRTLS::openvrDataReceived);
 #endif
 #ifdef RTLS_MOTIVE
@@ -42,7 +42,7 @@ void ofxRTLS::setup() {
 // --------------------------------------------------------------
 void ofxRTLS::start() {
 	// Start communications with the trackers
-#ifdef RTLS_VIVE
+#ifdef RTLS_OPENVR
 	vive.connect();
 #endif
 #ifdef RTLS_MOTIVE
@@ -54,7 +54,7 @@ void ofxRTLS::start() {
 // --------------------------------------------------------------
 void ofxRTLS::stop() {
 	// Stop communication with the trackers
-#ifdef RTLS_VIVE
+#ifdef RTLS_OPENVR
 	vive.disconnect();
 #endif
 #ifdef RTLS_MOTIVE
@@ -94,7 +94,7 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 #endif
 
 // --------------------------------------------------------------
-#ifdef RTLS_VIVE
+#ifdef RTLS_OPENVR
 
 void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 
@@ -144,7 +144,7 @@ void ofxRTLS::threadedFunction() {
 // --------------------------------------------------------------
 void ofxRTLS::exit() {
 
-#ifdef RTLS_VIVE
+#ifdef RTLS_OPENVR
 	// Remove listener for new device data
 	ofRemoveListener(vive.newDataReceived, this, &ofxRTLS::openvrDataReceived);
 	vive.exit();
@@ -157,7 +157,7 @@ void ofxRTLS::exit() {
 // --------------------------------------------------------------
 bool ofxRTLS::isConnected() {
 
-#ifdef RTLS_VIVE
+#ifdef RTLS_OPENVR
 	return vive.isConnected();
 #endif
 #ifdef RTLS_MOTIVE
