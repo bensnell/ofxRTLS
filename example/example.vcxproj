@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Condition="'$(WindowsTargetPlatformVersion)'==''">
+    <LatestTargetPlatformVersion>$([Microsoft.Build.Utilities.ToolLocationHelper]::GetLatestSDKTargetPlatformVersion('Windows', '10.0'))</LatestTargetPlatformVersion>
+    <WindowsTargetPlatformVersion Condition="'$(WindowsTargetPlatformVersion)' == ''">10.0</WindowsTargetPlatformVersion>
+    <TargetPlatformVersion>$(WindowsTargetPlatformVersion)</TargetPlatformVersion>
+  </PropertyGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7FD42DF7-442E-479A-BA76-D0022F99702A}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>example</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="../../../OpenFrameworks/libs\openFrameworksCompiled\project\vs\openFrameworksRelease.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="../../../OpenFrameworks/libs\openFrameworksCompiled\project\vs\openFrameworksRelease.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="../../../OpenFrameworks/libs\openFrameworksCompiled\project\vs\openFrameworksDebug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="../../../OpenFrameworks/libs\openFrameworksCompiled\project\vs\openFrameworksDebug.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_debug</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+    <GenerateManifest>true</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_debug</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+    <GenerateManifest>true</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;..\..\..\OpenFrameworks\addons\ofxOsc\libs;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\posix;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\win32;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc;..\..\..\OpenFrameworks\addons\ofxOsc\src;..\..\..\OpenFrameworks\addons\ofxPoco\libs\poco\include;..\..\..\OpenFrameworks\addons\ofxPoco\src;..\..\..\OpenFrameworks\addons\ofxXmlSettings\libs;..\..\..\OpenFrameworks\addons\ofxXmlSettings\src;..\..\..\ExternalAddons\ofxRemoteUI\src;..\..\..\ExternalAddons\ofxRTLS\src;..\..\..\ExternalAddons\ofxOpenVRTracker\libs;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\linux32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx32\libopenvr_api.dylib.dSYM;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx32\libopenvr_api.dylib.dSYM\Contents;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx32\libopenvr_api.dylib.dSYM\Contents\Resources;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx32\libopenvr_api.dylib.dSYM\Contents\Resources\DWARF;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\controller_callouts;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\headers;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\lib;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\lib\linux32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\lib\osx32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\lib\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\lib\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\resources;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\resources\icons;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\resources\input;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\resources\localization;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\resources\settings;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\osx32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\shaders;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\win32\platforms;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\driver_sample;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_dx12;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_opengl;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_vulkan;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\helloworldoverlay;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release MX;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release MX\Win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release MX\x64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release\Win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release\x64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\doc;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\include;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\include\GL;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release MX;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release MX\Win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release MX\x64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release\Win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release\osx32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release\x64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\bin;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\bin\linux32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\bin\osx32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\bin\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\bin\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\shaderc;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\lib;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\lib\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\lib\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\tracked_camera_openvr_sample;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins\openvr_api.bundle;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins\openvr_api.bundle\Contents;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins\openvr_api.bundle\Contents\MacOS;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins\x86;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins\x86_64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Editor;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Extras;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Materials;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Prefabs;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Resources;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Scenes;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Scripts;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Textures;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\ProjectSettings;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Materials;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins\openvr_api.bundle;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins\openvr_api.bundle\Contents;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins\openvr_api.bundle\Contents\MacOS;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins\x86;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins\x86_64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Editor;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Extras;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Materials;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Prefabs;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Resources;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Scenes;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Scripts;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Textures;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\UnityVS;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\UnityVS\Editor;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\ProjectSettings;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\json;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon;..\..\..\ExternalAddons\ofxOpenVRTracker\src;..\..\..\ExternalAddons\ofxMotive\src</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <PreprocessorDefinitions>OSC_HOST_LITTLE_ENDIAN</PreprocessorDefinitions>
+      <AdditionalOptions>-DPOCO_STATIC</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <AdditionalDependencies>%(AdditionalDependencies);PocoCryptomdd.lib;PocoDatamdd.lib;PocoDataSQLitemdd.lib;PocoFoundationmdd.lib;PocoJSONmdd.lib;PocoNetmdd.lib;PocoNetSSLmdd.lib;PocoPDFmdd.lib;PocoUtilmdd.lib;PocoXMLmdd.lib;PocoZipmdd.lib;iphlpapi.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);..\..\..\OpenFrameworks\addons\ofxPoco\libs\poco\lib\vs\Win32\Debug;..\..\..\OpenFrameworks\addons\ofxPoco</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;..\..\..\OpenFrameworks\addons\ofxOsc\libs;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\posix;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\win32;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc;..\..\..\OpenFrameworks\addons\ofxOsc\src;..\..\..\OpenFrameworks\addons\ofxPoco\libs\poco\include;..\..\..\OpenFrameworks\addons\ofxPoco\src;..\..\..\OpenFrameworks\addons\ofxXmlSettings\libs;..\..\..\OpenFrameworks\addons\ofxXmlSettings\src;..\..\..\ExternalAddons\ofxRemoteUI\src;..\..\..\ExternalAddons\ofxRTLS\src;..\..\..\ExternalAddons\ofxOpenVRTracker\libs;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\linux32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx32\libopenvr_api.dylib.dSYM;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx32\libopenvr_api.dylib.dSYM\Contents;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx32\libopenvr_api.dylib.dSYM\Contents\Resources;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx32\libopenvr_api.dylib.dSYM\Contents\Resources\DWARF;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\controller_callouts;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\headers;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\lib;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\lib\linux32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\lib\osx32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\lib\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\lib\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\resources;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\resources\icons;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\resources\input;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\resources\localization;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\resources\settings;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\osx32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\shaders;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\win32\platforms;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\driver_sample;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_dx12;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_opengl;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_vulkan;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\helloworldoverlay;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release MX;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release MX\Win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release MX\x64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release\Win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release\x64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\doc;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\include;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\include\GL;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release MX;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release MX\Win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release MX\x64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release\Win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release\osx32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release\x64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\bin;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\bin\linux32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\bin\osx32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\bin\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\bin\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\shaderc;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\lib;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\lib\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\lib\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\tracked_camera_openvr_sample;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins\openvr_api.bundle;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins\openvr_api.bundle\Contents;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins\openvr_api.bundle\Contents\MacOS;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins\x86;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins\x86_64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Editor;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Extras;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Materials;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Prefabs;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Resources;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Scenes;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Scripts;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Textures;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\ProjectSettings;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Materials;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins\openvr_api.bundle;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins\openvr_api.bundle\Contents;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins\openvr_api.bundle\Contents\MacOS;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins\x86;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins\x86_64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Editor;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Extras;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Materials;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Prefabs;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Resources;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Scenes;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Scripts;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Textures;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\UnityVS;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\UnityVS\Editor;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\ProjectSettings;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\json;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon;..\..\..\ExternalAddons\ofxOpenVRTracker\src;..\..\..\ExternalAddons\ofxMotive\src</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <PreprocessorDefinitions>OSC_HOST_LITTLE_ENDIAN</PreprocessorDefinitions>
+      <AdditionalOptions>-DPOCO_STATIC</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <AdditionalDependencies>%(AdditionalDependencies);PocoCryptomdd.lib;PocoDatamdd.lib;PocoDataSQLitemdd.lib;PocoFoundationmdd.lib;PocoJSONmdd.lib;PocoNetmdd.lib;PocoNetSSLmdd.lib;PocoPDFmdd.lib;PocoUtilmdd.lib;PocoXMLmdd.lib;PocoZipmdd.lib;iphlpapi.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);..\..\..\OpenFrameworks\addons\ofxPoco\libs\poco\lib\vs\x64\Debug;..\..\..\OpenFrameworks\addons\ofxPoco</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;..\..\..\OpenFrameworks\addons\ofxOsc\libs;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\posix;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\win32;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc;..\..\..\OpenFrameworks\addons\ofxOsc\src;..\..\..\OpenFrameworks\addons\ofxPoco\libs\poco\include;..\..\..\OpenFrameworks\addons\ofxPoco\src;..\..\..\OpenFrameworks\addons\ofxXmlSettings\libs;..\..\..\OpenFrameworks\addons\ofxXmlSettings\src;..\..\..\ExternalAddons\ofxRemoteUI\src;..\..\..\ExternalAddons\ofxRTLS\src;..\..\..\ExternalAddons\ofxOpenVRTracker\libs;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\linux32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx32\libopenvr_api.dylib.dSYM;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx32\libopenvr_api.dylib.dSYM\Contents;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx32\libopenvr_api.dylib.dSYM\Contents\Resources;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx32\libopenvr_api.dylib.dSYM\Contents\Resources\DWARF;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\controller_callouts;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\headers;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\lib;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\lib\linux32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\lib\osx32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\lib\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\lib\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\resources;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\resources\icons;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\resources\input;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\resources\localization;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\resources\settings;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\osx32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\shaders;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\win32\platforms;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\driver_sample;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_dx12;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_opengl;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_vulkan;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\helloworldoverlay;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release MX;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release MX\Win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release MX\x64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release\Win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release\x64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\doc;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\include;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\include\GL;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release MX;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release MX\Win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release MX\x64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release\Win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release\osx32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release\x64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\bin;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\bin\linux32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\bin\osx32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\bin\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\bin\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\shaderc;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\lib;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\lib\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\lib\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\tracked_camera_openvr_sample;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins\openvr_api.bundle;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins\openvr_api.bundle\Contents;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins\openvr_api.bundle\Contents\MacOS;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins\x86;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins\x86_64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Editor;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Extras;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Materials;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Prefabs;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Resources;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Scenes;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Scripts;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Textures;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\ProjectSettings;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Materials;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins\openvr_api.bundle;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins\openvr_api.bundle\Contents;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins\openvr_api.bundle\Contents\MacOS;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins\x86;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins\x86_64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Editor;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Extras;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Materials;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Prefabs;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Resources;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Scenes;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Scripts;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Textures;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\UnityVS;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\UnityVS\Editor;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\ProjectSettings;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\json;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon;..\..\..\ExternalAddons\ofxOpenVRTracker\src;..\..\..\ExternalAddons\ofxMotive\src</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <PreprocessorDefinitions>OSC_HOST_LITTLE_ENDIAN</PreprocessorDefinitions>
+      <AdditionalOptions>-DPOCO_STATIC</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <AdditionalDependencies>%(AdditionalDependencies);PocoCryptomd.lib;PocoDatamd.lib;PocoDataSQLitemd.lib;PocoFoundationmd.lib;PocoJSONmd.lib;PocoNetmd.lib;PocoNetSSLmd.lib;PocoPDFmd.lib;PocoUtilmd.lib;PocoXMLmd.lib;PocoZipmd.lib;iphlpapi.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);..\..\..\OpenFrameworks\addons\ofxPoco\libs\poco\lib\vs\Win32\Release;..\..\..\OpenFrameworks\addons\ofxPoco</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;..\..\..\OpenFrameworks\addons\ofxOsc\libs;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\posix;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\win32;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc;..\..\..\OpenFrameworks\addons\ofxOsc\src;..\..\..\OpenFrameworks\addons\ofxPoco\libs\poco\include;..\..\..\OpenFrameworks\addons\ofxPoco\src;..\..\..\OpenFrameworks\addons\ofxXmlSettings\libs;..\..\..\OpenFrameworks\addons\ofxXmlSettings\src;..\..\..\ExternalAddons\ofxRemoteUI\src;..\..\..\ExternalAddons\ofxRTLS\src;..\..\..\ExternalAddons\ofxOpenVRTracker\libs;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\linux32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx32\libopenvr_api.dylib.dSYM;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx32\libopenvr_api.dylib.dSYM\Contents;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx32\libopenvr_api.dylib.dSYM\Contents\Resources;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx32\libopenvr_api.dylib.dSYM\Contents\Resources\DWARF;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\osx64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\bin\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\controller_callouts;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\headers;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\lib;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\lib\linux32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\lib\osx32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\lib\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\lib\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\resources;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\resources\icons;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\resources\input;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\resources\localization;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\resources\settings;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\drivers\sample\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\osx32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\shaders;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\win32\platforms;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\bin\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\driver_sample;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_dx12;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_opengl;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_vulkan;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\helloworldoverlay;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release MX;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release MX\Win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release MX\x64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release\Win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\bin\Release\x64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\doc;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\include;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\include\GL;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release MX;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release MX\Win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release MX\x64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release\Win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release\osx32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\lib\Release\x64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\bin;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\bin\linux32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\bin\osx32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\bin\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\bin\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\shaderc;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\lib;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\lib\win32;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\lib\win64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\tracked_camera_openvr_sample;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins\openvr_api.bundle;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins\openvr_api.bundle\Contents;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins\openvr_api.bundle\Contents\MacOS;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins\x86;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\Plugins\x86_64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Editor;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Extras;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Materials;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Prefabs;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Resources;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Scenes;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Scripts;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\Assets\SteamVR\Textures;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_keyboard_sample\ProjectSettings;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Materials;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins\openvr_api.bundle;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins\openvr_api.bundle\Contents;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins\openvr_api.bundle\Contents\MacOS;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins\x86;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\Plugins\x86_64;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Editor;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Extras;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Materials;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Prefabs;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Resources;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Scenes;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Scripts;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\SteamVR\Textures;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\UnityVS;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\Assets\UnityVS\Editor;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\unity_teleport_sample\ProjectSettings;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\json;..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon;..\..\..\ExternalAddons\ofxOpenVRTracker\src;..\..\..\ExternalAddons\ofxMotive\src</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <PreprocessorDefinitions>OSC_HOST_LITTLE_ENDIAN</PreprocessorDefinitions>
+      <AdditionalOptions>-DPOCO_STATIC</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <AdditionalDependencies>%(AdditionalDependencies);PocoCryptomd.lib;PocoDatamd.lib;PocoDataSQLitemd.lib;PocoFoundationmd.lib;PocoJSONmd.lib;PocoNetmd.lib;PocoNetSSLmd.lib;PocoPDFmd.lib;PocoUtilmd.lib;PocoXMLmd.lib;PocoZipmd.lib;iphlpapi.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);..\..\..\OpenFrameworks\addons\ofxPoco\libs\poco\lib\vs\x64\Release;..\..\..\OpenFrameworks\addons\ofxPoco</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\ofApp.cpp" />
+    <ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOscBundle.cpp" />
+    <ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOscMessage.cpp" />
+    <ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOscParameterSync.cpp" />
+    <ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOscReceiver.cpp" />
+    <ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOscSender.cpp" />
+    <ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\IpEndpointName.cpp" />
+    <ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\win32\NetworkingUtils.cpp" />
+    <ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\win32\UdpSocket.cpp" />
+    <ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\OscOutboundPacketStream.cpp" />
+    <ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\OscPrintReceivedElements.cpp" />
+    <ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\OscReceivedElements.cpp" />
+    <ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\OscTypes.cpp" />
+    <ClCompile Include="..\..\..\OpenFrameworks\addons\ofxPoco\src\ofxXmlPoco.cpp" />
+    <ClCompile Include="..\..\..\OpenFrameworks\addons\ofxXmlSettings\src\ofxXmlSettings.cpp" />
+    <ClCompile Include="..\..\..\OpenFrameworks\addons\ofxXmlSettings\libs\tinyxml.cpp" />
+    <ClCompile Include="..\..\..\OpenFrameworks\addons\ofxXmlSettings\libs\tinyxmlerror.cpp" />
+    <ClCompile Include="..\..\..\OpenFrameworks\addons\ofxXmlSettings\libs\tinyxmlparser.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUI.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUIClient.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUINeigbors.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUIofParamaterSync.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUIServer.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUIWebServer.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxRemoteUI\src\OscQueryServerMgr.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxRemoteUI\src\RUIWebBinary.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxRemoteUI\src\uriencode.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLS.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\Trackable.pb.cc" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\Device.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\DeviceList.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\ofxOpenVRTracker.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\Utilities.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\driver_sample\driverlog.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\driver_sample\driver_sample.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_dx12\hellovr_dx12_main.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_opengl\hellovr_opengl_main.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_vulkan\hellovr_vulkan_main.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\helloworldoverlay\main.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\helloworldoverlay\openvroverlaycontroller.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\helloworldoverlay\overlaywidget.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared\lodepng.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared\Matrices.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared\pathtools.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared\strtools.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\tracked_camera_openvr_sample\main.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\tracked_camera_openvr_sample\tracked_camera_openvr_sample.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\jsoncpp.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\openvr_api_public.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\dirtools_public.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\envvartools_public.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\hmderrors_public.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\pathtools_public.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\sharedlibtools_public.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\strtools_public.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\vrpathregistry_public.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxMotive\src\Marker.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxMotive\src\MotiveCamera.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxMotive\src\MotiveCameraSet.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxMotive\src\ofxMotive.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxMotive\src\Reconstruction.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\ofApp.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOsc.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOscArg.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOscBundle.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOscMessage.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOscParameterSync.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOscReceiver.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOscSender.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\IpEndpointName.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\NetworkingUtils.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\PacketListener.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\TimerListener.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\UdpSocket.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\MessageMappingOscPacketListener.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\OscException.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\OscHostEndianness.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\OscOutboundPacketStream.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\OscPacketListener.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\OscPrintReceivedElements.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\OscReceivedElements.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\OscTypes.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxPoco\src\ofxXmlPoco.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxXmlSettings\src\ofxXmlSettings.h" />
+    <ClInclude Include="..\..\..\OpenFrameworks\addons\ofxXmlSettings\libs\tinyxml.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\dirent_vs.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUI.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUIClient.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUINeigbors.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUIofParamaterSync.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUIServer.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUIServerMacros.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUISimpleNotifications.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUIVars.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUIWebServer.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\OscQueryServerMgr.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\RemoteParam.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\uriencode.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLS.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\Trackable.pb.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\Device.hpp" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\DeviceList.hpp" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\ofxOpenVRTracker.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\Utilities.hpp" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\headers\openvr.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\headers\openvr_capi.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\headers\openvr_driver.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\driver_sample\driverlog.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_dx12\d3dx12.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\helloworldoverlay\openvroverlaycontroller.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\helloworldoverlay\overlaywidget.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared\compat.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared\lodepng.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared\Matrices.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared\pathtools.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared\strtools.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared\Vectors.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\include\GL\glew.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\include\GL\glxew.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\include\GL\wglew.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\begin_code.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\close_code.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_assert.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_atomic.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_audio.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_bits.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_blendmode.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_clipboard.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_config.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_config_android.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_config_iphoneos.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_config_macosx.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_config_minimal.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_config_pandora.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_config_psp.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_config_windows.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_config_winrt.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_config_wiz.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_copying.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_cpuinfo.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_egl.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_endian.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_error.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_events.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_filesystem.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_gamecontroller.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_gesture.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_haptic.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_hints.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_joystick.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_keyboard.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_keycode.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_loadso.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_log.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_main.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_messagebox.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_mouse.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_mutex.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_name.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_opengl.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_opengles.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_opengles2.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_pixels.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_platform.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_power.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_quit.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_rect.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_render.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_revision.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_rwops.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_scancode.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_shape.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_stdinc.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_surface.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_system.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_syswm.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test_assert.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test_common.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test_compare.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test_crc32.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test_font.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test_fuzzer.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test_harness.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test_images.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test_log.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test_md5.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test_random.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_thread.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_timer.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_touch.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_types.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_version.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_video.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\shaderc\shaderc.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\shaderc\shaderc.hpp" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan\GLSL.std.450.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan\spirv.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan\spirv.hpp" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan\vk_icd.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan\vk_layer.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan\vk_layer_dispatch_table.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan\vk_platform.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan\vk_sdk_platform.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan\vulkan.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan\vulkan.hpp" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\tracked_camera_openvr_sample\tracked_camera_openvr_sample.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\ivrclientcore.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\json\json-forwards.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\json\json.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\dirtools_public.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\envvartools_public.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\hmderrors_public.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\pathtools_public.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\sharedlibtools_public.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\strtools_public.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\vrpathregistry_public.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxMotive\src\Marker.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxMotive\src\MotiveCamera.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxMotive\src\MotiveCameraSet.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxMotive\src\ofxMotive.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxMotive\src\Reconstruction.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(OF_ROOT)\libs\openFrameworksCompiled\project\vs\openframeworksLib.vcxproj">
+      <Project>{5837595d-aca9-485c-8e76-729040ce4b0b}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="icon.rc">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/D_DEBUG %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/D_DEBUG %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(OF_ROOT)\libs\openFrameworksCompiled\project\vs</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="icon.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

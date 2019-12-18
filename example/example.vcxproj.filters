@@ -1,0 +1,840 @@
+<?xml version="1.0"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<ClCompile Include="src\ofApp.cpp">
+			<Filter>src</Filter>
+		</ClCompile>
+		<ClCompile Include="src\main.cpp">
+			<Filter>src</Filter>
+		</ClCompile>
+		<ClCompile Include="src\main.cpp">
+			<Filter>src</Filter>
+		</ClCompile>
+		<ClCompile Include="src\ofApp.cpp">
+			<Filter>src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOscBundle.cpp">
+			<Filter>addons\ofxOsc\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOscMessage.cpp">
+			<Filter>addons\ofxOsc\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOscParameterSync.cpp">
+			<Filter>addons\ofxOsc\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOscReceiver.cpp">
+			<Filter>addons\ofxOsc\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOscSender.cpp">
+			<Filter>addons\ofxOsc\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\IpEndpointName.cpp">
+			<Filter>addons\ofxOsc\libs\oscpack\src\ip</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\win32\NetworkingUtils.cpp">
+			<Filter>addons\ofxOsc\libs\oscpack\src\ip\win32</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\win32\UdpSocket.cpp">
+			<Filter>addons\ofxOsc\libs\oscpack\src\ip\win32</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\OscOutboundPacketStream.cpp">
+			<Filter>addons\ofxOsc\libs\oscpack\src\osc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\OscPrintReceivedElements.cpp">
+			<Filter>addons\ofxOsc\libs\oscpack\src\osc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\OscReceivedElements.cpp">
+			<Filter>addons\ofxOsc\libs\oscpack\src\osc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\OscTypes.cpp">
+			<Filter>addons\ofxOsc\libs\oscpack\src\osc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\OpenFrameworks\addons\ofxPoco\src\ofxXmlPoco.cpp">
+			<Filter>addons\ofxPoco\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\OpenFrameworks\addons\ofxXmlSettings\src\ofxXmlSettings.cpp">
+			<Filter>addons\ofxXmlSettings\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\OpenFrameworks\addons\ofxXmlSettings\libs\tinyxml.cpp">
+			<Filter>addons\ofxXmlSettings\libs</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\OpenFrameworks\addons\ofxXmlSettings\libs\tinyxmlerror.cpp">
+			<Filter>addons\ofxXmlSettings\libs</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\OpenFrameworks\addons\ofxXmlSettings\libs\tinyxmlparser.cpp">
+			<Filter>addons\ofxXmlSettings\libs</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUI.cpp">
+			<Filter>local_addons\ofxRemoteUI\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUIClient.cpp">
+			<Filter>local_addons\ofxRemoteUI\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUINeigbors.cpp">
+			<Filter>local_addons\ofxRemoteUI\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUIofParamaterSync.cpp">
+			<Filter>local_addons\ofxRemoteUI\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUIServer.cpp">
+			<Filter>local_addons\ofxRemoteUI\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUIWebServer.cpp">
+			<Filter>local_addons\ofxRemoteUI\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxRemoteUI\src\OscQueryServerMgr.cpp">
+			<Filter>local_addons\ofxRemoteUI\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxRemoteUI\src\RUIWebBinary.cpp">
+			<Filter>local_addons\ofxRemoteUI\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxRemoteUI\src\uriencode.cpp">
+			<Filter>local_addons\ofxRemoteUI\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLS.cpp">
+			<Filter>local_addons\ofxRTLS\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\Trackable.pb.cc">
+			<Filter>local_addons\ofxRTLS\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\Device.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\DeviceList.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\ofxOpenVRTracker.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\Utilities.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\driver_sample\driverlog.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\driver_sample</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\driver_sample\driver_sample.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\driver_sample</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_dx12\hellovr_dx12_main.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_dx12</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_opengl\hellovr_opengl_main.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_opengl</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_vulkan\hellovr_vulkan_main.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_vulkan</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\helloworldoverlay\main.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\helloworldoverlay</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\helloworldoverlay\openvroverlaycontroller.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\helloworldoverlay</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\helloworldoverlay\overlaywidget.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\helloworldoverlay</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared\lodepng.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\shared</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared\Matrices.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\shared</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared\pathtools.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\shared</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared\strtools.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\shared</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\tracked_camera_openvr_sample\main.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\tracked_camera_openvr_sample</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\tracked_camera_openvr_sample\tracked_camera_openvr_sample.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\tracked_camera_openvr_sample</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\jsoncpp.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\openvr_api_public.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\dirtools_public.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\envvartools_public.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\hmderrors_public.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\pathtools_public.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\sharedlibtools_public.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\strtools_public.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\vrpathregistry_public.cpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxMotive\src\Marker.cpp">
+			<Filter>local_addons\ofxMotive\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxMotive\src\MotiveCamera.cpp">
+			<Filter>local_addons\ofxMotive\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxMotive\src\MotiveCameraSet.cpp">
+			<Filter>local_addons\ofxMotive\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxMotive\src\ofxMotive.cpp">
+			<Filter>local_addons\ofxMotive\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxMotive\src\Reconstruction.cpp">
+			<Filter>local_addons\ofxMotive\src</Filter>
+		</ClCompile>
+	</ItemGroup>
+	<ItemGroup>
+		<Filter Include="src">
+			<UniqueIdentifier>{d8376475-7454-4a24-b08a-aac121d3ad6f}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons">
+			<UniqueIdentifier>{71834F65-F3A9-211E-73B8-DC85}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxOsc">
+			<UniqueIdentifier>{D91DCA33-6E5D-4481-2AEC-9FBB}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxOsc\src">
+			<UniqueIdentifier>{B9DD339A-D93D-92A1-0A2F-4B41}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxOsc\libs">
+			<UniqueIdentifier>{99ECA1D9-873F-4622-8FC0-FC7B}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxOsc\libs\oscpack">
+			<UniqueIdentifier>{D3A98534-1602-4FEF-57A6-6593}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxOsc\libs\oscpack\src">
+			<UniqueIdentifier>{BFB5BB47-98C8-BBCB-3066-1046}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxOsc\libs\oscpack\src\ip">
+			<UniqueIdentifier>{5A029128-EB41-95C5-CBC0-CDED}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxOsc\libs\oscpack\src\ip\win32">
+			<UniqueIdentifier>{79DFDFE2-400B-8654-3675-01A3}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxOsc\libs\oscpack\src\osc">
+			<UniqueIdentifier>{EDACB89C-9768-9551-4D41-B590}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxPoco">
+			<UniqueIdentifier>{3256AE3E-9B29-EA27-C842-CE6B}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxPoco\src">
+			<UniqueIdentifier>{C7D4269D-D8A9-A7BB-531B-98DA}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxXmlSettings">
+			<UniqueIdentifier>{877F005D-13E6-0592-1D97-F2E3}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxXmlSettings\src">
+			<UniqueIdentifier>{CCB2AC63-49D2-977C-CFE8-AEAD}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxXmlSettings\libs">
+			<UniqueIdentifier>{687714A8-1662-FA1C-261F-50F0}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons">
+			<UniqueIdentifier>{DE6745C7-E99D-D8E0-F77D-C032}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxRemoteUI">
+			<UniqueIdentifier>{DFCB62F2-EABF-394F-4C42-54C8}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxRemoteUI\src">
+			<UniqueIdentifier>{0E8034BD-932E-4031-A20F-9C02}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxRTLS">
+			<UniqueIdentifier>{C74CF183-644B-C1F4-D712-6172}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxRTLS\src">
+			<UniqueIdentifier>{141E2C9B-FA16-C9EB-EFE6-F734}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker">
+			<UniqueIdentifier>{6C15F835-D142-A705-253C-2C4E}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\src">
+			<UniqueIdentifier>{CCDE2D78-982F-6A51-D5E0-17A9}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs">
+			<UniqueIdentifier>{81251A0A-D70A-A424-DFA1-1B5C}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR">
+			<UniqueIdentifier>{D197F02D-9922-30BE-1D6B-F493}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\headers">
+			<UniqueIdentifier>{59604678-A7EC-68F0-6B90-4697}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\samples">
+			<UniqueIdentifier>{63F2C535-C0FF-FA8B-A0DE-5A11}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\samples\driver_sample">
+			<UniqueIdentifier>{F5E23EEF-EF9A-B5CF-85EB-EDEC}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_dx12">
+			<UniqueIdentifier>{24FAAF80-2F51-ACA3-CC30-401E}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_opengl">
+			<UniqueIdentifier>{5C51B97D-303A-8D88-C285-5570}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_vulkan">
+			<UniqueIdentifier>{C3A1A70B-39BC-4C71-6FAE-ECA9}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\samples\helloworldoverlay">
+			<UniqueIdentifier>{819BF225-E225-6773-A0CD-8466}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\samples\shared">
+			<UniqueIdentifier>{B77F960A-028B-9128-6477-7660}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty">
+			<UniqueIdentifier>{85D41ACA-235B-FB21-AED1-1B82}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew">
+			<UniqueIdentifier>{E9134480-14A4-1A29-FE3E-6A29}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0">
+			<UniqueIdentifier>{18401876-2FB5-79DF-5E30-7B98}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\include">
+			<UniqueIdentifier>{46C0CFFC-7688-3805-8C4C-8B0D}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\include\GL">
+			<UniqueIdentifier>{BE9EA139-FFBC-CFB0-831C-3302}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3">
+			<UniqueIdentifier>{4DB17CC8-42B7-436A-6F18-5EBF}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include">
+			<UniqueIdentifier>{150EB48B-50B0-ED48-0EA6-FE7D}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0">
+			<UniqueIdentifier>{E69BFFFB-14DF-7796-8130-CABE}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include">
+			<UniqueIdentifier>{962FF262-7337-DC3A-6E51-E548}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\shaderc">
+			<UniqueIdentifier>{8F8738E6-D150-7E5B-5366-2604}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan">
+			<UniqueIdentifier>{B0B84A35-ECFD-CFC5-39EC-5EB0}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\samples\tracked_camera_openvr_sample">
+			<UniqueIdentifier>{5E21F2CD-8300-DCF8-A405-37D4}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\src">
+			<UniqueIdentifier>{BEEBF658-AFAB-57BF-16D6-DD2F}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\src\json">
+			<UniqueIdentifier>{0D3CC32F-EF77-CB9D-99E2-1A41}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon">
+			<UniqueIdentifier>{2B105574-82F7-C508-7987-3FB6}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxMotive">
+			<UniqueIdentifier>{91746FAC-D5DC-C5D3-0B6F-DAB1}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxMotive\src">
+			<UniqueIdentifier>{4CE75907-060E-5C70-DE78-C272}</UniqueIdentifier>
+		</Filter>
+	</ItemGroup>
+	<ItemGroup>
+		<ClInclude Include="src\ofApp.h">
+			<Filter>src</Filter>
+		</ClInclude>
+		<ClInclude Include="src\ofApp.h">
+			<Filter>src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOsc.h">
+			<Filter>addons\ofxOsc\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOscArg.h">
+			<Filter>addons\ofxOsc\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOscBundle.h">
+			<Filter>addons\ofxOsc\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOscMessage.h">
+			<Filter>addons\ofxOsc\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOscParameterSync.h">
+			<Filter>addons\ofxOsc\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOscReceiver.h">
+			<Filter>addons\ofxOsc\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\src\ofxOscSender.h">
+			<Filter>addons\ofxOsc\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\IpEndpointName.h">
+			<Filter>addons\ofxOsc\libs\oscpack\src\ip</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\NetworkingUtils.h">
+			<Filter>addons\ofxOsc\libs\oscpack\src\ip</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\PacketListener.h">
+			<Filter>addons\ofxOsc\libs\oscpack\src\ip</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\TimerListener.h">
+			<Filter>addons\ofxOsc\libs\oscpack\src\ip</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\UdpSocket.h">
+			<Filter>addons\ofxOsc\libs\oscpack\src\ip</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\MessageMappingOscPacketListener.h">
+			<Filter>addons\ofxOsc\libs\oscpack\src\osc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\OscException.h">
+			<Filter>addons\ofxOsc\libs\oscpack\src\osc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\OscHostEndianness.h">
+			<Filter>addons\ofxOsc\libs\oscpack\src\osc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\OscOutboundPacketStream.h">
+			<Filter>addons\ofxOsc\libs\oscpack\src\osc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\OscPacketListener.h">
+			<Filter>addons\ofxOsc\libs\oscpack\src\osc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\OscPrintReceivedElements.h">
+			<Filter>addons\ofxOsc\libs\oscpack\src\osc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\OscReceivedElements.h">
+			<Filter>addons\ofxOsc\libs\oscpack\src\osc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc\OscTypes.h">
+			<Filter>addons\ofxOsc\libs\oscpack\src\osc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxPoco\src\ofxXmlPoco.h">
+			<Filter>addons\ofxPoco\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxXmlSettings\src\ofxXmlSettings.h">
+			<Filter>addons\ofxXmlSettings\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\OpenFrameworks\addons\ofxXmlSettings\libs\tinyxml.h">
+			<Filter>addons\ofxXmlSettings\libs</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\dirent_vs.h">
+			<Filter>local_addons\ofxRemoteUI\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUI.h">
+			<Filter>local_addons\ofxRemoteUI\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUIClient.h">
+			<Filter>local_addons\ofxRemoteUI\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUINeigbors.h">
+			<Filter>local_addons\ofxRemoteUI\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUIofParamaterSync.h">
+			<Filter>local_addons\ofxRemoteUI\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUIServer.h">
+			<Filter>local_addons\ofxRemoteUI\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUIServerMacros.h">
+			<Filter>local_addons\ofxRemoteUI\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUISimpleNotifications.h">
+			<Filter>local_addons\ofxRemoteUI\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUIVars.h">
+			<Filter>local_addons\ofxRemoteUI\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\ofxRemoteUIWebServer.h">
+			<Filter>local_addons\ofxRemoteUI\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\OscQueryServerMgr.h">
+			<Filter>local_addons\ofxRemoteUI\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\RemoteParam.h">
+			<Filter>local_addons\ofxRemoteUI\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxRemoteUI\src\uriencode.h">
+			<Filter>local_addons\ofxRemoteUI\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLS.h">
+			<Filter>local_addons\ofxRTLS\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\Trackable.pb.h">
+			<Filter>local_addons\ofxRTLS\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\Device.hpp">
+			<Filter>local_addons\ofxOpenVRTracker\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\DeviceList.hpp">
+			<Filter>local_addons\ofxOpenVRTracker\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\ofxOpenVRTracker.h">
+			<Filter>local_addons\ofxOpenVRTracker\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\src\Utilities.hpp">
+			<Filter>local_addons\ofxOpenVRTracker\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\headers\openvr.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\headers</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\headers\openvr_capi.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\headers</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\headers\openvr_driver.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\headers</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\driver_sample\driverlog.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\driver_sample</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_dx12\d3dx12.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\hellovr_dx12</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\helloworldoverlay\openvroverlaycontroller.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\helloworldoverlay</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\helloworldoverlay\overlaywidget.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\helloworldoverlay</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared\compat.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\shared</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared\lodepng.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\shared</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared\Matrices.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\shared</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared\pathtools.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\shared</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared\strtools.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\shared</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\shared\Vectors.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\shared</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\include\GL\glew.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\include\GL</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\include\GL\glxew.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\include\GL</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\include\GL\wglew.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\glew\glew-1.11.0\include\GL</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\begin_code.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\close_code.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_assert.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_atomic.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_audio.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_bits.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_blendmode.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_clipboard.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_config.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_config_android.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_config_iphoneos.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_config_macosx.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_config_minimal.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_config_pandora.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_config_psp.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_config_windows.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_config_winrt.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_config_wiz.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_copying.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_cpuinfo.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_egl.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_endian.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_error.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_events.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_filesystem.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_gamecontroller.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_gesture.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_haptic.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_hints.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_joystick.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_keyboard.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_keycode.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_loadso.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_log.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_main.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_messagebox.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_mouse.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_mutex.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_name.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_opengl.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_opengles.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_opengles2.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_pixels.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_platform.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_power.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_quit.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_rect.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_render.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_revision.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_rwops.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_scancode.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_shape.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_stdinc.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_surface.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_system.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_syswm.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test_assert.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test_common.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test_compare.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test_crc32.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test_font.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test_fuzzer.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test_harness.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test_images.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test_log.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test_md5.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_test_random.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_thread.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_timer.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_touch.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_types.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_version.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include\SDL_video.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\sdl2-2.0.3\include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\shaderc\shaderc.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\shaderc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\shaderc\shaderc.hpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\shaderc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan\GLSL.std.450.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan\spirv.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan\spirv.hpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan\vk_icd.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan\vk_layer.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan\vk_layer_dispatch_table.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan\vk_platform.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan\vk_sdk_platform.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan\vulkan.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan\vulkan.hpp">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\thirdparty\vulkan-1.0.49.0\include\vulkan</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\samples\tracked_camera_openvr_sample\tracked_camera_openvr_sample.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\samples\tracked_camera_openvr_sample</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\ivrclientcore.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\json\json-forwards.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\src\json</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\json\json.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\src\json</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\dirtools_public.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\envvartools_public.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\hmderrors_public.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\pathtools_public.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\sharedlibtools_public.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\strtools_public.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\vrpathregistry_public.h">
+			<Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxMotive\src\Marker.h">
+			<Filter>local_addons\ofxMotive\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxMotive\src\MotiveCamera.h">
+			<Filter>local_addons\ofxMotive\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxMotive\src\MotiveCameraSet.h">
+			<Filter>local_addons\ofxMotive\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxMotive\src\ofxMotive.h">
+			<Filter>local_addons\ofxMotive\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxMotive\src\Reconstruction.h">
+			<Filter>local_addons\ofxMotive\src</Filter>
+		</ClInclude>
+	</ItemGroup>
+	<ItemGroup>
+		<ResourceCompile Include="icon.rc" />
+	</ItemGroup>
+</Project>
