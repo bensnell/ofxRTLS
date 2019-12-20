@@ -1,8 +1,7 @@
 #pragma once
 
 // Define which tracking system we're going to use
-// #define RTLS_MOTIVE
-#define RTLS_OPENVR
+#define RTLS_MOTIVE // RTLS_OPENVR
 
 #include "ofMain.h"
 #include "ofxRTLS.h"

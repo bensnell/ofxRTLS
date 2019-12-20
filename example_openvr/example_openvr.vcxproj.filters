@@ -136,21 +136,6 @@
     <ClCompile Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\vrpathregistry_public.cpp">
       <Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ExternalAddons\ofxMotive\src\Marker.cpp">
-      <Filter>local_addons\ofxMotive\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\ExternalAddons\ofxMotive\src\MotiveCamera.cpp">
-      <Filter>local_addons\ofxMotive\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\ExternalAddons\ofxMotive\src\MotiveCameraSet.cpp">
-      <Filter>local_addons\ofxMotive\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\ExternalAddons\ofxMotive\src\ofxMotive.cpp">
-      <Filter>local_addons\ofxMotive\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\ExternalAddons\ofxMotive\src\Reconstruction.cpp">
-      <Filter>local_addons\ofxMotive\src</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -236,12 +221,6 @@
     </Filter>
     <Filter Include="local_addons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon">
       <UniqueIdentifier>{2B105574-82F7-C508-7987-3FB6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="local_addons\ofxMotive">
-      <UniqueIdentifier>{91746FAC-D5DC-C5D3-0B6F-DAB1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="local_addons\ofxMotive\src">
-      <UniqueIdentifier>{4CE75907-060E-5C70-DE78-C272}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -415,21 +394,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\ExternalAddons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon\vrpathregistry_public.h">
       <Filter>local_addons\ofxOpenVRTracker\libs\OpenVR\src\vrcommon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\ExternalAddons\ofxMotive\src\Marker.h">
-      <Filter>local_addons\ofxMotive\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\ExternalAddons\ofxMotive\src\MotiveCamera.h">
-      <Filter>local_addons\ofxMotive\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\ExternalAddons\ofxMotive\src\MotiveCameraSet.h">
-      <Filter>local_addons\ofxMotive\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\ExternalAddons\ofxMotive\src\ofxMotive.h">
-      <Filter>local_addons\ofxMotive\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\ExternalAddons\ofxMotive\src\Reconstruction.h">
-      <Filter>local_addons\ofxMotive\src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
