@@ -55,7 +55,7 @@ Finally, implement your handler, e.g.:
 
 Take a look at the example for an in-depth look at using ofxRTLS with OpenVR. See below for instructions on switching the example to use Motive instead.
 
-## Example
+## Example - UPDATE TODO, examples are now split into two
 The example is setup to use `RTLS_OPENVR`, but this can be changed:
 
 - Change the Preprocessor Definitions (see "Setup" above) to have `RTLS_MOTIVE`
