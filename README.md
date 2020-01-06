@@ -53,18 +53,16 @@ Finally, implement your handler, e.g.:
         // Do whatever you need to do :)
     }
 
-Take a look at the example for an in-depth look at using ofxRTLS with OpenVR. See below for instructions on switching the example to use Motive instead.
+Take a look at the examples for a more in-depth look at using ofxRTLS with ofxMotive and ofxOpenVRTracker.
 
-## Example - UPDATE TODO, examples are now split into two
-The example is setup to use `RTLS_OPENVR`, but this can be changed:
+## Examples
+There are two examples, one for Motive and one for OpenVR. In fact, the two examples are nearly identical; the only two differences being:
 
-- Change the Preprocessor Definitions (see "Setup" above) to have `RTLS_MOTIVE`
-- Similarly, change the defined constant in `example/src/ofApp.h`
-- Edit `addons.make` to remove the ofxOpenVRTracker addon and include ofxMotive
-- "Clean" your project (potentially also delete the `.vs/` folder)
-- Regenerate project files
+- the defined constant in `example/src/ofApp.h`
+- which one of either ofxOpenVRTracker or ofxMotive is included in `addons.make`
 
-You may have to troubleshoot further (see the [ofxMotive](https://github.com/local-projects/ofxMotive) README for help) and potentially regenerate project files. It may help, for example, to edit `addons.make` to remove the ofxOpenVRTracker addon since that isn't needed for ofxMotive.
+To run the examples, first declare the appropriate Preprocessor Definition (see "Setup"). Then follow the specific setup instructions for whichever addon you are using (ofxMotive or ofxOpenVRTracker). For example, you will need to copy the required Motive libraries, and profile and calibration files into the `bin` directory if you are using ofxMotive.
+
 
 ## Troubleshooting
 
