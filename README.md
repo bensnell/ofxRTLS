@@ -9,6 +9,8 @@ This addon is intended to act as a manager for any "Real Time Location System" a
 
 This requires a Windows 10, x64 computer since Optitrack maintains these requirements.
 
+This has been developed with OpenFrameworks version 0.11.0
+
 ### Dependencies
 
 Follow the instructions in each addon to include the relevant dependencies:
@@ -19,9 +21,23 @@ Follow the instructions in each addon to include the relevant dependencies:
     - Follow the Windows(x64) installation instructions to install the `protobuf` libraries system-wide.
     - The C++ headers are already copied into the `src` folder of this addon, but you may have to regenerate the headers if the version of `protobuf` that was installed is ahead of the version used to generate the headers (v3.11).
 
+The addon also supports optional post-processing of the data. Options include:
+
+- ML-enabled bit sequence identification
+- ID re-mappings
+- Smoothing and filtering (easing, kalman)
+- Predictive gap-filling filters (continuity)
+
+These post-processing options require additional addons, including:
+
+- ofxOpenCv (comes with OF v0.11.0)
+- ofxCv (branch: [project/lp.rtls-server](project/lp.rtls-server))
+- ofxFDeep (branch: [fdeep-v0.12.1-p0](https://github.com/local-projects/ofxFDeep/tree/fdeep-v0.12.1-p0))
+- [ofxFilter](https://github.com/local-projects/ofxFilter/tree/master)
+
 ## How to use this addon with your project
 
-First, make sure you have properly installed all of the dependencies; there are various idiosyncracies for each one. Ideally, make sure you can get the examples for each dependency up and running before starting to work with ofxRTLS.
+First, make sure you have properly installed all of the dependencies; there are various idiosyncrasies for each one. Ideally, make sure you can get the examples for each dependency up and running before starting to work with ofxRTLS.
 
 ### Setup
 
@@ -49,7 +65,7 @@ Finally, implement your handler, e.g.:
 
     void ofApp::myHandlerFunction(RTLSEventArgs& args) {
         TrackableFrame frameReceived = args.frame;
-
+    
         // Do whatever you need to do :)
     }
 
