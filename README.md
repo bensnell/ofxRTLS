@@ -18,8 +18,8 @@ Follow the instructions in each addon to include the relevant dependencies:
 - [ofxMotive](https://github.com/local-projects/ofxMotive)
 - [ofxOpenVRTracker](https://github.com/local-projects/ofxOpenVRTracker)
 - [rtls-protocol (C++)](https://github.com/local-projects/rtls-protocol/tree/master/c%2B%2B)
-    - Follow the Windows(x64) installation instructions to install the `protobuf` libraries system-wide.
-    - The C++ headers are already copied into the `src` folder of this addon, but you may have to regenerate the headers if the version of `protobuf` that was installed is ahead of the version used to generate the headers (v3.11).
+    - Follow the Windows(x64) installation instructions to install the `protobuf` libraries. **Do not install them system-wide.**
+    - The C++ headers are already copied into the `src` folder of this addon, but you may have to regenerate the headers if the version of `protobuf` that was installed is ahead of the version used to generate the headers (v3.11.3).
 
 The addon also supports optional post-processing of the data. Options include:
 
@@ -41,10 +41,14 @@ First, make sure you have properly installed all of the dependencies; there are 
 
 ### Setup
 
-In order to declare which version of this addon you're using, declare one of the following in this Project's Preprocessor Definitions in the Property Sheets > C/C++ section:
+include the relative path to `ofxRTLS` in your *addons.make* file, as usual. Regenerate your project files using OpenFrameworks' ProjectGenerator.
 
-- RTLS_OPENVR
-- RTLS_MOTIVE
+In Visual Studios, in the *Property Manager*, add the the appropriate property sheet to your project. Each mode of server operation has a different property sheet. Only include one of these. Available property sheets are in the *ofxRTLS* directory and include:
+
+- *RTLS_OPENVR.props* for an OpenVR server. This will automatically include the macro `RTLS_OPENVR`.
+- *RTLS_MOTIVE.props* for an Optitrack Motive server. This will automatically include the macro `RTLS_MOTIVE`.
+
+In your project *Properties* window, under *Configuration Properties  > C/C++ > Preprocessor > Preprocessor Definitions*, select *Edit* from the dropdown menu on the right and at the bottom of the window, check the box that says *Inherit from parent or project defaults*.
 
 ### Usage
 
@@ -89,12 +93,4 @@ When including ofxOsc in a project, sometimes the project generator overrides ex
 ```c++
 OSC_HOST_LITTLE_ENDIAN
 %(PreprocessorDefinitions)
-
 ```
-
-
-
-## Reference
-
-xxx
-
