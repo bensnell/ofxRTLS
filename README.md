@@ -45,8 +45,8 @@ include the relative path to `ofxRTLS` in your *addons.make* file, as usual. Reg
 
 In Visual Studios, in the *Property Manager*, add the the appropriate property sheet to your project. Each mode of server operation has a different property sheet. Only include one of these. Available property sheets are in the *ofxRTLS* directory and include:
 
-- *RTLS_OPENVR.props* for an OpenVR server. This will automatically include the macro `RTLS_OPENVR`.
-- *RTLS_MOTIVE.props* for an Optitrack Motive server. This will automatically include the macro `RTLS_MOTIVE`.
+- *RTLS_OPENVR.props* for an OpenVR server. This will automatically include the macro `RTLS_OPENVR`. ***Note: OpenVR does not currently work with the filtering dependencies.***
+- *RTLS_MOTIVE.props* for an Optitrack Motive server. This will automatically include the macro `RTLS_MOTIVE`. 
 
 In your project *Properties* window, under *Configuration Properties  > C/C++ > Preprocessor > Preprocessor Definitions*, select *Edit* from the dropdown menu on the right and at the bottom of the window, check the box that says *Inherit from parent or project defaults*.
 
