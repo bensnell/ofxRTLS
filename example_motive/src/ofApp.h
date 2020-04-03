@@ -1,12 +1,11 @@
 #pragma once
 
-// Define which tracking system we're going to use
-#define RTLS_MOTIVE // RTLS_OPENVR
-
 #include "ofMain.h"
 #include "ofxRTLS.h"
 #include "ofxOsc.h"
 #include "ofxRemoteUIServer.h"
+#include "ofxFDeep.h"
+#include "ofxFilter.h"
 
 class OSCThread : public ofThread {
 	public:
