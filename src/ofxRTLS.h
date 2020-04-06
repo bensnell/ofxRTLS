@@ -8,6 +8,8 @@
 #include "ofMain.h"
 #include "ofxRemoteUIServer.h"
 #include "Trackable.pb.h"
+#include "ofxFDeep.h"
+#include "ofxFilter.h"
 
 using namespace RTLSProtocol;
 
@@ -62,9 +64,6 @@ public:
 #endif
 
 private:
-	//string positionOrder = "xyz";
-	//string orientationOrder = "wxyz";
-	//string order = "ipo";
 
 	TrackableFrame lastFrame;
 
