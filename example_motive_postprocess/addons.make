@@ -1,0 +1,10 @@
+ofxOpenCv
+ofxOsc
+ofxPoco
+ofxXmlSettings
+../../../ExternalAddons/ofxRemoteUI
+../../../ExternalAddons/ofxRTLS
+../../../ExternalAddons/ofxMotive
+../../../ExternalAddons/ofxFDeep
+../../../ExternalAddons/ofxCv
+../../../ExternalAddons/ofxFilter
