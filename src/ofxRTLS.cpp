@@ -88,6 +88,8 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 		((uint64_t*)byte_array)[0] = args.markers[i].cuid.HighBits();
 		((uint64_t*)byte_array)[1] = args.markers[i].cuid.LowBits();
 		trackable->set_cuid(byte_array, 16);
+		// Set the ID (-1 for passive, >=0 for active)
+		trackable->set_id(getActiveMarkerID(args.markers[i].cuid));
 		Trackable::Position* position = trackable->mutable_position();
 		position->set_x(args.markers[i].position.x);
 		position->set_y(args.markers[i].position.y);
@@ -191,14 +193,11 @@ bool ofxRTLS::isReceivingData() {
 void ofxRTLS::postprocess(RTLSProtocol::TrackableFrame& frame) {
 #ifdef RTLS_ENABLE_POSTPROCESS
 
-	if (bMapIDs) {	// Map IDs
+	if (bMapIDs) {	// Map IDs if they are valid
 		for (int i = 0; i < frame.trackables_size(); i++) {
-			uint64_t highBits = ((uint64_t*)(frame.trackables(i).cuid().c_str()))[0];
-			uint64_t lowBits = ((uint64_t*)(frame.trackables(i).cuid().c_str()))[1];
-
-			// TODO: Use high or low?
-
-			frame.mutable_trackables(i)->set_id(dict.lookup(int(highBits)));
+			int ID = frame.trackables(i).id();
+			if (ID < 0) continue;
+			frame.mutable_trackables(i)->set_id(dict.lookup(ID));
 		}
 	}
 

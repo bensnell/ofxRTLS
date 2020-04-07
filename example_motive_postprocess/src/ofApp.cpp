@@ -45,6 +45,7 @@ void ofApp::draw(){
 
 void ofApp::exit() {
 
+	RUI_SAVE_TO_XML();
 	oscThread.exit();
 
 }

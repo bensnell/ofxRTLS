@@ -5,10 +5,15 @@
             <property>
                 <name>SelectedTabIndexInTabCtrl</name>
                 <value>5</value>
-                <defaultValue>5</defaultValue>
+                <defaultValue>2</defaultValue>
             </property>
             <property>
-                <name>ShowMarkerCrosshairs</name>
+                <name>MarkerDiameterForceSize</name>
+                <value>100.000000</value>
+                <defaultValue>100.000000</defaultValue>
+            </property>
+            <property>
+                <name>ShowMarkerRoundness</name>
                 <value>true</value>
                 <defaultValue>true</defaultValue>
             </property>
@@ -16,6 +21,21 @@
                 <name>ShowCameraObjectSize</name>
                 <value>true</value>
                 <defaultValue>true</defaultValue>
+            </property>
+            <property>
+                <name>ShowCamera2DLabel</name>
+                <value>true</value>
+                <defaultValue>true</defaultValue>
+            </property>
+            <property>
+                <name>ShowMarkerLabels</name>
+                <value>true</value>
+                <defaultValue>true</defaultValue>
+            </property>
+            <property>
+                <name>GraphsPreferredLiveLayout</name>
+                <value>Tracks</value>
+                <defaultValue>Tracks</defaultValue>
             </property>
             <property>
                 <name>GraphsPreferredPostLayout</name>
@@ -33,74 +53,53 @@
                 <defaultValue>false</defaultValue>
             </property>
             <property>
-                <name>CameraOverlap</name>
-                <value>2</value>
-                <defaultValue>2</defaultValue>
-            </property>
-            <property>
-                <name>PCObjectFilterLevel</name>
-                <value>2</value>
-                <defaultValue>0</defaultValue>
-            </property>
-            <property>
                 <name>PCObjectFilterMinSize</name>
-                <value>4</value>
-                <defaultValue>1</defaultValue>
+                <value>25</value>
             </property>
             <property>
                 <name>PCObjectFilterCircularity</name>
-                <value>0.600000</value>
-                <defaultValue>0.300000</defaultValue>
-            </property>
-            <property>
-                <name>SelectTrackMarker</name>
-                <value>true</value>
-                <defaultValue>true</defaultValue>
+                <value>0.200000</value>
+                <defaultValue>0.200000</defaultValue>
             </property>
             <property>
                 <name>DialogOtherGroupPath</name>
-                <value>C:/Users/LP/Documents/OptiTrack</value>
-                <defaultValue>C:/Users/LP/Documents/OptiTrack/Session 2019-02-28/</defaultValue>
+                <value>C:/dev/lp.rtls-server/ExternalAddons/ofxRTLS/example_motive_postprocess/bin/data</value>
+                <defaultValue>C:/Users/ABS/Documents/OptiTrack/Session 2020-01-22/</defaultValue>
             </property>
             <property>
                 <name>DialogProfileGroupPath</name>
-                <value>C:/Users/LP/Documents/OptiTrack</value>
-                <defaultValue>C:/Users/LP/Desktop</defaultValue>
+                <value>C:/dev/lp.rtls-server/ExternalAddons/ofxRTLS/example_motive_postprocess/bin/data</value>
+                <defaultValue>C:/ProgramData/OptiTrack/Motive/Profiles/</defaultValue>
             </property>
             <property>
                 <name>DialogTakeGroupPath</name>
-                <value>C:/Users/LP/Documents/OptiTrack/Session 2019-02-28/</value>
-                <defaultValue>C:/Users/LP/Documents/OptiTrack/Session 2019-02-28/</defaultValue>
+                <value>C:/Users/ABS/Documents/OptiTrack/Session 2020-01-22</value>
+                <defaultValue>C:/Users/ABS/Documents/OptiTrack/Session 2020-01-22/</defaultValue>
             </property>
             <property>
                 <name>PCResidual</name>
-                <value>0.006437</value>
-                <defaultValue>0.030000</defaultValue>
+                <value>0.060000</value>
+                <defaultValue>0.002726</defaultValue>
             </property>
             <property>
                 <name>PCMaxRayLength</name>
-                <value>7.068559</value>
-                <defaultValue>5.000000</defaultValue>
+                <value>8.738194</value>
+                <defaultValue>6.584229</defaultValue>
             </property>
             <property>
-                <name>PCMinRayLength</name>
-                <value>0.100000</value>
-                <defaultValue>0.100000</defaultValue>
+                <name>ActiveMarkerLabeling</name>
+                <value>1</value>
+                <defaultValue>2</defaultValue>
             </property>
             <property>
-                <name>PCFilterOutlierRays</name>
-                <value>4</value>
-                <defaultValue>3</defaultValue>
-            </property>
-            <property>
-                <name>PCMinAngle</name>
-                <value>0.010000</value>
-                <defaultValue>0.010000</defaultValue>
+                <name>BitDepth</name>
+                <value>16</value>
+                <defaultValue>16</defaultValue>
             </property>
             <property>
                 <name>TrajMaxGapSpan</name>
-                <value>31</value>
-                <defaultValue>31</defaultValue>
+                <value>20</value>
+                <defaultValue>9</defaultValue>
             </property>
             <property>
                 <name>TrajNumPasses</name>
@@ -263,13 +262,13 @@
                     </property>
                     <property>
                         <name>TimeManagementActionTakeName</name>
-                        <value>Calibration Ground Plane</value>
-                        <defaultValue>Take 2019-02-28 05.15.36 PM</defaultValue>
+                        <value>Take 2020-03-18 08.25.29 PM_014</value>
+                        <defaultValue>Take 2020-01-22 03.40.58 PM</defaultValue>
                     </property>
                     <property>
                         <name>TimeManagementActionLiveFrameRate</name>
-                        <value>100.000000</value>
-                        <defaultValue>100.000000</defaultValue>
+                        <value>240.000000</value>
+                        <defaultValue>240.000000</defaultValue>
                     </property>
                 </properties>
             </action>
@@ -316,7 +315,13 @@
                 <properties/>
             </action>
             <action ID="RenameTakeUIAction">
-                <properties/>
+                <properties>
+                    <property>
+                        <name>TakeRenameActionName</name>
+                        <value>Take 2020-03-17 04.19.44 PM_001</value>
+                        <defaultValue>Take 2020-03-17 04.19.44 PM_001</defaultValue>
+                    </property>
+                </properties>
             </action>
             <action ID="ImportTakeAction">
                 <properties/>
@@ -342,38 +347,93 @@
     </LabelingPanel>
     <TakeManager version="1">
         <sessions>
-            <session path="C:/Users/LP/Documents/OptiTrack/"/>
+            <session path="C:/Users/ABS/Documents/OptiTrack/Session 2020-01-22/"/>
         </sessions>
-        <current_session path="C:/Users/LP/Documents/OptiTrack/"/>
+        <current_session path="C:/Users/ABS/Documents/OptiTrack/Session 2020-01-22/"/>
     </TakeManager>
     <PluginDevices/>
     <NodeAssets/>
     <DeviceAssets>
-        <sync_device version="1.0" id="6c58c44e24813b0:a43fe8baef7c11e9">
+        <sync_device version="1.0" id="eeb452bf31187496:321d773578e211ea">
             <properties>
                 <property>
+                    <name>NodeName</name>
+                    <value>eSync 2 ES001276</value>
+                    <defaultValue>eSync 2 ES001276</defaultValue>
+                </property>
+                <property>
                     <name>SyncDeviceConnected</name>
-                    <value>false</value>
+                    <value>true</value>
+                    <defaultValue>true</defaultValue>
                 </property>
                 <property>
                     <name>SyncDeviceModel</name>
-                    <value></value>
+                    <value>eSync 2</value>
+                    <defaultValue>eSync 2</defaultValue>
                 </property>
                 <property>
                     <name>SyncDeviceSerial</name>
-                    <value></value>
+                    <value>ES001276</value>
+                    <defaultValue>ES001276</defaultValue>
                 </property>
                 <property>
                     <name>CameraExposure</name>
-                    <value>203</value>
+                    <value>2000</value>
+                    <defaultValue>2000</defaultValue>
+                </property>
+                <property>
+                    <name>InternalSyncGeneratorFrequency</name>
+                    <value>240.000000</value>
+                    <defaultValue>240.000000</defaultValue>
+                </property>
+                <property>
+                    <name>InputSourceFrequency</name>
+                    <value>239.999802</value>
+                    <defaultValue>239.999802</defaultValue>
+                </property>
+                <property>
+                    <name>GlobalSyncOffset</name>
+                    <value>2500.000000</value>
+                    <defaultValue>2500.000000</defaultValue>
+                </property>
+                <property>
+                    <name>SyncOutput1Enabled</name>
+                    <value>true</value>
+                    <defaultValue>true</defaultValue>
                 </property>
                 <property>
                     <name>kSyncFinalCameraRate</name>
-                    <value>120.000000</value>
+                    <value>240.000000</value>
+                    <defaultValue>240.000000</defaultValue>
+                </property>
+                <property>
+                    <name>SyncOutput1PulseDuration</name>
+                    <value>13</value>
+                    <defaultValue>13</defaultValue>
+                    <constraints>
+                        <constraint name="Recording Gate" value="2"/>
+                        <constraint name="Gated Exposure Time" value="3"/>
+                        <constraint name="Exposure Time" value="4"/>
+                        <constraint name="Selected Sync" value="5"/>
+                        <constraint name="Adjusted Sync" value="6"/>
+                        <constraint name="SMPTE Time Code In" value="7"/>
+                        <constraint name="Video GenLock In" value="8"/>
+                        <constraint name="Input 1" value="16"/>
+                        <constraint name="Input 2" value="17"/>
+                        <constraint name="Input 3" value="18"/>
+                        <constraint name="VESA Stereo In" value="19"/>
+                        <constraint name="Isolated" value="11"/>
+                        <constraint name="Reserved" value="15"/>
+                        <constraint name="Record Start/Stop Pulse" value="12"/>
+                        <constraint name="Internal Clock" value="13"/>
+                        <constraint name="Gated Internal Clock" value="14"/>
+                        <constraint name="None" value="20"/>
+                    </constraints>
                 </property>
                 <property>
                     <name>SyncDeviceMonitorInternalClock</name>
-                    <value>0.000000</value>
+                    <value>239.999802</value>
+                    <defaultValue>239.999802</defaultValue>
                 </property>
                 <property>
                     <name>SyncDeviceMonitorSMPTE</name>
@@ -422,25 +482,28 @@
                 <properties>
                     <property>
                         <name>CameraNodeCameraSerialNumber</name>
-                        <value>364907</value>
-                        <defaultValue>364907</defaultValue>
+                        <value>84952</value>
+                        <defaultValue>84952</defaultValue>
                     </property>
                     <property>
                         <name>CameraNodeCameraFrameRateDivisor</name>
                         <value>1</value>
                         <constraints>
-                            <constraint name="x1 (100 Hz)" value="1"/>
-                            <constraint name="x1/2 (50 Hz)" value="2"/>
-                            <constraint name="x1/4 (25 Hz)" value="4"/>
+                            <constraint name="x1 (240 Hz)" value="1"/>
+                            <constraint name="x1/2 (120 Hz)" value="2"/>
+                            <constraint name="x1/3 (80 Hz)" value="3"/>
+                            <constraint name="x1/4 (60 Hz)" value="4"/>
+                            <constraint name="x1/5 (48 Hz)" value="5"/>
+                            <constraint name="x1/6 (40 Hz)" value="6"/>
+                            <constraint name="x1/8 (30 Hz)" value="8"/>
                         </constraints>
                     </property>
                     <property>
                         <name>CameraNodeCameraExposure</name>
-                        <value>200</value>
-                        <defaultValue>55</defaultValue>
+                        <value>3800</value>
                         <constraints>
-                            <constraint name="Min" value="1"/>
-                            <constraint name="Max" value="480"/>
+                            <constraint name="Min" value="10"/>
+                            <constraint name="Max" value="3966"/>
                         </constraints>
                     </property>
                 </properties>
@@ -449,25 +512,28 @@
                 <properties>
                     <property>
                         <name>CameraNodeCameraSerialNumber</name>
-                        <value>364908</value>
-                        <defaultValue>364908</defaultValue>
+                        <value>84956</value>
+                        <defaultValue>84956</defaultValue>
                     </property>
                     <property>
                         <name>CameraNodeCameraFrameRateDivisor</name>
                         <value>1</value>
                         <constraints>
-                            <constraint name="x1 (120 Hz)" value="1"/>
-                            <constraint name="x1/2 (60 Hz)" value="2"/>
-                            <constraint name="x1/4 (30 Hz)" value="4"/>
+                            <constraint name="x1 (240 Hz)" value="1"/>
+                            <constraint name="x1/2 (120 Hz)" value="2"/>
+                            <constraint name="x1/3 (80 Hz)" value="3"/>
+                            <constraint name="x1/4 (60 Hz)" value="4"/>
+                            <constraint name="x1/5 (48 Hz)" value="5"/>
+                            <constraint name="x1/6 (40 Hz)" value="6"/>
+                            <constraint name="x1/8 (30 Hz)" value="8"/>
                         </constraints>
                     </property>
                     <property>
                         <name>CameraNodeCameraExposure</name>
-                        <value>203</value>
-                        <defaultValue>55</defaultValue>
+                        <value>3800</value>
                         <constraints>
-                            <constraint name="Min" value="1"/>
-                            <constraint name="Max" value="480"/>
+                            <constraint name="Min" value="10"/>
+                            <constraint name="Max" value="3966"/>
                         </constraints>
                     </property>
                 </properties>
@@ -476,25 +542,28 @@
                 <properties>
                     <property>
                         <name>CameraNodeCameraSerialNumber</name>
-                        <value>364906</value>
-                        <defaultValue>364906</defaultValue>
+                        <value>84955</value>
+                        <defaultValue>84955</defaultValue>
                     </property>
                     <property>
                         <name>CameraNodeCameraFrameRateDivisor</name>
                         <value>1</value>
                         <constraints>
-                            <constraint name="x1 (120 Hz)" value="1"/>
-                            <constraint name="x1/2 (60 Hz)" value="2"/>
-                            <constraint name="x1/4 (30 Hz)" value="4"/>
+                            <constraint name="x1 (240 Hz)" value="1"/>
+                            <constraint name="x1/2 (120 Hz)" value="2"/>
+                            <constraint name="x1/3 (80 Hz)" value="3"/>
+                            <constraint name="x1/4 (60 Hz)" value="4"/>
+                            <constraint name="x1/5 (48 Hz)" value="5"/>
+                            <constraint name="x1/6 (40 Hz)" value="6"/>
+                            <constraint name="x1/8 (30 Hz)" value="8"/>
                         </constraints>
                     </property>
                     <property>
                         <name>CameraNodeCameraExposure</name>
-                        <value>210</value>
-                        <defaultValue>55</defaultValue>
+                        <value>3800</value>
                         <constraints>
-                            <constraint name="Min" value="1"/>
-                            <constraint name="Max" value="480"/>
+                            <constraint name="Min" value="10"/>
+                            <constraint name="Max" value="3966"/>
                         </constraints>
                     </property>
                 </properties>
@@ -503,25 +572,28 @@
                 <properties>
                     <property>
                         <name>CameraNodeCameraSerialNumber</name>
-                        <value>364694</value>
-                        <defaultValue>364694</defaultValue>
+                        <value>84957</value>
+                        <defaultValue>84957</defaultValue>
                     </property>
                     <property>
                         <name>CameraNodeCameraFrameRateDivisor</name>
                         <value>1</value>
                         <constraints>
-                            <constraint name="x1 (120 Hz)" value="1"/>
-                            <constraint name="x1/2 (60 Hz)" value="2"/>
-                            <constraint name="x1/4 (30 Hz)" value="4"/>
+                            <constraint name="x1 (240 Hz)" value="1"/>
+                            <constraint name="x1/2 (120 Hz)" value="2"/>
+                            <constraint name="x1/3 (80 Hz)" value="3"/>
+                            <constraint name="x1/4 (60 Hz)" value="4"/>
+                            <constraint name="x1/5 (48 Hz)" value="5"/>
+                            <constraint name="x1/6 (40 Hz)" value="6"/>
+                            <constraint name="x1/8 (30 Hz)" value="8"/>
                         </constraints>
                     </property>
                     <property>
                         <name>CameraNodeCameraExposure</name>
-                        <value>207</value>
-                        <defaultValue>55</defaultValue>
+                        <value>3800</value>
                         <constraints>
-                            <constraint name="Min" value="1"/>
-                            <constraint name="Max" value="480"/>
+                            <constraint name="Min" value="10"/>
+                            <constraint name="Max" value="3966"/>
                         </constraints>
                     </property>
                 </properties>
@@ -530,25 +602,28 @@
                 <properties>
                     <property>
                         <name>CameraNodeCameraSerialNumber</name>
-                        <value>364909</value>
-                        <defaultValue>364909</defaultValue>
+                        <value>84958</value>
+                        <defaultValue>84958</defaultValue>
                     </property>
                     <property>
                         <name>CameraNodeCameraFrameRateDivisor</name>
                         <value>1</value>
                         <constraints>
-                            <constraint name="x1 (120 Hz)" value="1"/>
-                            <constraint name="x1/2 (60 Hz)" value="2"/>
-                            <constraint name="x1/4 (30 Hz)" value="4"/>
+                            <constraint name="x1 (240 Hz)" value="1"/>
+                            <constraint name="x1/2 (120 Hz)" value="2"/>
+                            <constraint name="x1/3 (80 Hz)" value="3"/>
+                            <constraint name="x1/4 (60 Hz)" value="4"/>
+                            <constraint name="x1/5 (48 Hz)" value="5"/>
+                            <constraint name="x1/6 (40 Hz)" value="6"/>
+                            <constraint name="x1/8 (30 Hz)" value="8"/>
                         </constraints>
                     </property>
                     <property>
                         <name>CameraNodeCameraExposure</name>
-                        <value>207</value>
-                        <defaultValue>55</defaultValue>
+                        <value>3800</value>
                         <constraints>
-                            <constraint name="Min" value="1"/>
-                            <constraint name="Max" value="480"/>
+                            <constraint name="Min" value="10"/>
+                            <constraint name="Max" value="3966"/>
                         </constraints>
                     </property>
                 </properties>
@@ -557,25 +632,28 @@
                 <properties>
                     <property>
                         <name>CameraNodeCameraSerialNumber</name>
-                        <value>364695</value>
-                        <defaultValue>364695</defaultValue>
+                        <value>84951</value>
+                        <defaultValue>84951</defaultValue>
                     </property>
                     <property>
                         <name>CameraNodeCameraFrameRateDivisor</name>
                         <value>1</value>
                         <constraints>
-                            <constraint name="x1 (120 Hz)" value="1"/>
-                            <constraint name="x1/2 (60 Hz)" value="2"/>
-                            <constraint name="x1/4 (30 Hz)" value="4"/>
+                            <constraint name="x1 (240 Hz)" value="1"/>
+                            <constraint name="x1/2 (120 Hz)" value="2"/>
+                            <constraint name="x1/3 (80 Hz)" value="3"/>
+                            <constraint name="x1/4 (60 Hz)" value="4"/>
+                            <constraint name="x1/5 (48 Hz)" value="5"/>
+                            <constraint name="x1/6 (40 Hz)" value="6"/>
+                            <constraint name="x1/8 (30 Hz)" value="8"/>
                         </constraints>
                     </property>
                     <property>
                         <name>CameraNodeCameraExposure</name>
-                        <value>203</value>
-                        <defaultValue>55</defaultValue>
+                        <value>3800</value>
                         <constraints>
-                            <constraint name="Min" value="1"/>
-                            <constraint name="Max" value="480"/>
+                            <constraint name="Min" value="10"/>
+                            <constraint name="Max" value="3966"/>
                         </constraints>
                     </property>
                 </properties>
@@ -614,8 +692,8 @@
             <PANE_30>
                 <Devices>
                     <Camera>
-                        <Table SelectedModel="SimpleCameraTableModel" Sort="12" SortOrder="0" CompactView="0">
-                            <Model Name="SimpleCameraTableModel" ReadOnly="0" TreeOpen="0" Visibility="0,1,2,3,4,5" Order="0,1,2,3,4,5,6,7,8,9,10,11,12" Widths="30,48,67,43,64,35,50,82,70,50,70,55,51"/>
+                        <Table SelectedModel="SimpleCameraTableModel" Sort="2" SortOrder="0" CompactView="0">
+                            <Model Name="SimpleCameraTableModel" ReadOnly="0" TreeOpen="0" Visibility="0,1,2,3,4,5" Order="0,1,2,3,4,5,6,7,8,9,10,11,12" Widths="30,48,67,43,64,35,50,82,70,50,83,55,68"/>
                         </Table>
                     </Camera>
                     <ColorCamera>
