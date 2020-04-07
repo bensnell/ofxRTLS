@@ -4,8 +4,6 @@
 #include "ofxRTLS.h"
 #include "ofxOsc.h"
 #include "ofxRemoteUIServer.h"
-#include "ofxFDeep.h"
-#include "ofxFilter.h"
 
 class OSCThread : public ofThread {
 	public:

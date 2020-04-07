@@ -8,8 +8,12 @@
 #include "ofMain.h"
 #include "ofxRemoteUIServer.h"
 #include "Trackable.pb.h"
+
+#ifdef RTLS_ENABLE_POSTPROCESS
+#include "IDDictionary.h"
 #include "ofxFDeep.h"
-#include "ofxFilter.h"
+#include "ofxFilterGroup.h"
+#endif
 
 using namespace RTLSProtocol;
 
@@ -32,9 +36,6 @@ public:
 	/// \brief Create an object to connect with motive's cameras. There should only be one per program.
 	ofxRTLS();
 	~ofxRTLS();
-
-	/// \brief Setup the RUI Params associated with this addon
-	void setupParams();
 
 	/// \brief Setup this addon
 	void setup();
@@ -73,4 +74,19 @@ private:
 	bool bReceivingData = false;
 	uint64_t lastReceive = 0;
 	int stopGap = 100; // number of milliseconds before we decide no data is being received
+
+	// Post-process the data
+	void postprocess(RTLSProtocol::TrackableFrame& frame);
+#ifdef RTLS_ENABLE_POSTPROCESS
+	// Toggles
+	bool bMapIDs = true;
+	bool bRemoveInvalidIDs = true;
+	bool bApplyFilters = true;
+	// Post-processing helpers
+	IDDictionary dict;
+	ofxFilterGroup filters;
+#endif
+	
+	
+
 };

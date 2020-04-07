@@ -50,6 +50,8 @@ In Visual Studios, in the *Property Manager*, add the the appropriate property s
 
 In your project *Properties* window, under *Configuration Properties  > C/C++ > Preprocessor > Preprocessor Definitions*, select *Edit* from the dropdown menu on the right and at the bottom of the window, check the box that says *Inherit from parent or project defaults*.
 
+If you plan on using any of the postprocessing options, pass the macro `RTLS_ENABLE_POSTPROCESS` in the Project Properties' *Preprocessor Definitions*.
+
 ### Usage
 
 Include the addon in your project as normal. Then create an ofxRTLS object, e.g.:
@@ -76,12 +78,13 @@ Finally, implement your handler, e.g.:
 Take a look at the examples for a more in-depth look at using ofxRTLS with ofxMotive and ofxOpenVRTracker.
 
 ## Examples
-There are two examples, one for Motive and one for OpenVR. In fact, the two examples are nearly identical; the only two differences being:
+There are examples for Motive and for OpenVR. When possible, another example has been provided with postprocessing enabled. The only differences between the examples include:
 
-- the defined constant in `example/src/ofApp.h`
-- which one of either ofxOpenVRTracker or ofxMotive is included in `addons.make`
+- The Property Sheet included, either `RTLS_MOTIVE.props` or `RTLS_OPENVR.props`
+- The Addons included in `addons.make`
+- The definition of `RTLS_ENABLE_POSTPROCESS`
 
-To run the examples, first declare the appropriate Preprocessor Definition (see "Setup"). Then follow the specific setup instructions for whichever addon you are using (ofxMotive or ofxOpenVRTracker). For example, you will need to copy the required Motive libraries, and profile and calibration files into the `bin` directory if you are using ofxMotive.
+To run the examples, follow the specific setup instructions for whichever addon you are using (ofxMotive or ofxOpenVRTracker), then run.
 
 
 ## Troubleshooting

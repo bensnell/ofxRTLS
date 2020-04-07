@@ -11,29 +11,38 @@ ofxRTLS::~ofxRTLS() {
 }
 
 // --------------------------------------------------------------
-void ofxRTLS::setupParams() {
-
-	RUI_NEW_GROUP("ofxRTLS");
-
-	// Setup RUI Params
-
-#ifdef RTLS_OPENVR
-	// Are there any params?
-
-#endif
-#ifdef RTLS_MOTIVE
-	motive.setupParams();
-#endif
-}
-
-// --------------------------------------------------------------
 void ofxRTLS::setup() {
-	// Add listeners for new data
+
+	// Setup general RTLS params
+	//RUI_NEW_GROUP("ofxRTLS");
+
+	
 #ifdef RTLS_OPENVR
+	
+	// Add listeners for new data
 	ofAddListener(vive.newDataReceived, this, &ofxRTLS::openvrDataReceived);
+
 #endif
 #ifdef RTLS_MOTIVE
+
+	// Setup parameters for Motive
+	motive.setupParams();
+
+	// Add listeners for new data
 	ofAddListener(motive.newDataReceived, this, &ofxRTLS::motiveDataReceived);
+
+#endif
+
+#ifdef RTLS_ENABLE_POSTPROCESS
+	// Setup postprocessing params
+	RUI_NEW_GROUP("ofxRTLS Postprocessing");
+	RUI_SHARE_PARAM_WCN("RTLSPost- Map IDs", bMapIDs);
+	RUI_SHARE_PARAM_WCN("RTLSPost- Remove Invalid IDs", bRemoveInvalidIDs);
+	RUI_SHARE_PARAM_WCN("RTLSPost- Apply Filters", bApplyFilters);
+
+	// Setup processing helpers
+	dict.setup("id-dictionary.json");
+	filters.setup("RTLS", "kalman,easing,add-rate,continuity,easing");
 #endif
 
 	startThread();
@@ -85,6 +94,9 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 		position->set_z(args.markers[i].position.z);
 	}
 
+	// Post-process the data
+	postprocess(outArgs.frame);
+
 	ofNotifyEvent(newFrameReceived, outArgs);
 
 	// Save this frame
@@ -120,6 +132,9 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 			orientation->set_z(tkr->quaternion.z);
 		}
 	}
+
+	// Post-process the data
+	postprocess(outArgs.frame);
 
 	ofNotifyEvent(newFrameReceived, outArgs);
 
@@ -172,3 +187,102 @@ bool ofxRTLS::isReceivingData() {
 	return bReceivingData; // no need to lock for a bool
 }
 
+// --------------------------------------------------------------
+void ofxRTLS::postprocess(RTLSProtocol::TrackableFrame& frame) {
+#ifdef RTLS_ENABLE_POSTPROCESS
+
+	if (bMapIDs) {	// Map IDs
+		for (int i = 0; i < frame.trackables_size(); i++) {
+			uint64_t highBits = ((uint64_t*)(frame.trackables(i).cuid().c_str()))[0];
+			uint64_t lowBits = ((uint64_t*)(frame.trackables(i).cuid().c_str()))[1];
+
+			// TODO: Use high or low?
+
+			frame.mutable_trackables(i)->set_id(dict.lookup(int(highBits)));
+		}
+	}
+
+	if (bRemoveInvalidIDs) { // Remove IDs that are invalid (< 0)
+		int i = 0;
+		while (i < frame.trackables_size()) {
+
+			// Check if this trackable's ID is invalid
+			if (frame.trackables(i).id() < 0) {
+				// Arbitrary elements cannot be deleted. Swap this element with the last
+				// and remove the last element.
+				frame.mutable_trackables()->SwapElements(i, frame.trackables_size() - 1);
+				frame.mutable_trackables()->RemoveLast();
+			}
+			else {
+				i++;
+			}
+		}
+	}
+
+	// For all that remain in the filter, set their new coordinates and export them
+	if (bApplyFilters) {
+		// Input the new data
+		for (int i = 0; i < frame.trackables_size(); i++) {
+			// Add new data to the filter 
+			glm::vec3 position = glm::vec3(
+				frame.trackables(i).position().x(),
+				frame.trackables(i).position().y(),
+				frame.trackables(i).position().z());
+			auto* filter = filters.getFilter(ofToString(frame.trackables(i).id()));
+			filter->process(position);
+		}
+
+		// Process any remaining filters that haven't seen data
+		filters.processRemaining();
+
+		// Delete any data that is invalid.
+		// Also save IDs for all data that is valid.
+		set<int> existingDataIDs;
+		int i = 0;
+		while (i < frame.trackables_size()) {
+			// Check if this trackable's data is invalid.
+			ofxFilter* filter = filters.getFilter(ofToString(frame.trackables(i).id()));
+			if (!filter->isDataValid()) {
+				// If not, delete it
+				frame.mutable_trackables()->SwapElements(i, frame.trackables_size() - 1);
+				frame.mutable_trackables()->RemoveLast();
+			}
+			else {
+				// Save that this ID has valid data
+				existingDataIDs.insert(frame.trackables(i).id());
+
+				// Set this new processed data
+				glm::vec3 data = filter->getPosition();
+				frame.mutable_trackables(i)->mutable_position()->set_x(data.x);
+				frame.mutable_trackables(i)->mutable_position()->set_y(data.y);
+				frame.mutable_trackables(i)->mutable_position()->set_z(data.z);
+
+				i++;
+			}
+		}
+
+		// Add any data that isn't present
+		for (auto& it : filters.getFilters()) {
+			int id = ofToInt(it.first);
+			// Check if this is a new ID and if it has valid data.
+			if (existingDataIDs.find(id) == existingDataIDs.end() && it.second->isDataValid()) {
+				// If so, add a trackable with this ID
+				
+				Trackable* trackable = frame.add_trackables();
+				// What should cuid be?
+				Trackable::Position* position = trackable->mutable_position();
+				glm::vec3 data = it.second->getPosition();
+				position->set_x(data.x);
+				position->set_y(data.y);
+				position->set_z(data.z);
+			}
+		}
+	}
+
+#endif
+}
+
+// --------------------------------------------------------------
+
+
+// --------------------------------------------------------------

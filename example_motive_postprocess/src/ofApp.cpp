@@ -9,14 +9,13 @@ void ofApp::setup() {
 void OSCThread::setup(){
 
 	ofSetFrameRate(120);
+	RUI_SETUP();
+	RUI_LOAD_FROM_XML();
+
 	RUI_SHARE_PARAM_WCN("Enable Osc", bOscEnabled);
 	RUI_SHARE_PARAM_WCN("OSC Host", oscHost);
 	RUI_SHARE_PARAM_WCN("OSC Port", oscPort, 0, 9999);
 	RUI_SHARE_PARAM_WCN("Message Address", messageAddress);
-
-	RUI_SETUP();
-	tracker.setupParams();
-	RUI_LOAD_FROM_XML();
 
 	// Setup OSC
 	sender.setup(oscHost, oscPort);

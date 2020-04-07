@@ -121,3 +121,6 @@ Desktop.ini
 *.VC.opendb
 /.vs/*
 *.VC.*
+
+# Config files
+*.rui
