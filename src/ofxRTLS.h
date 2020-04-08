@@ -50,6 +50,7 @@ public:
 
 	bool isConnected();
 	bool isReceivingData();
+	float getFPS() { return dataFPS; }
 
 	// Event that occurs when new data is received
 	ofEvent< RTLSEventArgs > newFrameReceived;
@@ -74,6 +75,10 @@ private:
 	bool bReceivingData = false;
 	uint64_t lastReceive = 0;
 	int stopGap = 100; // number of milliseconds before we decide no data is being received
+
+	// Contains timestamps at which data was received in the last second
+	queue<uint64_t> dataTimestamps;
+	float dataFPS = 0.0;
 
 	// Post-process the data
 	void postprocess(RTLSProtocol::TrackableFrame& frame);

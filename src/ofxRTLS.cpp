@@ -45,6 +45,9 @@ void ofxRTLS::setup() {
 	filters.setup("RTLS", "kalman,easing,add-rate,continuity,easing");
 #endif
 
+	// Set target frame rate
+	dataFPS = ofGetTargetFrameRate();
+
 	startThread();
 }
 
@@ -77,6 +80,7 @@ void ofxRTLS::stop() {
 void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 
 	lastReceive = ofGetElapsedTimeMillis();
+	dataTimestamps.push(lastReceive);
 
 	// Send each identified point
 	RTLSEventArgs outArgs;
@@ -113,6 +117,7 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 
 	lastReceive = ofGetElapsedTimeMillis();
+	dataTimestamps.push(lastReceive);
 
 	// Send each identified point
 	RTLSEventArgs outArgs;
@@ -151,10 +156,17 @@ void ofxRTLS::threadedFunction() {
 
 	while (isThreadRunning()) {
 
+		uint64_t thisTime = ofGetElapsedTimeMillis();
+
 		// Determine whether we are actively receiving any messages in the last
 		// stopGap milliseconds
-		bReceivingData = ofGetElapsedTimeMillis() - lastReceive < stopGap;
+		bReceivingData = thisTime - lastReceive < stopGap;
 
+		// Determine the frame rate of the data
+		while (!dataTimestamps.empty() && dataTimestamps.front() < (thisTime-1000)) {
+			dataTimestamps.pop();
+		}
+		dataFPS = float(dataTimestamps.size());
 	}
 }
 
