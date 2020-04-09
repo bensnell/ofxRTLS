@@ -28,6 +28,11 @@ void ofxRTLS::setup() {
 	// Setup parameters for Motive
 	motive.setupParams();
 
+	// Setup additional parameters
+	RUI_NEW_GROUP("ofxMotive Data");
+	RUI_SHARE_PARAM_WCN("Motive- Send Camera Data", bSendCameraData);
+	RUI_SHARE_PARAM_WCN("Motive- Camera Data Freq", cameraDataFrequency, 0, 300);
+
 	// Add listeners for new data
 	ofAddListener(motive.newDataReceived, this, &ofxRTLS::motiveDataReceived);
 
@@ -82,12 +87,20 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 	lastReceive = ofGetElapsedTimeMillis();
 	dataTimestamps.push(lastReceive);
 
-	// Send each identified point
-	RTLSEventArgs outArgs;
-	outArgs.frame.set_frame_id(1);
+	// ==============================================
+	// Marker Trackables
+	// Send every frame
+	// ==============================================
+
+	// Send each identified marker
+	RTLSEventArgs mOutArgs;
+	mOutArgs.frame.set_context("m"); // 'm' for marker
+	mOutArgs.frame.set_frame_id(frameID);
+	mOutArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
+
 	for (int i = 0; i < args.markers.size(); i++) {
 
-		Trackable* trackable = outArgs.frame.add_trackables();
+		Trackable* trackable = mOutArgs.frame.add_trackables();
 		char byte_array[16];
 		((uint64_t*)byte_array)[0] = args.markers[i].cuid.HighBits();
 		((uint64_t*)byte_array)[1] = args.markers[i].cuid.LowBits();
@@ -101,12 +114,47 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 	}
 
 	// Post-process the data
-	postprocess(outArgs.frame);
+	postprocess(mOutArgs.frame);
 
-	ofNotifyEvent(newFrameReceived, outArgs);
+	// Send out marker data
+	ofNotifyEvent(newFrameReceived, mOutArgs);
 
-	// Save this frame
-	lastFrame = outArgs.frame;
+	// ==============================================
+	// Camera Trackables
+	// Send with specified period.
+	// ==============================================
+
+	uint64_t thisTime = ofGetElapsedTimeMillis();
+	if (bSendCameraData && ((lastSendTime == 0) || (thisTime - lastSendTime >= cameraDataFrequency*1000.0))) {
+		lastSendTime = thisTime;
+
+		RTLSEventArgs cOutArgs;
+		cOutArgs.frame.set_context("c"); // 'c' for camera
+		cOutArgs.frame.set_frame_id(frameID);
+		cOutArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
+
+		// Add all cameras (after postprocessing)
+		for (int i = 0; i < args.cameras.size(); i++) {
+
+			Trackable* trackable = cOutArgs.frame.add_trackables();
+			trackable->set_id(args.cameras[i].ID);
+			trackable->set_cuid(ofToString(args.cameras[i].serial));
+			Trackable::Position* position = trackable->mutable_position();
+			position->set_x(args.cameras[i].position.x);
+			position->set_y(args.cameras[i].position.y);
+			position->set_z(args.cameras[i].position.z);
+			Trackable::Orientation* orientation = trackable->mutable_orientation();
+			orientation->set_w(args.cameras[i].orientation.w);
+			orientation->set_x(args.cameras[i].orientation.x);
+			orientation->set_y(args.cameras[i].orientation.y);
+			orientation->set_z(args.cameras[i].orientation.z);
+		}
+
+		// Send out camera data
+		ofNotifyEvent(newFrameReceived, cOutArgs);
+	}
+	
+	frameID++;
 }
 
 #endif
@@ -121,7 +169,9 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 
 	// Send each identified point
 	RTLSEventArgs outArgs;
-	outArgs.frame.set_frame_id(1);
+	outArgs.frame.set_frame_id(frameID);
+	outArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
+
 	for (int i = 0; i < (*args.devices->getTrackers()).size(); i++) {
 
 		Device* tkr = (*args.devices->getTrackers())[i];
@@ -145,8 +195,7 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 
 	ofNotifyEvent(newFrameReceived, outArgs);
 
-	// Save this frame
-	lastFrame = outArgs.frame;
+	frameID++;
 }
 
 #endif

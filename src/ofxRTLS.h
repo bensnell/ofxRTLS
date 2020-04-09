@@ -63,11 +63,13 @@ public:
 #ifdef RTLS_MOTIVE
 	ofxMotive motive;
 	void motiveDataReceived(MotiveEventArgs& args);
+
+	bool bSendCameraData = true;
+	float cameraDataFrequency = 10.0; // what is the sending period in seconds?
+	uint64_t lastSendTime = 0;
 #endif
 
 private:
-
-	TrackableFrame lastFrame;
 
 	void threadedFunction();
 
@@ -92,6 +94,8 @@ private:
 	ofxFilterGroup filters;
 #endif
 	
-	
+	// Frame ID
+	// Increment for each new packet of data sent.
+	uint64_t frameID = 0;
 
 };
