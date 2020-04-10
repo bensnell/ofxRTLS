@@ -11,6 +11,8 @@ This requires a Windows 10, x64 computer since Optitrack maintains these require
 
 This has been developed with OpenFrameworks version 0.11.0
 
+This must be used in Release mode.
+
 ### Dependencies
 
 Follow the instructions in each addon to include the relevant dependencies:
@@ -77,6 +79,8 @@ Finally, implement your handler, e.g.:
 
 Take a look at the examples for a more in-depth look at using ofxRTLS with ofxMotive and ofxOpenVRTracker.
 
+Build in **Release** Mode. Debug is not currently supported and will produce errors.
+
 ## Examples
 There are examples for Motive and for OpenVR. When possible, another example has been provided with postprocessing enabled. The only differences between the examples include:
 
@@ -97,3 +101,4 @@ When including ofxOsc in a project, sometimes the project generator overrides ex
 OSC_HOST_LITTLE_ENDIAN
 %(PreprocessorDefinitions)
 ```
+

@@ -92,6 +92,10 @@ private:
 	// Post-processing helpers
 	IDDictionary dict;
 	ofxFilterGroup filters;
+	// Filter keys will be:
+	// if frame.ID < 0:		key = ofToString(frame.ID)		variable length (< 16 digits)
+	// else:				key = frame.cuid				16 characters long
+	string getFilterKey(const Trackable& t);
 #endif
 	
 	// Frame ID

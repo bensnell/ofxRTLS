@@ -288,7 +288,7 @@ void ofxRTLS::postprocess(RTLSProtocol::TrackableFrame& frame) {
 				frame.trackables(i).position().x(),
 				frame.trackables(i).position().y(),
 				frame.trackables(i).position().z());
-			auto* filter = filters.getFilter(ofToString(frame.trackables(i).id()));
+			auto* filter = filters.getFilter(getFilterKey(frame.trackables(i)));
 			filter->process(position);
 		}
 
@@ -297,11 +297,11 @@ void ofxRTLS::postprocess(RTLSProtocol::TrackableFrame& frame) {
 
 		// Delete any data that is invalid.
 		// Also save IDs for all data that is valid.
-		set<int> existingDataIDs;
+		set<string> existingDataIDs;
 		int i = 0;
 		while (i < frame.trackables_size()) {
 			// Check if this trackable's data is invalid.
-			ofxFilter* filter = filters.getFilter(ofToString(frame.trackables(i).id()));
+			ofxFilter* filter = filters.getFilter(getFilterKey(frame.trackables(i)));
 			if (!filter->isDataValid()) {
 				// If not, delete it
 				frame.mutable_trackables()->SwapElements(i, frame.trackables_size() - 1);
@@ -309,7 +309,7 @@ void ofxRTLS::postprocess(RTLSProtocol::TrackableFrame& frame) {
 			}
 			else {
 				// Save that this ID has valid data
-				existingDataIDs.insert(frame.trackables(i).id());
+				existingDataIDs.insert(getFilterKey(frame.trackables(i)));
 
 				// Set this new processed data
 				glm::vec3 data = filter->getPosition();
@@ -323,13 +323,17 @@ void ofxRTLS::postprocess(RTLSProtocol::TrackableFrame& frame) {
 
 		// Add any data that isn't present
 		for (auto& it : filters.getFilters()) {
-			int id = ofToInt(it.first);
 			// Check if this is a new ID and if it has valid data.
-			if (existingDataIDs.find(id) == existingDataIDs.end() && it.second->isDataValid()) {
+			if (existingDataIDs.find(it.first) == existingDataIDs.end() && it.second->isDataValid()) {
 				// If so, add a trackable with this ID
 				
 				Trackable* trackable = frame.add_trackables();
-				// What should cuid be?
+				if (it.first.size() == 16) {	// cuid
+					trackable->set_cuid(it.first);
+				}
+				else if (!it.first.empty()) {	// id
+					trackable->set_id(ofToInt(it.first));
+				}
 				Trackable::Position* position = trackable->mutable_position();
 				glm::vec3 data = it.second->getPosition();
 				position->set_x(data.x);
@@ -343,6 +347,16 @@ void ofxRTLS::postprocess(RTLSProtocol::TrackableFrame& frame) {
 }
 
 // --------------------------------------------------------------
+string ofxRTLS::getFilterKey(const Trackable& t) {
 
+	// Use the ID as the key, if valid (>= 0)
+	if (t.id() >= 0) return ofToString(t.id());
+
+	// Otherwise, use the cuid
+	if (!t.cuid().empty()) return t.cuid();
+
+	// Otherwise, return an empty string
+	return "";
+}
 
 // --------------------------------------------------------------
