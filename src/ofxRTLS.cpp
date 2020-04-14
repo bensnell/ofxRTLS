@@ -85,7 +85,9 @@ void ofxRTLS::stop() {
 void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 
 	lastReceive = ofGetElapsedTimeMillis();
+	mtx.lock();
 	dataTimestamps.push(lastReceive);
+	mtx.unlock();
 
 	// ==============================================
 	// Marker Trackables
@@ -102,8 +104,8 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 
 		Trackable* trackable = mOutArgs.frame.add_trackables();
 		char byte_array[16];
-		((uint64_t*)byte_array)[0] = args.markers[i].cuid.HighBits();
-		((uint64_t*)byte_array)[1] = args.markers[i].cuid.LowBits();
+		((uint64_t*)byte_array)[0] = args.markers[i].cuid.LowBits();
+		((uint64_t*)byte_array)[1] = args.markers[i].cuid.HighBits();
 		trackable->set_cuid(byte_array, 16);
 		// Set the ID (-1 for passive, >=0 for active)
 		trackable->set_id(getActiveMarkerID(args.markers[i].cuid));
@@ -165,7 +167,9 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 
 	lastReceive = ofGetElapsedTimeMillis();
+	mtx.lock();
 	dataTimestamps.push(lastReceive);
+	mtx.unlock();
 
 	// Send each identified point
 	RTLSEventArgs outArgs;
@@ -212,10 +216,12 @@ void ofxRTLS::threadedFunction() {
 		bReceivingData = thisTime - lastReceive < stopGap;
 
 		// Determine the frame rate of the data
+		mtx.lock();
 		while (!dataTimestamps.empty() && dataTimestamps.front() < (thisTime-1000)) {
 			dataTimestamps.pop();
 		}
 		dataFPS = float(dataTimestamps.size());
+		mtx.unlock();
 	}
 }
 
@@ -325,10 +331,10 @@ void ofxRTLS::postprocess(RTLSProtocol::TrackableFrame& frame) {
 		for (auto& it : filters.getFilters()) {
 			// Check if this is a new ID and if it has valid data.
 			if (existingDataIDs.find(it.first) == existingDataIDs.end() && it.second->isDataValid()) {
-				// If so, add a trackable with this ID
-				
+				// If so, add a trackable with this ID				
 				Trackable* trackable = frame.add_trackables();
 				if (it.first.size() == 16) {	// cuid
+					trackable->set_id(-1);
 					trackable->set_cuid(it.first);
 				}
 				else if (!it.first.empty()) {	// id
