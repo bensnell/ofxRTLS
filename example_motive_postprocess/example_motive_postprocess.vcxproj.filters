@@ -205,9 +205,7 @@
     <ClCompile Include="..\..\..\ExternalAddons\ofxFilter\src\ofxFilterUtils.cpp">
       <Filter>local_addons\ofxFilter\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\IDDictionary.cpp">
-      <Filter>local_addons\ofxRTLS\src</Filter>
-    </ClCompile>
+    <ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\IDDictionary.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -1559,9 +1557,7 @@
     <ClInclude Include="..\..\..\ExternalAddons\ofxFilter\src\ofxFilterUtils.h">
       <Filter>local_addons\ofxFilter\src</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\IDDictionary.h">
-      <Filter>local_addons\ofxRTLS\src</Filter>
-    </ClInclude>
+    <ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\IDDictionary.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icon.rc" />
