@@ -90,13 +90,20 @@ private:
 	bool bMapIDs = true;
 	bool bRemoveInvalidIDs = true;
 	bool bApplyFilters = true;
+
 	// Post-processing helpers
 	IDDictionary dict;
 	ofxFilterGroup filters;
+
 	// Filter keys will be:
 	// if frame.ID < 0:		key = ofToString(frame.ID)		variable length (< 16 digits)
 	// else:				key = frame.cuid				16 characters long
 	string getFilterKey(const Trackable& t);
+	
+	// When was the last time filters were culled? (ms)
+	uint64_t lastFilterCullingTime = 0;
+	// What is the period by which filters are culled? (ms)
+	uint64_t filterCullingPeriod = 1000; // each second
 #endif
 	
 	// Frame ID

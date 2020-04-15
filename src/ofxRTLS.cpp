@@ -347,8 +347,13 @@ void ofxRTLS::postprocess(RTLSProtocol::TrackableFrame& frame) {
 				position->set_z(data.z);
 			}
 		}
-	}
 
+		// Delete any filters that haven't been used recently
+		if (ofGetElapsedTimeMillis() - lastFilterCullingTime > filterCullingPeriod) {
+			lastFilterCullingTime = ofGetElapsedTimeMillis();
+			filters.removeUnused();
+		}
+	}
 #endif
 }
 
