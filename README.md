@@ -20,7 +20,7 @@ Follow the instructions in each addon to include the relevant dependencies:
 - [ofxMotive](https://github.com/local-projects/ofxMotive)
 - [ofxOpenVRTracker](https://github.com/local-projects/ofxOpenVRTracker)
 - [rtls-protocol (C++)](https://github.com/local-projects/rtls-protocol/tree/master/c%2B%2B)
-    - Follow the Windows(x64) installation instructions to install the `protobuf` libraries. **Do not install them system-wide.**
+    - For Windows, the Protobuf runtime libraries for v3.11.3 have been included in this repo.
     - The C++ headers are already copied into the `src` folder of this addon, but you may have to regenerate the headers if the version of `protobuf` that was installed is ahead of the version used to generate the headers (v3.11.3).
 
 The addon also supports optional post-processing of the data. Options include:
