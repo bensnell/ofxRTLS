@@ -8,16 +8,17 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(VCPKG)\packages\protobuf_x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(VCPKG)\packages\protobuf_x64-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x64-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>for /d %%f in ("$(OF_ROOT)\libs\*") do (if exist "%%f\lib\vs\$(Platform_Actual)\*.dll" ( robocopy "%%f\lib\vs\$(Platform_Actual)" "$(ProjectDir)bin" "*.dll" /njs /njh /np /fp /bytes ))
-for %%f in ("$(VCPKG)\packages\protobuf_x64-windows\bin") do ( robocopy "%%f" "$(ProjectDir)bin" /s /njs /njh /np /fp /bytes )
-if errorlevel 1 exit 0 else exit %errorlevel%</Command>
+      <Command>
+        for /d %%f in ("$(OF_ROOT)\libs\*") do (if exist "%%f\lib\vs\$(Platform_Actual)\*.dll" ( robocopy "%%f\lib\vs\$(Platform_Actual)" "$(ProjectDir)bin" "*.dll" /njs /njh /np /fp /bytes ))
+        for %%f in ("$(ProjectDir)\..\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x64-windows\bin") do ( robocopy "%%f" "$(ProjectDir)bin" /s /njs /njh /np /fp /bytes )
+        if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </PostBuildEvent>
     <CustomBuildStep>
       <Command>
