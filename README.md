@@ -4,6 +4,14 @@
 
 This addon is intended to act as a manager for any "Real Time Location System" and exports tracking information in a standardized format via the [`rtls-protocol`](https://github.com/local-projects/rtls-protocol). Currently, this addon supports Optitrack Motive's API and the OpenVR API.
 
+This addon also supports optional realtime post-processing of the data. Options include:
+
+- ML-enabled bit sequence identification
+- ID re-mappings
+- Smoothing and filtering (easing, kalman)
+- Predictive gap-filling filters (continuity)
+- etc.
+
 
 ### System Requirements
 
@@ -11,30 +19,29 @@ This requires a Windows 10, x64 computer since Optitrack maintains these require
 
 This has been developed with OpenFrameworks version 0.11.0
 
-This must be used in Release mode.
-
 ### Dependencies
 
-Follow the instructions in each addon to include the relevant dependencies:
+#### General Dependencies
 
-- [ofxMotive](https://github.com/local-projects/ofxMotive)
-- [ofxOpenVRTracker](https://github.com/local-projects/ofxOpenVRTracker)
-- [rtls-protocol (C++)](https://github.com/local-projects/rtls-protocol/tree/master/c%2B%2B)
-    - For Windows, the Protobuf runtime libraries for v3.11.3 have been included in this repo.
-    - The C++ headers are already copied into the `src` folder of this addon, but you may have to regenerate the headers if the version of `protobuf` that was installed is ahead of the version used to generate the headers (v3.11.3).
+[rtls-protocol (C++)](https://github.com/local-projects/rtls-protocol/tree/master/c%2B%2B)
 
-The addon also supports optional post-processing of the data. Options include:
+- The rtls-protocol uses Protobuf to package data in a efficient format that can be easily transmitted across networks and unpacked in virtually any language. Protobuf v3.11.3 has already been included in this repo for Windows development. The runtime libraries are in the folder *protobuf* and the C++ headers have been copied to the *src* folder. Other versions of Protobuf may require header regeneration and inclusion of different libraries.
 
-- ML-enabled bit sequence identification
-- ID re-mappings
-- Smoothing and filtering (easing, kalman)
-- Predictive gap-filling filters (continuity)
+#### Tracking System-Specific Dependencies
 
-These post-processing options require additional addons, including:
+- Motive (Optitrack)
+    - Using Motive requires the addon [ofxMotive](https://github.com/local-projects/ofxMotive). See its repo for any additional dependencies that are not listed here.
+    - [Motive](https://www.optitrack.com/downloads/motive.html) must be installed on the system you are working on and a valid license key generated and stored on your computer. If not, ofxRTLS will not compile and/or Motive will not connect to the Motive API.
+- OpenVR (e.g. HTC Vive, etc.)
+    - Using OpenVR requires the addon [ofxOpenVRTracker](https://github.com/local-projects/ofxOpenVRTracker). See its repo for any additional dependencies that are not listed here.
 
-- ofxOpenCv (comes with OF v0.11.0)
-- ofxCv (branch: [project/lp.rtls-server](project/lp.rtls-server))
-- ofxFDeep (branch: [fdeep-v0.12.1-p0](https://github.com/local-projects/ofxFDeep/tree/fdeep-v0.12.1-p0))
+#### Post-Processing Dependencies
+
+If the macro `RTLS_ENABLE_POSTPROCESS` is defined, then ofxRTLS expects a number of additional dependencies. Make sure they are included in the *addons.make* file of your project. See the *example_motive_postprocess/addons.make* for an example using Motive.
+
+- ofxOpenCv (this comes with OF v0.11.0)
+- [ofxCv](https://github.com/local-projects/ofxCv/tree/project/lp.rtls-server) (use this branch)
+- [ofxFDeep](https://github.com/local-projects/ofxFDeep/tree/fdeep-v0.12.1-p0) (use this branch)
 - [ofxFilter](https://github.com/local-projects/ofxFilter/tree/master)
 
 ## How to use this addon with your project
@@ -43,16 +50,23 @@ First, make sure you have properly installed all of the dependencies; there are 
 
 ### Setup
 
-include the relative path to `ofxRTLS` in your *addons.make* file, as usual. Regenerate your project files using OpenFrameworks' ProjectGenerator.
+1. Include the relative path to `ofxRTLS` in your *addons.make* file, as usual. Regenerate your project files using OpenFrameworks' ProjectGenerator.
 
-In Visual Studios, in the *Property Manager*, add the the appropriate property sheet to your project. Each mode of server operation has a different property sheet. Only include one of these. Available property sheets are in the *ofxRTLS* directory and include:
+2. In Visual Studios, in the *Property Manager*, right click your entire project and select *Add Existing Property Sheet...*. Then, choose the appropriate sheet. Available property sheets are listed below and included in the *ofxRTLS* directory. 
 
-- *RTLS_OPENVR.props* for an OpenVR server. This will automatically include the macro `RTLS_OPENVR`. ***Note: OpenVR does not currently work with the filtering dependencies.***
-- *RTLS_MOTIVE.props* for an Optitrack Motive server. This will automatically include the macro `RTLS_MOTIVE`.  If you are using debug mode, then use *RTLS_MOTIVE_DEBUG.props*.
+   *Note: If your application directly interfaces with a tracking system, choose the corresponding sheet `RTLS_[SYSTEM].props`. If your application does not directly interface with a tracking system, but instead receives data in the protobuf format, use the `Protobuf.props` sheet instead.*
 
-In your project *Properties* window, under *Configuration Properties  > C/C++ > Preprocessor > Preprocessor Definitions*, select *Edit* from the dropdown menu on the right and at the bottom of the window, check the box that says *Inherit from parent or project defaults*.
+   *Note: Only one of these property sheets may be added to a project. Each application that uses ofxRTLS may only directly interface with a single tracking system. For example, to interface with both Motive and OpenVR, two applications would be needed.*
 
-If you plan on using any of the postprocessing options, pass the macro `RTLS_ENABLE_POSTPROCESS` in the Project Properties' *Preprocessor Definitions*.
+| Property Sheet      | Tracking System        | Supported <br />Configuration | Supported <br />Platform | Notes                                    |
+| ------------------- | ---------------------- | ----------------------------- | ------------------------ | ---------------------------------------- |
+| `RTLS_MOTIVE.props` | Motive (Optitrack)     | Release, Debug                | x64                      | 32-bit (x86) is not supported by Motive. |
+| `RTLS_OPENVR.props` | OpenVR (e.g. HTC Vive) | Release, Debug                | x64 (x86?)               |                                          |
+| `Protobuf.props`    | None                   | Release, Debug                | x64, x86                 |                                          |
+
+3. In your project *Properties* window, under *Configuration Properties  > C/C++ > Preprocessor > Preprocessor Definitions*, select *Edit* from the dropdown menu on the right and at the bottom of the window, check the box that says *Inherit from parent or project defaults*.
+
+4. If you plan on using any of the postprocessing options, pass the macro `RTLS_ENABLE_POSTPROCESS` in the Project Properties' *Preprocessor Definitions*.
 
 ### Usage
 
@@ -62,7 +76,6 @@ Include the addon in your project as normal. Then create an ofxRTLS object, e.g.
 
 Then, in your `setup()` method:
 
-    tracker.setupParams(); // for ofxRemoteUI
     tracker.setup();
     tracker.start();
     ofAddListener(tracker.newFrameReceived, this, &ofApp::myHandlerFunction);
@@ -79,8 +92,6 @@ Finally, implement your handler, e.g.:
 
 Take a look at the examples for a more in-depth look at using ofxRTLS with ofxMotive and ofxOpenVRTracker.
 
-Build in **Release** Mode. Debug is not currently supported and will produce errors.
-
 ## Examples
 There are examples for Motive and for OpenVR. When possible, another example has been provided with postprocessing enabled. The only differences between the examples include:
 
@@ -88,7 +99,7 @@ There are examples for Motive and for OpenVR. When possible, another example has
 - The Addons included in `addons.make`
 - The definition of `RTLS_ENABLE_POSTPROCESS`
 
-To run the examples, follow the specific setup instructions for whichever addon you are using (ofxMotive or ofxOpenVRTracker), then run.
+To run the examples, follow the specific setup instructions for whichever addon you are using, then run.
 
 
 ## Troubleshooting

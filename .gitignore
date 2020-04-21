@@ -114,9 +114,9 @@ Desktop.ini
 # Libs for motive in the bin folder of any examples
 #/example*/bin/
 #/example/bin/*
-!*/example/bin/data/example.cal
-!*/example/bin/data/example.motive
-/example/bin/*
+!*/example*/bin/data/example.cal
+!*/example*/bin/data/example.motive
+/example*/bin/*
 *.VC.db
 *.VC.opendb
 /.vs/*
@@ -126,5 +126,5 @@ Desktop.ini
 *.rui
 
 # Protobuf
-!protobuf/protobuf*/debug/
-!libprotobuf*.pdb
+!protobuf/protobuf*/*
+#!libprotobuf*.pdb

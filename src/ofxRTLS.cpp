@@ -358,6 +358,7 @@ void ofxRTLS::postprocess(RTLSProtocol::TrackableFrame& frame) {
 }
 
 // --------------------------------------------------------------
+#ifdef RTLS_ENABLE_POSTPROCESS
 string ofxRTLS::getFilterKey(const Trackable& t) {
 
 	// Use the ID as the key, if valid (>= 0)
@@ -369,5 +370,5 @@ string ofxRTLS::getFilterKey(const Trackable& t) {
 	// Otherwise, return an empty string
 	return "";
 }
-
+#endif
 // --------------------------------------------------------------
