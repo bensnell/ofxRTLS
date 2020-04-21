@@ -124,3 +124,7 @@ Desktop.ini
 
 # Config files
 *.rui
+
+# Protobuf
+!protobuf/protobuf*/debug/
+!libprotobuf*.pdb
