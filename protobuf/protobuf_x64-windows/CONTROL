@@ -1,0 +1,7 @@
+Package: protobuf
+Version: 3.11.3
+Architecture: x64-windows
+Multi-Arch: same
+Abi: e2dcb58416c9b3510dd5ce220c9c79ab52f17f1d
+Description: Protocol Buffers - Google's data interchange format
+Type: Port
