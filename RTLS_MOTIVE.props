@@ -5,64 +5,64 @@
   <PropertyGroup />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(NPTRACKINGTOOLS_INC);$(NP_FIRST_PARTY)\SharedLibraries\RigidBodySolver\Include;$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OF_ROOT)\..\ExternalAddons\ofxMotive\motive\inc;$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>RTLS_MOTIVE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(NPTRACKINGTOOLS_LIB);C:\Program Files\OptiTrack\Motive;C:\Program Files\OptiTrack\Motive\plugins\platforms;$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x64-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OF_ROOT)\..\ExternalAddons\ofxMotive\motive\lib;$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x64-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>NPTrackingToolsx64.lib;libprotobuf.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>for /d %%f in ("$(OF_ROOT)\libs\*") do (if exist "%%f\lib\vs\$(Platform_Actual)\*.dll" ( robocopy "%%f\lib\vs\$(Platform_Actual)" "$(ProjectDir)bin" "*.dll" /njs /njh /np /fp /bytes ))
-for %%f in ("$(OF_ROOT)\..\ExternalAddons\ofxMotive\lib") do ( robocopy "%%f" "$(ProjectDir)bin" /s /njs /njh /np /fp /bytes )
+for %%f in ("$(OF_ROOT)\..\ExternalAddons\ofxMotive\motive\bin") do ( robocopy "%%f" "$(ProjectDir)bin" /s /njs /njh /np /fp /bytes )
 for %%f in ("$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x64-windows\bin") do ( robocopy "%%f" "$(ProjectDir)bin" /s /njs /njh /np /fp /bytes )
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(NPTRACKINGTOOLS_INC);$(NP_FIRST_PARTY)\SharedLibraries\RigidBodySolver\Include;$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OF_ROOT)\..\ExternalAddons\ofxMotive\motive\inc;$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>RTLS_MOTIVE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(NPTRACKINGTOOLS_LIB);C:\Program Files\OptiTrack\Motive;C:\Program Files\OptiTrack\Motive\plugins\platforms;$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x64-windows\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OF_ROOT)\..\ExternalAddons\ofxMotive\motive\lib;$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x64-windows\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>NPTrackingToolsx64.lib;libprotobufd.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>for /d %%f in ("$(OF_ROOT)\libs\*") do (if exist "%%f\lib\vs\$(Platform_Actual)\*.dll" ( robocopy "%%f\lib\vs\$(Platform_Actual)" "$(ProjectDir)bin" "*.dll" /njs /njh /np /fp /bytes ))
-for %%f in ("$(OF_ROOT)\..\ExternalAddons\ofxMotive\lib") do ( robocopy "%%f" "$(ProjectDir)bin" /s /njs /njh /np /fp /bytes )
+for %%f in ("$(OF_ROOT)\..\ExternalAddons\ofxMotive\motive\bin") do ( robocopy "%%f" "$(ProjectDir)bin" /s /njs /njh /np /fp /bytes )
 for %%f in ("$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x64-windows\debug\bin") do ( robocopy "%%f" "$(ProjectDir)bin" /s /njs /njh /np /fp /bytes )
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(NPTRACKINGTOOLS_INC);$(NP_FIRST_PARTY)\SharedLibraries\RigidBodySolver\Include;$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x86-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OF_ROOT)\..\ExternalAddons\ofxMotive\motive\inc;$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x86-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>RTLS_MOTIVE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(NPTRACKINGTOOLS_LIB);C:\Program Files\OptiTrack\Motive;C:\Program Files\OptiTrack\Motive\plugins\platforms;$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x86-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OF_ROOT)\..\ExternalAddons\ofxMotive\motive\lib;$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x86-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>NPTrackingToolsx64.lib;libprotobuf.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>for /d %%f in ("$(OF_ROOT)\libs\*") do (if exist "%%f\lib\vs\$(Platform_Actual)\*.dll" ( robocopy "%%f\lib\vs\$(Platform_Actual)" "$(ProjectDir)bin" "*.dll" /njs /njh /np /fp /bytes ))
-for %%f in ("$(OF_ROOT)\..\ExternalAddons\ofxMotive\lib") do ( robocopy "%%f" "$(ProjectDir)bin" /s /njs /njh /np /fp /bytes )
+for %%f in ("$(OF_ROOT)\..\ExternalAddons\ofxMotive\motive\bin") do ( robocopy "%%f" "$(ProjectDir)bin" /s /njs /njh /np /fp /bytes )
 for %%f in ("$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x86-windows\bin") do ( robocopy "%%f" "$(ProjectDir)bin" /s /njs /njh /np /fp /bytes )
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(NPTRACKINGTOOLS_INC);$(NP_FIRST_PARTY)\SharedLibraries\RigidBodySolver\Include;$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x86-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OF_ROOT)\..\ExternalAddons\ofxMotive\motive\inc;$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x86-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>RTLS_MOTIVE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(NPTRACKINGTOOLS_LIB);C:\Program Files\OptiTrack\Motive;C:\Program Files\OptiTrack\Motive\plugins\platforms;$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x86-windows\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OF_ROOT)\..\ExternalAddons\ofxMotive\motive\lib;$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x86-windows\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>NPTrackingToolsx64.lib;libprotobufd.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>for /d %%f in ("$(OF_ROOT)\libs\*") do (if exist "%%f\lib\vs\$(Platform_Actual)\*.dll" ( robocopy "%%f\lib\vs\$(Platform_Actual)" "$(ProjectDir)bin" "*.dll" /njs /njh /np /fp /bytes ))
-for %%f in ("$(OF_ROOT)\..\ExternalAddons\ofxMotive\lib") do ( robocopy "%%f" "$(ProjectDir)bin" /s /njs /njh /np /fp /bytes )
+for %%f in ("$(OF_ROOT)\..\ExternalAddons\ofxMotive\motive\bin") do ( robocopy "%%f" "$(ProjectDir)bin" /s /njs /njh /np /fp /bytes )
 for %%f in ("$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x86-windows\debug\bin") do ( robocopy "%%f" "$(ProjectDir)bin" /s /njs /njh /np /fp /bytes )
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </PostBuildEvent>
