@@ -30,7 +30,7 @@ This has been developed with OpenFrameworks version 0.11.0
 #### Tracking System-Specific Dependencies
 
 - Motive (Optitrack)
-    - Using Motive requires the addon [ofxMotive](https://github.com/local-projects/ofxMotive). See its repo for any additional dependencies that are not listed here.
+    - Using Motive requires the addon [ofxMotive](https://github.com/local-projects/ofxMotive/tree/version/2.2.0) (branch: `version/2.2.0`). See its repo for any additional dependencies that are not listed here.
     - [Motive](https://www.optitrack.com/downloads/motive.html) must be installed on the system you are working on and a valid license key generated and stored on your computer. If not, ofxRTLS will not compile and/or Motive will not connect to the Motive API.
 - OpenVR (e.g. HTC Vive, etc.)
     - Using OpenVR requires the addon [ofxOpenVRTracker](https://github.com/local-projects/ofxOpenVRTracker). See its repo for any additional dependencies that are not listed here.
@@ -40,8 +40,8 @@ This has been developed with OpenFrameworks version 0.11.0
 If the macro `RTLS_ENABLE_POSTPROCESS` is defined, then ofxRTLS expects a number of additional dependencies. Make sure they are included in the *addons.make* file of your project. See the *example_motive_postprocess/addons.make* for an example using Motive.
 
 - ofxOpenCv (this comes with OF v0.11.0)
-- [ofxCv](https://github.com/local-projects/ofxCv/tree/project/lp.rtls-server) (use this branch)
-- [ofxFDeep](https://github.com/local-projects/ofxFDeep/tree/fdeep-v0.12.1-p0) (use this branch)
+- [ofxCv](https://github.com/local-projects/ofxCv/tree/project/lp.rtls-server) (branch: `project/lp.rtls-server`)
+- [ofxFDeep](https://github.com/local-projects/ofxFDeep/tree/fdeep-v0.12.1-p0) (branch: `fdeep-v0.12.1-p0`)
 - [ofxFilter](https://github.com/local-projects/ofxFilter/tree/master)
 
 ## How to use this addon with your project
@@ -58,11 +58,11 @@ First, make sure you have properly installed all of the dependencies; there are 
 
    *Note: Only one of these property sheets may be added to a project. Each application that uses ofxRTLS may only directly interface with a single tracking system. For example, to interface with both Motive and OpenVR, two applications would be needed.*
 
-| Property Sheet      | Tracking System        | Supported <br />Configuration | Supported <br />Platform | Notes                                    |
-| ------------------- | ---------------------- | ----------------------------- | ------------------------ | ---------------------------------------- |
-| `RTLS_MOTIVE.props` | Motive (Optitrack)     | Release, Debug                | x64                      | 32-bit (x86) is not supported by Motive. |
-| `RTLS_OPENVR.props` | OpenVR (e.g. HTC Vive) | Release, Debug                | x64 (x86?)               |                                          |
-| `Protobuf.props`    | None                   | Release, Debug                | x64, x86                 |                                          |
+| Property Sheet      | Tracking System        | Supported <br />Configuration | Supported <br />Platform | Notes                                                        |
+| ------------------- | ---------------------- | ----------------------------- | ------------------------ | ------------------------------------------------------------ |
+| `RTLS_MOTIVE.props` | Motive (Optitrack)     | Release, Debug                | x64                      | 32-bit (x86) is not supported by Motive.<br />This uses Motive v2.2.0 |
+| `RTLS_OPENVR.props` | OpenVR (e.g. HTC Vive) | Release, Debug                | x64 (x86?)               |                                                              |
+| `Protobuf.props`    | None                   | Release, Debug                | x64, x86                 |                                                              |
 
 3. In your project *Properties* window, under *Configuration Properties  > C/C++ > Preprocessor > Preprocessor Definitions*, select *Edit* from the dropdown menu on the right and at the bottom of the window, check the box that says *Inherit from parent or project defaults*.
 
