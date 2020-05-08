@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxRemoteUIServer.h"
 
 class IDDictionary {
 public:
@@ -9,7 +8,9 @@ public:
 	IDDictionary();
 	~IDDictionary();
 
-	void setup(string _filepath = "");
+	bool setup(string _filepath = "");
+
+	bool isSetup() { return bValid; }
 
 	// Lookup a value mapping
 	int lookup(int value);
@@ -18,12 +19,12 @@ public:
 private:
 
 	// The path at which the dictionary is loaded
-	string filepath = "id-dictionary.json";
+	string filepath = "";
 
 	// This is the dictionary, mapping Motive ID (int) to Lamp ID (int)
 	vector<int> dict;
 
-	// Is the mapping enabled?
-	bool bEnabled = true;
+	// Is the mapping loaded?
+	bool bValid = false;
 
 };
