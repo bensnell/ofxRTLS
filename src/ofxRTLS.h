@@ -81,7 +81,6 @@ private:
 	// Contains timestamps at which data was received in the last second
 	queue<uint64_t> dataTimestamps;
 	float dataFPS = 0.0;
-	ofMutex mtx;
 	
 	// Frame ID
 	// Increment for each new packet of data sent.

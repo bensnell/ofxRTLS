@@ -12,6 +12,16 @@ using namespace RTLSProtocol;
 #include "ofxFDeep.h"
 #include "ofxFilterGroup.h"
 
+// Locking with Condition Variables, Queues and Mutex follows the 
+// examples set forth here:
+// https://ncona.com/2019/04/using-condition-variables-in-cpp/
+// Also useful:
+// https://wiki.sei.cmu.edu/confluence/display/cplusplus/CON54-CPP.+Wrap+functions+that+can+spuriously+wake+up+in+a+loop
+// https://en.cppreference.com/w/cpp/thread/condition_variable
+// https://www.justsoftwaresolutions.co.uk/threading/multithreading-in-c++0x-part-7-locking-multiple-mutexes.html
+// https://www.modernescpp.com/index.php/c-core-guidelines-be-aware-of-the-traps-of-condition-variables
+// http://jakascorner.com/blog/2016/02/lock_guard-and-unique_lock.html
+
 class ofxRTLSPostprocessor : public ofThread {
 public:
 
@@ -39,6 +49,8 @@ private:
 	bool bApplyFilters = true;
 
 	void threadedFunction();
+	std::condition_variable cv;
+	atomic<bool> flagUnlock = false;
 
 	// Queue holds data ready to be processed
 	struct DataElem {
@@ -46,7 +58,6 @@ private:
 		ofEvent<ofxRTLSEventArgs>* dataReadyEvent;
 	};
 	queue< DataElem* > dataQueue;
-	ofMutex mtx;
 
 	// Process a data element
 	void _process(RTLSProtocol::TrackableFrame& frame);
@@ -65,7 +76,6 @@ private:
 	uint64_t lastFilterCullingTime = 0;
 	// What is the period by which filters are culled? (ms)
 	uint64_t filterCullingPeriod = 1000; // each second
-
 };
 
 #endif

@@ -84,9 +84,9 @@ void ofxRTLS::stop() {
 void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 
 	lastReceive = ofGetElapsedTimeMillis();
-	mtx.lock();
+	mutex.lock();
 	dataTimestamps.push(lastReceive);
-	mtx.unlock();
+	mutex.unlock();
 
 	// ==============================================
 	// Marker Trackables
@@ -173,9 +173,9 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 
 	lastReceive = ofGetElapsedTimeMillis();
-	mtx.lock();
+	mutex.lock();
 	dataTimestamps.push(lastReceive);
-	mtx.unlock();
+	mutex.unlock();
 
 	// ==============================================
 	// Generic Tracker Trackables
@@ -229,12 +229,14 @@ void ofxRTLS::threadedFunction() {
 		bReceivingData = thisTime - lastReceive < stopGap;
 
 		// Determine the frame rate of the data
-		mtx.lock();
+		mutex.lock();
 		while (!dataTimestamps.empty() && dataTimestamps.front() < (thisTime-1000)) {
 			dataTimestamps.pop();
 		}
 		dataFPS = float(dataTimestamps.size());
-		mtx.unlock();
+		mutex.unlock();
+		
+		sleep(16);
 	}
 }
 

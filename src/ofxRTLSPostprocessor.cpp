@@ -8,6 +8,12 @@ ofxRTLSPostprocessor::ofxRTLSPostprocessor() {
 // --------------------------------------------------------------
 ofxRTLSPostprocessor::~ofxRTLSPostprocessor() {
 
+	// Flag that we should stop waiting 
+	flagUnlock = true;
+	// Signal the conditional variable
+	cv.notify_one();
+
+	// Stop this thread and wait for it to complete
 	waitForThread(true);
 }
 
@@ -42,14 +48,33 @@ void ofxRTLSPostprocessor::threadedFunction() {
 
 	while (isThreadRunning()) {
 
-		// Process all data that is waiting
-		while (!dataQueue.empty()) {
+		DataElem* elem = NULL;
 
-			// Get the next element
-			mtx.lock();
-			DataElem* elem = dataQueue.front();
-			dataQueue.pop();
-			mtx.unlock();
+		{
+			// Lock the mutex
+			std::unique_lock<std::mutex> lk(mutex);
+
+			// This locks the mutex (if not already locked) in order to check
+			// the predicate (whether the queue contains items). If false, the mutex 
+			// is unlocked and waits for the condition variable to receive a signal
+			// to check again. If true, code execution continues.
+			cv.wait(lk, [this] { return flagUnlock || !dataQueue.empty(); });
+			// alt:
+			//cv.wait(lk, [&] { return !dataQueue.empty(); });
+			// alt:
+			//while (dataQueue.empty()) { // include in while loop in case of spurious wakeup
+			//	cv.wait(lk); // wait for the condition; wait for notification
+			//}
+
+			if (!flagUnlock) {
+				// The queue contains elements. Get an element.
+				elem = dataQueue.front();
+				dataQueue.pop();
+			}
+		}
+
+		// If an element has been received, process it.
+		if (elem) {
 
 			// Process this element
 			_process(elem->data.frame);
@@ -60,8 +85,6 @@ void ofxRTLSPostprocessor::threadedFunction() {
 			// Delete this data
 			delete elem;
 		}
-
-		sleep(1); // ?
 	}
 }
 
@@ -74,13 +97,18 @@ void ofxRTLSPostprocessor::exit() {
 void ofxRTLSPostprocessor::processAndSend(ofxRTLSEventArgs& data, 
 	ofEvent<ofxRTLSEventArgs>& dataReadyEvent) {
 
+	// Create a data element
 	DataElem* elem = new DataElem();
 	elem->data = data;
 	elem->dataReadyEvent = &dataReadyEvent;
 
-	mtx.lock();
-	dataQueue.push(elem);
-	mtx.unlock();
+	// Add the element to the queue
+	{
+		std::lock_guard<std::mutex> lk(mutex);
+		dataQueue.push(elem);
+	}
+	// Notify the thread that the condition has been met to proceed
+	cv.notify_one();
 }
 
 // --------------------------------------------------------------
