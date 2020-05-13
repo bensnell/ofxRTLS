@@ -1,5 +1,7 @@
 #include "ofxRTLSPostprocessor.h"
 
+#ifdef RTLS_ENABLE_POSTPROCESS
+
 // --------------------------------------------------------------
 ofxRTLSPostprocessor::ofxRTLSPostprocessor() {
 
@@ -224,3 +226,5 @@ string ofxRTLSPostprocessor::getFilterKey(const Trackable& t) {
 }
 
 // --------------------------------------------------------------
+
+#endif
