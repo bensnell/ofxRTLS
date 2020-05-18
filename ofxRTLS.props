@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OFXRTLS_ROOT Condition="'$(OFXRTLS_ROOT)'==''">$(MSBuildThisFileDirectory)</OFXRTLS_ROOT>
+
+    <!-- This is where the tracking system should be set. Set the environment variables to true if you would like to include them, or false if not. -->
+    <RTLS_MOTIVE Condition="'$(RTLS_MOTIVE)'==''">false</RTLS_MOTIVE>
+    <RTLS_OPENVR Condition="'$(RTLS_OPENVR)'==''">false</RTLS_OPENVR>
+    <RTLS_NULL Condition="'$(RTLS_NULL)'==''">false</RTLS_NULL>
+    <RTLS_NULL Condition="('$(RTLS_MOTIVE)'=='false')And('$(RTLS_OPENVR)'=='false')">true</RTLS_NULL>
+
+    <RTLS_POSTPROCESS Condition="'$(RTLS_POSTPROCESS)'==''">false</RTLS_POSTPROCESS>
+  </PropertyGroup>
+<!--   <ItemGroup>
+    <BuildMacro Include="RTLS_MOTIVE">
+      <Value>$(RTLS_MOTIVE)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="RTLS_OPENVR">
+      <Value>$(RTLS_OPENVR)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="RTLS_NULL">
+      <Value>$(RTLS_NULL)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+  </ItemGroup> -->
+
+  <!-- Import Property Sheets -->
+  <ImportGroup Label="PropertySheets">
+    <!-- Always include protobuf property sheet -->
+    <Import Project="$(OFXRTLS_ROOT)\Protobuf.props" />
+
+    <!-- Depending on the tracking system variable, include the appropriate property sheets-->
+    <Import Condition="'$(RTLS_MOTIVE)'=='true'" Project="$(OFXRTLS_ROOT)\..\ofxMotive\ofxMotive.props" />
+    <Import Condition="'$(RTLS_OPENVR)'=='true'" Project="$(OFXRTLS_ROOT)\..\ofxOpenVRTracker\ofxOpenVRTracker.props" />
+  </ImportGroup>
+
+<!--   <PropertyGroup Label="UserMacros">
+    <RTLS_MOTIVE Condition="'$(RTLS_MOTIVE)'==''">false</RTLS_MOTIVE>
+    <RTLS_OPENVR Condition="'$(RTLS_OPENVR)'==''">false</RTLS_OPENVR>
+    <RTLS_NULL Condition="'$(RTLS_NULL)'==''">false</RTLS_NULL>
+    <RTLS_NULL Condition="('$(RTLS_MOTIVE)'=='false')And('$(RTLS_OPENVR)'=='false')">true</RTLS_NULL>
+  </PropertyGroup> -->
+
+  <!-- Include the appropriate macro. This is the same as the value of the tracking system. -->
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions Condition="'$(RTLS_NULL)'=='true'">RTLS_NULL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(RTLS_MOTIVE)'=='true'">RTLS_MOTIVE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(RTLS_OPENVR)'=='true'">RTLS_OPENVR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(RTLS_POSTPROCESS)'=='true'">RTLS_POSTPROCESS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+
+  <!-- Include the version library -->
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+</Project>

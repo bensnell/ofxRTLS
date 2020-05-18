@@ -1,67 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
-  <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <PropertyGroup>
+    <PROTOBUF_ROOT Condition="'$(PROTOBUF_ROOT)'==''">$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf</PROTOBUF_ROOT>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Platform)'=='x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PROTOBUF_ROOT)\protobuf_x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
-    <Link>
-      <AdditionalLibraryDirectories>$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x64-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libprotobuf.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    <Link Condition="'$(Configuration)'=='Release'">
+      <AdditionalLibraryDirectories>$(PROTOBUF_ROOT)\protobuf_x64-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>
-        for /d %%f in ("$(OF_ROOT)\libs\*") do (if exist "%%f\lib\vs\$(Platform_Actual)\*.dll" ( robocopy "%%f\lib\vs\$(Platform_Actual)" "$(ProjectDir)bin" "*.dll" /njs /njh /np /fp /bytes ))
-        for %%f in ("$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x64-windows\bin") do ( robocopy "%%f" "$(ProjectDir)bin" /s /njs /njh /np /fp /bytes )
-        if errorlevel 1 exit 0 else exit %errorlevel%</Command>
-    </PostBuildEvent>
+    <Link Condition="'$(Configuration)'=='Debug'">
+      <AdditionalLibraryDirectories>$(PROTOBUF_ROOT)\protobuf_x64-windows\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libprotobufd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PROTOBUF_ROOT)\protobuf_x86-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
-    <Link>
-      <AdditionalLibraryDirectories>$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x64-windows\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libprotobufd.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    <Link Condition="'$(Configuration)'=='Release'">
+      <AdditionalLibraryDirectories>$(PROTOBUF_ROOT)\protobuf_x86-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>
-        for /d %%f in ("$(OF_ROOT)\libs\*") do (if exist "%%f\lib\vs\$(Platform_Actual)\*.dll" ( robocopy "%%f\lib\vs\$(Platform_Actual)" "$(ProjectDir)bin" "*.dll" /njs /njh /np /fp /bytes ))
-        for %%f in ("$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x64-windows\debug\bin") do ( robocopy "%%f" "$(ProjectDir)bin" /s /njs /njh /np /fp /bytes )
-        if errorlevel 1 exit 0 else exit %errorlevel%</Command>
-    </PostBuildEvent>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x86-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
-    <Link>
-      <AdditionalLibraryDirectories>$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x86-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libprotobuf.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    <Link Condition="'$(Configuration)'=='Debug'">
+      <AdditionalLibraryDirectories>$(PROTOBUF_ROOT)\protobuf_x86-windows\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libprotobufd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>
-        for /d %%f in ("$(OF_ROOT)\libs\*") do (if exist "%%f\lib\vs\$(Platform_Actual)\*.dll" ( robocopy "%%f\lib\vs\$(Platform_Actual)" "$(ProjectDir)bin" "*.dll" /njs /njh /np /fp /bytes ))
-        for %%f in ("$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x86-windows\bin") do ( robocopy "%%f" "$(ProjectDir)bin" /s /njs /njh /np /fp /bytes )
-        if errorlevel 1 exit 0 else exit %errorlevel%</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x86-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
-    <Link>
-      <AdditionalLibraryDirectories>$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x86-windows\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libprotobufd.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
-    <PostBuildEvent>
-      <Command>
-        for /d %%f in ("$(OF_ROOT)\libs\*") do (if exist "%%f\lib\vs\$(Platform_Actual)\*.dll" ( robocopy "%%f\lib\vs\$(Platform_Actual)" "$(ProjectDir)bin" "*.dll" /njs /njh /np /fp /bytes ))
-        for %%f in ("$(OF_ROOT)\..\ExternalAddons\ofxRTLS\protobuf\protobuf_x86-windows\debug\bin") do ( robocopy "%%f" "$(ProjectDir)bin" /s /njs /njh /np /fp /bytes )
-        if errorlevel 1 exit 0 else exit %errorlevel%</Command>
-    </PostBuildEvent>
-  </ItemDefinitionGroup>
-  <ItemGroup />
+  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  	<Content Include="$(PROTOBUF_ROOT)\protobuf_x86-windows\debug\bin\libprotobufd.dll">
+  		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  		<Visible>false</Visible>
+  	</Content>
+  	<Content Include="$(PROTOBUF_ROOT)\protobuf_x86-windows\debug\bin\libprotobufd.pdb">
+  		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  		<Visible>false</Visible>
+  	</Content>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  	<Content Include="$(PROTOBUF_ROOT)\protobuf_x64-windows\debug\bin\libprotobufd.dll">
+  		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  		<Visible>false</Visible>
+  	</Content>
+  	<Content Include="$(PROTOBUF_ROOT)\protobuf_x64-windows\debug\bin\libprotobufd.pdb">
+  		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  		<Visible>false</Visible>
+  	</Content>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  	<Content Include="$(PROTOBUF_ROOT)\protobuf_x86-windows\bin\libprotobuf.dll">
+  		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  		<Visible>false</Visible>
+  	</Content>
+  	<Content Include="$(PROTOBUF_ROOT)\protobuf_x86-windows\bin\libprotobuf.pdb">
+  		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  		<Visible>false</Visible>
+  	</Content>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  	<Content Include="$(PROTOBUF_ROOT)\protobuf_x64-windows\bin\libprotobuf.dll">
+  		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  		<Visible>false</Visible>
+  	</Content>
+  	<Content Include="$(PROTOBUF_ROOT)\protobuf_x64-windows\bin\libprotobuf.pdb">
+  		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  		<Visible>false</Visible>
+  	</Content>
+  </ItemGroup>
 </Project>

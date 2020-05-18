@@ -1,6 +1,6 @@
 #include "ofxRTLSPostprocessor.h"
 
-#ifdef RTLS_ENABLE_POSTPROCESS
+#ifdef RTLS_POSTPROCESS
 
 // --------------------------------------------------------------
 ofxRTLSPostprocessor::ofxRTLSPostprocessor() {

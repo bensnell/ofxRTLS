@@ -6,7 +6,7 @@
 #include "Trackable.pb.h"
 using namespace RTLSProtocol;
 
-#ifdef RTLS_ENABLE_POSTPROCESS
+#ifdef RTLS_POSTPROCESS
 
 #include "IDDictionary.h"
 #include "ofxFDeep.h"

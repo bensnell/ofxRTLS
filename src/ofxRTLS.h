@@ -1,8 +1,8 @@
 #pragma once
 
-#if !defined(RTLS_OPENVR) && !defined(RTLS_MOTIVE)
-#error "ofxRTLS: Please add one of the following definitions to your project RTLS_OPENVR, RTLS_MOTIVE"
-#endif
+//#if !defined(RTLS_OPENVR) && !defined(RTLS_MOTIVE)
+//#error "ofxRTLS: Please add one of the following definitions to your project RTLS_OPENVR, RTLS_MOTIVE"
+//#endif
 
 #include "ofMain.h"
 #include "ofxRemoteUIServer.h"
@@ -16,8 +16,11 @@ using namespace RTLSProtocol;
 #ifdef RTLS_MOTIVE
 #include "ofxMotive.h"
 #endif
+#ifdef RTLS_NULL
+#include "ofxRTLSNullSystem.h"
+#endif
 
-#ifdef RTLS_ENABLE_POSTPROCESS
+#ifdef RTLS_POSTPROCESS
 #include "ofxRTLSPostprocessor.h"
 #endif
 
@@ -39,29 +42,41 @@ public:
 
 	void exit();
 
-	bool isConnected();
+	int isConnected();
 	bool isReceivingData();
 	float getFPS() { return dataFPS; }
 
 	// Event that occurs when new data is received
 	ofEvent< ofxRTLSEventArgs > newFrameReceived;
 
-#ifdef RTLS_OPENVR
-	ofxOpenVRTracker vive;
-	void openvrDataReceived(ofxOpenVRTrackerEventArgs& args);
+#ifdef RTLS_NULL
+	ofxRTLSNullSystem nsys;
+	void nsysDataReceived(NullSystemEventArgs& args);
+	uint64_t nsysFrameID = 0;
 
-#ifdef RTLS_ENABLE_POSTPROCESS
-	ofxRTLSPostprocessor tPost; // tracker postprocessor
+#ifdef RTLS_POSTPROCESS
+	ofxRTLSPostProcessor nsysPostM;
+#endif
+#endif
+
+#ifdef RTLS_OPENVR
+	ofxOpenVRTracker openvr;
+	void openvrDataReceived(ofxOpenVRTrackerEventArgs& args);
+	uint64_t openvrFrameID = 0; 
+
+#ifdef RTLS_POSTPROCESS
+	ofxRTLSPostprocessor openvrPostM; // marker postprocessor
 #endif
 #endif
 
 #ifdef RTLS_MOTIVE
 	ofxMotive motive;
 	void motiveDataReceived(MotiveEventArgs& args);
+	uint64_t motiveFrameID = 0; // increment for every packet sent
 
-#ifdef RTLS_ENABLE_POSTPROCESS
-	ofxRTLSPostprocessor mPost;	// marker postprocessor
-	ofxRTLSPostprocessor cPost;	// camera postprocessor
+#ifdef RTLS_POSTPROCESS
+	ofxRTLSPostprocessor motivePostM;	// marker postprocessor
+	ofxRTLSPostprocessor motivePostR;	// reference (camera) postprocessor
 #endif
 
 	bool bSendCameraData = true;
@@ -74,16 +89,11 @@ private:
 	void threadedFunction();
 
 	// last time a packet of data was received
-	bool bReceivingData = false;
+	atomic<bool> bReceivingData = false;
 	uint64_t lastReceive = 0;
 	int stopGap = 100; // number of milliseconds before we decide no data is being received
 
 	// Contains timestamps at which data was received in the last second
 	queue<uint64_t> dataTimestamps;
 	float dataFPS = 0.0;
-	
-	// Frame ID
-	// Increment for each new packet of data sent.
-	uint64_t frameID = 0;
-
 };

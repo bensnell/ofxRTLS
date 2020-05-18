@@ -50,23 +50,42 @@ First, make sure you have properly installed all of the dependencies; there are 
 
 ### Setup
 
-1. Include the relative path to `ofxRTLS` in your *addons.make* file, as usual. Regenerate your project files using OpenFrameworks' ProjectGenerator.
+1. Include the relative path to `ofxRTLS` in your *addons.make* file, as usual. However, <u>do not</u> include the path to `ofxMotive` or `ofxOpenVRTracker` in your *addons.make* file. Then, regenerate your project files using OpenFrameworks' ProjectGenerator.
 
-2. In Visual Studios, in the *Property Manager*, right click your entire project and select *Add Existing Property Sheet...*. Then, choose the appropriate sheet. Available property sheets are listed below and included in the *ofxRTLS* directory. 
+   *Note: If you plan on using any of the postprocessing options, include all of the Postprocessing-dependent addons defined above to the addons.make file.*
 
-   *Note: If your application directly interfaces with a tracking system, choose the corresponding sheet `RTLS_[SYSTEM].props`. If your application does not directly interface with a tracking system, but instead receives data in the protobuf format, use the `Protobuf.props` sheet instead.*
+2. In Visual Studios, in the *Property Manager*, right click your entire project and select *Add Existing Property Sheet...*. Then, choose `ofxRTLS.props`. <u>Do not</u> include any other RTLS-related property sheets.
 
-   *Note: Only one of these property sheets may be added to a project. Each application that uses ofxRTLS may only directly interface with a single tracking system. For example, to interface with both Motive and OpenVR, two applications would be needed.*
+   *If your application does not directly interface with a tracking system, but instead receives data in the protobuf format, use only the `Protobuf.props` sheet instead.*
 
-| Property Sheet      | Tracking System        | Supported <br />Configuration | Supported <br />Platform | Notes                                                        |
-| ------------------- | ---------------------- | ----------------------------- | ------------------------ | ------------------------------------------------------------ |
-| `RTLS_MOTIVE.props` | Motive (Optitrack)     | Release, Debug                | x64                      | 32-bit (x86) is not supported by Motive.<br />This uses Motive v2.2.0 |
-| `RTLS_OPENVR.props` | OpenVR (e.g. HTC Vive) | Release, Debug                | x64 (x86?)               |                                                              |
-| `Protobuf.props`    | None                   | Release, Debug                | x64, x86                 |                                                              |
+3. Instruct RTLS to build the tracking systems of your choice by passing the appropriate properties to MSBuild. Currently available tracking systems and their corresponding properties include those listed below. Tracking systems whose property equals `true` will be built. If a property equals `false`, it will not be built. Multiple systems can be built at once. If no systems are defined, ofxRTLS defaults to the Null System. Available systems include:
 
-3. In your project *Properties* window, under *Configuration Properties  > C/C++ > Preprocessor > Preprocessor Definitions*, select *Edit* from the dropdown menu on the right and at the bottom of the window, check the box that says *Inherit from parent or project defaults*.
+  | Tracking System          | Visual Studio Property | Supported <br />Platform | Notes                                                        |
+  | ------------------------ | ---------------------- | ------------------------ | ------------------------------------------------------------ |
+  | Optitrack Motive Tracker | RTLS_MOTIVE = true     | x64                      | 32-bit (x86) is not supported by Motive.<br />This uses Motive v2.2.0 |
+  | OpenVR (e.g. HTC Vive)   | RTLS_OPENVR = true     | x64 (x86?)               |                                                              |
+  | Null System              | RTLS_NULL = true       | x64, x86                 | This system exports fake data.                               |
 
-4. If you plan on using any of the postprocessing options, pass the macro `RTLS_ENABLE_POSTPROCESS` in the Project Properties' *Preprocessor Definitions*.
+  There are many ways to set a property in a Visual Studio project. It is important that this property must be defined before property sheets are imported in the project. The easiest way to add a property is to open up your **.vcxproj* file and add the following lines below (following XML structure) before property sheets are imported:
+
+  ```xml
+  <PropertyGroup>
+      <!-- Instruct RTLS to build support for ofxMotive: -->
+      <RTLS_MOTIVE>true</RTLS_MOTIVE>
+  </PropertyGroup>
+  ```
+
+4. In your project *Properties* window, under *Configuration Properties  > C/C++ > Preprocessor > Preprocessor Definitions*, select *Edit* from the dropdown menu on the right and at the bottom of the window, check the box that says *Inherit from parent or project defaults*.
+
+5. If you plan on using any of the postprocessing options (and have already included the appropriate addons according to the instructions in Step 1), pass the macro `RTLS_POSTPROCESS` in the Project Properties' *Preprocessor Definitions* <u>or</u> define `<RTLS_POSTPROCESS>true</RTLS_POSTPROCESS>` in **.vcproj* as above.
+
+This approach to building ofxRTLS using defined properties allows TeamCity to build any configuration without regenerating project files, by passing different options to the compiler like so:
+
+```bash
+/p:RTLS_MOTIVE="true"
+```
+
+
 
 ### Usage
 

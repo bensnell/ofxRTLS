@@ -24,7 +24,8 @@ meta:
 common:
 	# dependencies with other addons, a list of them separated by spaces 
 	# or use += in several lines
-	# ADDON_DEPENDENCIES =
+	# ADDON_DEPENDENCIES += $(OF_ROOT)/../ExternalAddons/ofxMotive
+	# ADDON_DEPENDENCIES += $(OF_ROOT)/../ExternalAddons/ofxOpenVRTracker
 	
 	# include search paths, this will be usually parsed from the file system
 	# but if the addon or addon libraries need special search paths they can be

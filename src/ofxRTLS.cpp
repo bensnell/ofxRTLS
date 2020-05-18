@@ -17,19 +17,28 @@ void ofxRTLS::setup() {
 	// Setup general RTLS params
 	//RUI_NEW_GROUP("ofxRTLS");
 	
+#ifdef RTLS_NULL
+	// Setup params
+	nsys.setup();
+	// Add listener for new data
+	ofAddListener(nsys.newDataReceived, this, &ofxRTLS::nsysDataReceived);
+	
+#ifdef RTLS_POSTPROCESS
+	nsysPostM.setup("NullSysMarkers", "NM");
+#endif
+#endif
+
 #ifdef RTLS_OPENVR
-	
 	// Add listeners for new data
-	ofAddListener(vive.newDataReceived, this, &ofxRTLS::openvrDataReceived);
+	ofAddListener(openvr.newDataReceived, this, &ofxRTLS::openvrDataReceived);
 	
-#ifdef RTLS_ENABLE_POSTPROCESS
+#ifdef RTLS_POSTPROCESS
 	// Setup the postprocessor
-	tPost.setup("ViveTrackers", "T");
+	openvrPostM.setup("OpenVRMarkers", "OM");
+#endif
 #endif
 
-#endif
 #ifdef RTLS_MOTIVE
-
 	// Setup parameters for Motive
 	motive.setupParams();
 
@@ -41,13 +50,12 @@ void ofxRTLS::setup() {
 	// Add listeners for new data
 	ofAddListener(motive.newDataReceived, this, &ofxRTLS::motiveDataReceived);
 
-#ifdef RTLS_ENABLE_POSTPROCESS
+#ifdef RTLS_POSTPROCESS
 	// Setup the postprocessors
-	mPost.setup("MotiveMarkers", "M", "id-dictionary.json", 
+	motivePostM.setup("MotiveMarkers", "MM", "id-dictionary.json", 
 		"age,axes,kalman,easing,add-rate,continuity,easing");
-	cPost.setup("MotiveCameras", "C", "", "axes");
+	motivePostR.setup("MotiveRef", "MR", "", "axes");
 #endif
-
 #endif
 
 	// Set target frame rate
@@ -59,8 +67,11 @@ void ofxRTLS::setup() {
 // --------------------------------------------------------------
 void ofxRTLS::start() {
 	// Start communications with the trackers
+#ifdef RTLS_NULL
+	nsys.start();
+#endif
 #ifdef RTLS_OPENVR
-	vive.connect();
+	openvr.connect();
 #endif
 #ifdef RTLS_MOTIVE
 	motive.start();
@@ -70,8 +81,11 @@ void ofxRTLS::start() {
 // --------------------------------------------------------------
 void ofxRTLS::stop() {
 	// Stop communication with the trackers
+#ifdef RTLS_NULL
+	nsys.stop();
+#endif
 #ifdef RTLS_OPENVR
-	vive.disconnect();
+	openvr.disconnect();
 #endif
 #ifdef RTLS_MOTIVE
 	motive.stop();
@@ -95,8 +109,8 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 
 	// Send each identified marker
 	ofxRTLSEventArgs mOutArgs;
-	mOutArgs.frame.set_context("m"); // 'm' for marker
-	mOutArgs.frame.set_frame_id(frameID);
+	mOutArgs.frame.set_context("motive_m"); // 'm' for marker
+	mOutArgs.frame.set_frame_id(motiveFrameID);
 	mOutArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
 
 	for (int i = 0; i < args.markers.size(); i++) {
@@ -114,9 +128,9 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 		position->set_z(args.markers[i].position.z);
 	}
 
-#ifdef RTLS_ENABLE_POSTPROCESS
+#ifdef RTLS_POSTPROCESS
 	// Post-process the data, then send it out when ready
-	mPost.processAndSend(mOutArgs, newFrameReceived);
+	motivePostM.processAndSend(mOutArgs, newFrameReceived);
 #else
 	// Send out the data immediately
 	ofNotifyEvent(newFrameReceived, mOutArgs);
@@ -132,8 +146,8 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 		lastSendTime = thisTime;
 
 		ofxRTLSEventArgs cOutArgs;
-		cOutArgs.frame.set_context("c"); // 'c' for camera
-		cOutArgs.frame.set_frame_id(frameID);
+		cOutArgs.frame.set_context("motive_r"); // 'r' for reference camera
+		cOutArgs.frame.set_frame_id(motiveFrameID);
 		cOutArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
 
 		// Add all cameras (after postprocessing)
@@ -153,16 +167,16 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 			orientation->set_z(args.cameras[i].orientation.z);
 		}
 
-#ifdef RTLS_ENABLE_POSTPROCESS
+#ifdef RTLS_POSTPROCESS
 		// Post-process the data, then send it out when ready
-		cPost.processAndSend(cOutArgs, newFrameReceived);
+		motivePostR.processAndSend(cOutArgs, newFrameReceived);
 #else
 		// Send out camera data immediately
 		ofNotifyEvent(newFrameReceived, cOutArgs);
 #endif
 	}
 	
-	frameID++;
+	motiveFrameID++;
 }
 
 #endif
@@ -183,7 +197,8 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 	// ==============================================
 
 	ofxRTLSEventArgs outArgs;
-	outArgs.frame.set_frame_id(frameID);
+	outArgs.frame.set_context("openvr_m");
+	outArgs.frame.set_frame_id(openvrFrameID);
 	outArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
 
 	for (int i = 0; i < (*args.devices->getTrackers()).size(); i++) {
@@ -204,15 +219,58 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 		}
 	}
 
-#ifdef RTLS_ENABLE_POSTPROCESS
+#ifdef RTLS_POSTPROCESS
 	// Post-process the data, then send it out when ready
-	tPost.processAndSend(outArgs, newFrameReceived);
+	openvrPostM.processAndSend(outArgs, newFrameReceived);
 #else
 	// Send out data immediately
 	ofNotifyEvent(newFrameReceived, outArgs);
 #endif
 
-	frameID++;
+	openvrFrameID++;
+}
+
+#endif
+
+// --------------------------------------------------------------
+#ifdef RTLS_NULL
+
+void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
+
+	lastReceive = ofGetElapsedTimeMillis();
+	mutex.lock();
+	dataTimestamps.push(lastReceive);
+	mutex.unlock();
+
+	// ==============================================
+	// Fake Data
+	// Send every frame
+	// ==============================================
+
+	ofxRTLSEventArgs outArgs;
+	outArgs.frame.set_context("null_m");	// 'm' for marker
+	outArgs.frame.set_frame_id(nsysFrameID);
+	outArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
+
+	for (int i = 0; i < args.markers.size(); i++) {
+
+		Trackable* trackable = outArgs.frame.add_trackables();
+		trackable->set_id(i);
+		Trackable::Position* position = trackable->mutable_position();
+		position->set_x(args.markers[i].x);
+		position->set_y(args.markers[i].y);
+		position->set_z(args.markers[i].z);
+	}
+
+#ifdef RTLS_POSTPROCESS
+	// Post-process the data, then send it out when ready
+	nsysPostM.processAndSend(outArgs, newFrameReceived);
+#else
+	// Send out data immediately
+	ofNotifyEvent(newFrameReceived, outArgs);
+#endif
+
+	nsysFrameID++;
 }
 
 #endif
@@ -243,34 +301,46 @@ void ofxRTLS::threadedFunction() {
 // --------------------------------------------------------------
 void ofxRTLS::exit() {
 
+#ifdef RTLS_NULL
+#ifdef RTLS_POSTPROCESS
+	nsysPostM.exit();
+#endif
+	ofRemoveListener(nsys.newDataReceived, this, &ofxRTLS::nsysDataReceived);
+	nsys.stop();
+#endif
 #ifdef RTLS_OPENVR
-#ifdef RTLS_ENABLE_POSTPROCESS
-	tPost.exit();
+#ifdef RTLS_POSTPROCESS
+	openvrPostM.exit();
 #endif
 	// Remove listener for new device data
-	ofRemoveListener(vive.newDataReceived, this, &ofxRTLS::openvrDataReceived);
-	vive.exit();
+	ofRemoveListener(openvr.newDataReceived, this, &ofxRTLS::openvrDataReceived);
+	openvr.exit();
 #endif
 #ifdef RTLS_MOTIVE
-#ifdef RTLS_ENABLE_POSTPROCESS
-	mPost.exit();
-	cPost.exit();
+#ifdef RTLS_POSTPROCESS
+	motivePostM.exit();
+	motivePostR.exit();
 #endif
 	ofRemoveListener(motive.newDataReceived, this, &ofxRTLS::motiveDataReceived);
 #endif
 }
 
 // --------------------------------------------------------------
-bool ofxRTLS::isConnected() {
+int ofxRTLS::isConnected() {
 
+	int nConnections = 0;
+
+#ifdef RTLS_NULL
+	nConnections += int(nsys.isConnected());
+#endif
 #ifdef RTLS_OPENVR
-	return vive.isConnected();
+	nConnections += int(openvr.isConnected());
 #endif
 #ifdef RTLS_MOTIVE
-	return motive.isConnected();
+	nConnections += int(motive.isConnected());
 #endif
 
-	return false;
+	return nConnections;
 }
 
 // --------------------------------------------------------------
