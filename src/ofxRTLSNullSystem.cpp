@@ -41,35 +41,40 @@ void ofxRTLSNullSystem::threadedFunction() {
 
 	while (isThreadRunning()) {
 
-		uint64_t thisTime = ofGetElapsedTimeMillis();
-		if (float(thisTime - lastTime) >= (1000.0 / fps)) {
-			lastTime = thisTime;
+		if (bSendFakeData) {
+			uint64_t thisTime = ofGetElapsedTimeMillis();
+			if (float(thisTime - lastTime) >= (1000.0 / fps)) {
+				lastTime = thisTime;
 
-			// Export data
-			int lastSize = points.size();
-			int thisSize = nPoints;
-			if (lastSize != thisSize) {
-				points.resize(thisSize);
-				for (int i = lastSize; i < thisSize; i++) {
-					points[i] = glm::vec3(ofRandom(1), ofRandom(1), ofRandom(1));
+				// Export data
+				int lastSize = points.size();
+				int thisSize = nPoints;
+				if (lastSize != thisSize) {
+					points.resize(thisSize);
+					for (int i = lastSize; i < thisSize; i++) {
+						points[i] = glm::vec3(ofRandom(1), ofRandom(1), ofRandom(1));
+					}
 				}
+
+				// Update all points
+				for (int i = 0; i < points.size(); i++) {
+					points[i] += glm::vec3(ofRandom(-0.1, 0.1), ofRandom(-0.1, 0.1), ofRandom(-0.1, 0.1));
+
+				}
+
+				NullSystemEventArgs args;
+				args.markers = points;
+				ofNotifyEvent(newDataReceived, args);
+
+				// Sleep for a bit
+				sleep(int(floor(1000.0 / fps * 0.99)));
 			}
-
-			// Update all points
-			for (int i = 0; i < points.size(); i++) {
-				points[i] += glm::vec3(ofRandom(-0.1, 0.1), ofRandom(-0.1, 0.1), ofRandom(-0.1, 0.1));
-
+			else {
+				sleep(1);
 			}
-
-			NullSystemEventArgs args;
-			args.markers = points;
-			ofNotifyEvent(newDataReceived, args);
-
-			// Sleep for a bit
-			sleep(int(floor(1000.0 / fps * 0.99)));
 		}
 		else {
-			sleep(1);
+			sleep(1000);
 		}
 	}
 }

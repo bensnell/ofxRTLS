@@ -79,10 +79,10 @@ First, make sure you have properly installed all of the dependencies; there are 
 
 5. If you plan on using any of the postprocessing options (and have already included the appropriate addons according to the instructions in Step 1), pass the macro `RTLS_POSTPROCESS` in the Project Properties' *Preprocessor Definitions* <u>or</u> define `<RTLS_POSTPROCESS>true</RTLS_POSTPROCESS>` in **.vcproj* as above.
 
-This approach to building ofxRTLS using defined properties allows TeamCity to build any configuration without regenerating project files, by passing different options to the compiler like so:
+This approach to building ofxRTLS using defined properties allows TeamCity to build any configuration without regenerating project files, by passing different options to the compiler on the command line like so:
 
 ```bash
-/p:RTLS_MOTIVE="true"
+-p:RTLS_MOTIVE=true
 ```
 
 
@@ -111,14 +111,17 @@ Finally, implement your handler, e.g.:
 
 Take a look at the examples for a more in-depth look at using ofxRTLS with ofxMotive and ofxOpenVRTracker.
 
+The data exported over the RTLS-protocol protobuf format is detailed [here](https://github.com/local-projects/rtls-protocol). However, the context field will also contain useful information about the data's source. A trackable's `context` field will be a json string. When parsed, this json object possess the following information in key-value pairs:
+
+| Key              | Possible Values (one of the following)                       |
+| ---------------- | ------------------------------------------------------------ |
+| `s` for "system" | `0` for Null System<br />`1` for OpenVR<br />`2` for Motive  |
+| `t` for "type"   | `0` for markers (tracked objects)<br />`1` for reference (cameras, base stations, etc.) |
+
+ 
+
 ## Examples
-There are examples for Motive and for OpenVR. When possible, another example has been provided with postprocessing enabled. The only differences between the examples include:
-
-- The Property Sheet included, either `RTLS_MOTIVE.props` or `RTLS_OPENVR.props`
-- The Addons included in `addons.make`
-- The definition of `RTLS_ENABLE_POSTPROCESS`
-
-To run the examples, follow the specific setup instructions for whichever addon you are using, then run.
+Examples have been provided with and without postprocessing. Following Setup Step 3 above to change the example's tracking system.
 
 
 ## Troubleshooting

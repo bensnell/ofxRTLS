@@ -93,9 +93,9 @@ void ofxRTLS::stop() {
 }
 
 // --------------------------------------------------------------
-#ifdef RTLS_MOTIVE
+#ifdef RTLS_NULL
 
-void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
+void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
 
 	lastReceive = ofGetElapsedTimeMillis();
 	mutex.lock();
@@ -103,80 +103,38 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 	mutex.unlock();
 
 	// ==============================================
-	// Marker Trackables
+	// Fake Data
 	// Send every frame
 	// ==============================================
 
-	// Send each identified marker
-	ofxRTLSEventArgs mOutArgs;
-	mOutArgs.frame.set_context("motive_m"); // 'm' for marker
-	mOutArgs.frame.set_frame_id(motiveFrameID);
-	mOutArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
+	ofJson js;
+	js["s"] = "0"; // system = motive
+	js["t"] = "0"; // type = marker
+
+	ofxRTLSEventArgs outArgs;
+	outArgs.frame.set_context(js.dump());
+	outArgs.frame.set_frame_id(nsysFrameID);
+	outArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
 
 	for (int i = 0; i < args.markers.size(); i++) {
 
-		Trackable* trackable = mOutArgs.frame.add_trackables();
-		char byte_array[16];
-		((uint64_t*)byte_array)[0] = args.markers[i].cuid.LowBits();
-		((uint64_t*)byte_array)[1] = args.markers[i].cuid.HighBits();
-		trackable->set_cuid(byte_array, 16);
-		// Set the ID (-1 for passive, >=0 for active)
-		trackable->set_id(getActiveMarkerID(args.markers[i].cuid));
+		Trackable* trackable = outArgs.frame.add_trackables();
+		trackable->set_id(i);
 		Trackable::Position* position = trackable->mutable_position();
-		position->set_x(args.markers[i].position.x);
-		position->set_y(args.markers[i].position.y);
-		position->set_z(args.markers[i].position.z);
+		position->set_x(args.markers[i].x);
+		position->set_y(args.markers[i].y);
+		position->set_z(args.markers[i].z);
 	}
 
 #ifdef RTLS_POSTPROCESS
 	// Post-process the data, then send it out when ready
-	motivePostM.processAndSend(mOutArgs, newFrameReceived);
+	nsysPostM.processAndSend(outArgs, newFrameReceived);
 #else
-	// Send out the data immediately
-	ofNotifyEvent(newFrameReceived, mOutArgs);
+	// Send out data immediately
+	ofNotifyEvent(newFrameReceived, outArgs);
 #endif
 
-	// ==============================================
-	// Camera Trackables
-	// Send with specified period.
-	// ==============================================
-
-	uint64_t thisTime = ofGetElapsedTimeMillis();
-	if (bSendCameraData && ((lastSendTime == 0) || (thisTime - lastSendTime >= cameraDataFrequency*1000.0))) {
-		lastSendTime = thisTime;
-
-		ofxRTLSEventArgs cOutArgs;
-		cOutArgs.frame.set_context("motive_r"); // 'r' for reference camera
-		cOutArgs.frame.set_frame_id(motiveFrameID);
-		cOutArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
-
-		// Add all cameras (after postprocessing)
-		for (int i = 0; i < args.cameras.size(); i++) {
-
-			Trackable* trackable = cOutArgs.frame.add_trackables();
-			trackable->set_id(args.cameras[i].ID);
-			trackable->set_cuid(ofToString(args.cameras[i].serial));
-			Trackable::Position* position = trackable->mutable_position();
-			position->set_x(args.cameras[i].position.x);
-			position->set_y(args.cameras[i].position.y);
-			position->set_z(args.cameras[i].position.z);
-			Trackable::Orientation* orientation = trackable->mutable_orientation();
-			orientation->set_w(args.cameras[i].orientation.w);
-			orientation->set_x(args.cameras[i].orientation.x);
-			orientation->set_y(args.cameras[i].orientation.y);
-			orientation->set_z(args.cameras[i].orientation.z);
-		}
-
-#ifdef RTLS_POSTPROCESS
-		// Post-process the data, then send it out when ready
-		motivePostR.processAndSend(cOutArgs, newFrameReceived);
-#else
-		// Send out camera data immediately
-		ofNotifyEvent(newFrameReceived, cOutArgs);
-#endif
-	}
-	
-	motiveFrameID++;
+	nsysFrameID++;
 }
 
 #endif
@@ -196,8 +154,12 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 	// Send every frame
 	// ==============================================
 
+	ofJson js;
+	js["s"] = "1"; // system = openvr
+	js["t"] = "0"; // type = marker
+
 	ofxRTLSEventArgs outArgs;
-	outArgs.frame.set_context("openvr_m");
+	outArgs.frame.set_context(js.dump());
 	outArgs.frame.set_frame_id(openvrFrameID);
 	outArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
 
@@ -233,9 +195,9 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 #endif
 
 // --------------------------------------------------------------
-#ifdef RTLS_NULL
+#ifdef RTLS_MOTIVE
 
-void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
+void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 
 	lastReceive = ofGetElapsedTimeMillis();
 	mutex.lock();
@@ -243,36 +205,89 @@ void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
 	mutex.unlock();
 
 	// ==============================================
-	// Fake Data
+	// Marker Trackables
 	// Send every frame
 	// ==============================================
 
-	ofxRTLSEventArgs outArgs;
-	outArgs.frame.set_context("null_m");	// 'm' for marker
-	outArgs.frame.set_frame_id(nsysFrameID);
-	outArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
+	ofJson js;
+	js["s"] = "2"; // system = motive
+	js["t"] = "0"; // type = marker
+
+	// Send each identified marker
+	ofxRTLSEventArgs mOutArgs;
+	mOutArgs.frame.set_context(js.dump());
+	mOutArgs.frame.set_frame_id(motiveFrameID);
+	mOutArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
 
 	for (int i = 0; i < args.markers.size(); i++) {
 
-		Trackable* trackable = outArgs.frame.add_trackables();
-		trackable->set_id(i);
+		Trackable* trackable = mOutArgs.frame.add_trackables();
+		char byte_array[16];
+		((uint64_t*)byte_array)[0] = args.markers[i].cuid.LowBits();
+		((uint64_t*)byte_array)[1] = args.markers[i].cuid.HighBits();
+		trackable->set_cuid(byte_array, 16);
+		// Set the ID (-1 for passive, >=0 for active)
+		trackable->set_id(getActiveMarkerID(args.markers[i].cuid));
 		Trackable::Position* position = trackable->mutable_position();
-		position->set_x(args.markers[i].x);
-		position->set_y(args.markers[i].y);
-		position->set_z(args.markers[i].z);
+		position->set_x(args.markers[i].position.x);
+		position->set_y(args.markers[i].position.y);
+		position->set_z(args.markers[i].position.z);
 	}
 
 #ifdef RTLS_POSTPROCESS
 	// Post-process the data, then send it out when ready
-	nsysPostM.processAndSend(outArgs, newFrameReceived);
+	motivePostM.processAndSend(mOutArgs, newFrameReceived);
 #else
-	// Send out data immediately
-	ofNotifyEvent(newFrameReceived, outArgs);
+	// Send out the data immediately
+	ofNotifyEvent(newFrameReceived, mOutArgs);
 #endif
 
-	nsysFrameID++;
-}
+	// ==============================================
+	// Camera Trackables
+	// Send with specified period.
+	// ==============================================
 
+	uint64_t thisTime = ofGetElapsedTimeMillis();
+	if (bSendCameraData && ((lastSendTime == 0) || (thisTime - lastSendTime >= cameraDataFrequency*1000.0))) {
+		lastSendTime = thisTime;
+
+		ofJson js;
+		js["s"] = "2"; // system = motive
+		js["t"] = "1"; // type = reference
+
+		ofxRTLSEventArgs cOutArgs;
+		cOutArgs.frame.set_context(js.dump());
+		cOutArgs.frame.set_frame_id(motiveFrameID);
+		cOutArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
+
+		// Add all cameras (after postprocessing)
+		for (int i = 0; i < args.cameras.size(); i++) {
+
+			Trackable* trackable = cOutArgs.frame.add_trackables();
+			trackable->set_id(args.cameras[i].ID);
+			trackable->set_cuid(ofToString(args.cameras[i].serial));
+			Trackable::Position* position = trackable->mutable_position();
+			position->set_x(args.cameras[i].position.x);
+			position->set_y(args.cameras[i].position.y);
+			position->set_z(args.cameras[i].position.z);
+			Trackable::Orientation* orientation = trackable->mutable_orientation();
+			orientation->set_w(args.cameras[i].orientation.w);
+			orientation->set_x(args.cameras[i].orientation.x);
+			orientation->set_y(args.cameras[i].orientation.y);
+			orientation->set_z(args.cameras[i].orientation.z);
+		}
+
+#ifdef RTLS_POSTPROCESS
+		// Post-process the data, then send it out when ready
+		motivePostR.processAndSend(cOutArgs, newFrameReceived);
+#else
+		// Send out camera data immediately
+		ofNotifyEvent(newFrameReceived, cOutArgs);
+#endif
+	}
+	
+	motiveFrameID++;
+}
 #endif
 
 // --------------------------------------------------------------

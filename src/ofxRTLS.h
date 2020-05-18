@@ -10,14 +10,14 @@
 #include "Trackable.pb.h"
 using namespace RTLSProtocol;
 
+#ifdef RTLS_NULL
+#include "ofxRTLSNullSystem.h"
+#endif
 #ifdef RTLS_OPENVR
 #include "ofxOpenVRTracker.h"
 #endif
 #ifdef RTLS_MOTIVE
 #include "ofxMotive.h"
-#endif
-#ifdef RTLS_NULL
-#include "ofxRTLSNullSystem.h"
 #endif
 
 #ifdef RTLS_POSTPROCESS
@@ -55,7 +55,7 @@ public:
 	uint64_t nsysFrameID = 0;
 
 #ifdef RTLS_POSTPROCESS
-	ofxRTLSPostProcessor nsysPostM;
+	ofxRTLSPostprocessor nsysPostM;
 #endif
 #endif
 
