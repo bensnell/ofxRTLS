@@ -108,8 +108,8 @@ void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
 	// ==============================================
 
 	ofJson js;
-	js["s"] = "0"; // system = motive
-	js["t"] = "0"; // type = marker
+	js["s"] = 0; // system = motive
+	js["t"] = 0; // type = marker
 
 	ofxRTLSEventArgs outArgs;
 	outArgs.frame.set_context(js.dump());
@@ -155,8 +155,8 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 	// ==============================================
 
 	ofJson js;
-	js["s"] = "1"; // system = openvr
-	js["t"] = "0"; // type = marker
+	js["s"] = 1; // system = openvr
+	js["t"] = 0; // type = marker
 
 	ofxRTLSEventArgs outArgs;
 	outArgs.frame.set_context(js.dump());
@@ -210,8 +210,8 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 	// ==============================================
 
 	ofJson js;
-	js["s"] = "2"; // system = motive
-	js["t"] = "0"; // type = marker
+	js["s"] = 2; // system = motive
+	js["t"] = 0; // type = marker
 
 	// Send each identified marker
 	ofxRTLSEventArgs mOutArgs;
@@ -251,9 +251,10 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 	if (bSendCameraData && ((lastSendTime == 0) || (thisTime - lastSendTime >= cameraDataFrequency*1000.0))) {
 		lastSendTime = thisTime;
 
-		ofJson js;
-		js["s"] = "2"; // system = motive
-		js["t"] = "1"; // type = reference
+		js.clear();
+		js["s"] = 2; // system = motive
+		js["t"] = 1; // type = reference
+		js["m"] = int(args.maybeNeedsCalibration);
 
 		ofxRTLSEventArgs cOutArgs;
 		cOutArgs.frame.set_context(js.dump());
@@ -263,9 +264,13 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 		// Add all cameras (after postprocessing)
 		for (int i = 0; i < args.cameras.size(); i++) {
 
+			js.clear();
+			js["m"] = int(args.cameras[i].maybeNeedsCalibration);
+
 			Trackable* trackable = cOutArgs.frame.add_trackables();
 			trackable->set_id(args.cameras[i].ID);
 			trackable->set_cuid(ofToString(args.cameras[i].serial));
+			trackable->set_context(js.dump());
 			Trackable::Position* position = trackable->mutable_position();
 			position->set_x(args.cameras[i].position.x);
 			position->set_y(args.cameras[i].position.y);

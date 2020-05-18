@@ -60,11 +60,11 @@ First, make sure you have properly installed all of the dependencies; there are 
 
 3. Instruct RTLS to build the tracking systems of your choice by passing the appropriate properties to MSBuild. Currently available tracking systems and their corresponding properties include those listed below. Tracking systems whose property equals `true` will be built. If a property equals `false`, it will not be built. Multiple systems can be built at once. If no systems are defined, ofxRTLS defaults to the Null System. Available systems include:
 
-  | Tracking System          | Visual Studio Property | Supported <br />Platform | Notes                                                        |
-  | ------------------------ | ---------------------- | ------------------------ | ------------------------------------------------------------ |
-  | Optitrack Motive Tracker | RTLS_MOTIVE = true     | x64                      | 32-bit (x86) is not supported by Motive.<br />This uses Motive v2.2.0 |
-  | OpenVR (e.g. HTC Vive)   | RTLS_OPENVR = true     | x64 (x86?)               |                                                              |
-  | Null System              | RTLS_NULL = true       | x64, x86                 | This system exports fake data.                               |
+| Tracking System          | Visual Studio Property | Supported <br />Platform | Notes                                                        |
+| ------------------------ | ---------------------- | ------------------------ | ------------------------------------------------------------ |
+| Optitrack Motive Tracker | RTLS_MOTIVE = true     | x64                      | 32-bit (x86) is not supported by Motive.<br />This uses Motive v2.2.0 |
+| OpenVR (e.g. HTC Vive)   | RTLS_OPENVR = true     | x64 (x86?)               |                                                              |
+| Null System              | RTLS_NULL = true       | x64, x86                 | This system exports fake data.                               |
 
   There are many ways to set a property in a Visual Studio project. It is important that this property must be defined before property sheets are imported in the project. The easiest way to add a property is to open up your **.vcxproj* file and add the following lines below (following XML structure) before property sheets are imported:
 
@@ -113,10 +113,11 @@ Take a look at the examples for a more in-depth look at using ofxRTLS with ofxMo
 
 The data exported over the RTLS-protocol protobuf format is detailed [here](https://github.com/local-projects/rtls-protocol). However, the context field will also contain useful information about the data's source. A trackable's `context` field will be a json string. When parsed, this json object possess the following information in key-value pairs:
 
-| Key              | Possible Values (one of the following)                       |
-| ---------------- | ------------------------------------------------------------ |
-| `s` for "system" | `0` for Null System<br />`1` for OpenVR<br />`2` for Motive  |
-| `t` for "type"   | `0` for markers (tracked objects)<br />`1` for reference (cameras, base stations, etc.) |
+| Key                                 | Possible Values (one of the following)                       |
+| ----------------------------------- | ------------------------------------------------------------ |
+| `s` for "system"                    | `0` for Null System<br />`1` for OpenVR<br />`2` for Motive  |
+| `t` for "type"                      | `0` for markers (tracked objects)<br />`1` for reference (cameras, base stations, etc.) |
+| `m` for "might need re-calibration" | `0` for false (by default)<br />`1` for true                 |
 
  
 
