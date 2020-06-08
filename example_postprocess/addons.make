@@ -7,3 +7,4 @@ ofxXmlSettings
 ../../../ExternalAddons/ofxFDeep
 ../../../ExternalAddons/ofxCv
 ../../../ExternalAddons/ofxFilter
+../../../ExternalAddons/ofxHungarian

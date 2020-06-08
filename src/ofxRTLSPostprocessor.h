@@ -11,6 +11,7 @@ using namespace RTLSProtocol;
 #include "IDDictionary.h"
 #include "ofxFDeep.h"
 #include "ofxFilterGroup.h"
+#include "ofxHungarian.h"
 
 // Locking with Condition Variables, Queues and Mutex follows the 
 // examples set forth here:
@@ -43,11 +44,6 @@ private:
 	string name = "";
 	string abbr = "";
 
-	// Toggles
-	bool bMapIDs = true;
-	bool bRemoveInvalidIDs = true;
-	bool bApplyFilters = true;
-
 	void threadedFunction();
 	std::condition_variable cv;
 	atomic<bool> flagUnlock = false;
@@ -61,17 +57,82 @@ private:
 
 	// Process a data element
 	void _process(RTLSProtocol::TrackableFrame& frame);
+	void _process_mapIDs(RTLSProtocol::TrackableFrame& frame);
+	void _process_removeInvalidIDs(RTLSProtocol::TrackableFrame& frame);
+	void _process_applyHungarian(RTLSProtocol::TrackableFrame& frame);
+	void _process_applyFilters(RTLSProtocol::TrackableFrame& frame);
+	bool bMapIDs = true;
+	bool bRemoveInvalidIDs = true;
+	bool bApplyHungarian = true;
+	bool bApplyFilters = true;
+
+	RTLSProtocol::TrackableFrame lastFrame;
 
 	// Dictionary for mapping IDs
 	IDDictionary dict;
 	string dictPath = "";
 
+	// In order to identify trackables, each trackable must have a unique key.
+	// Note: The trackable ID cannot be zero.
+	// Keys consist of two pieces of information:
+	//	Character 0 ("Prefix"):
+	//		TrackableKeyType
+	enum TrackableKeyType {
+		KEY_INVALID = 0,
+		KEY_ID,			// integer
+		KEY_CUID,		// 16 digit string, representing two uint64_t values
+		KEY_NAME		// string, any length
+	};
+	//	Characters 1+ ("Data"):
+	//		string of variable length that is parsed according to the Prefix
+	// This function will return the key used to track each point.
+	string getTrackableKey(const Trackable& t);
+	// This function will return the type of the key.
+	TrackableKeyType getTrackableKeyType(const Trackable& t);
+	TrackableKeyType getTrackableKeyType(string key);
+	// From a given key, get the raw information that correlates with the type.
+	// For example, if key = "112", then the type is ID and the ID is "12" as a string.
+	string getTrackableKeyData(string key);
+	// Get the English description of this key type
+	string getTrackableKeyTypeDescription(TrackableKeyType keyType);
+	// Reconcile a trackable with its trackable key. Align the trackable's 
+	// internal information so that the key would be correct.
+	bool reconcileTrackableWithKey(Trackable& t, string key);
+
+
+
+
+	// Hungarian Algorithm-related Parameters
+	// Temporary and Permanently Identifiable Fields
+	string tempIDFieldsStr = "cuid";
+	string permIDFieldsStr = "id,name";
+	set<string> tempIDFields;
+	set<string> permIDFields;
+	// Radius of the items (for calculating intersection)
+	// (If items are farther apart then this, no intersection is calculated and 
+	// the item cannot be tracked).
+	float hungarianRadius = 0.1;
+	// How are samples mapped?
+	enum HungarianMapping {
+		TEMPORARY = 0,
+		PERMANENT,
+		TEMPORARY_AND_PERMANENT
+	};
+	HungarianMapping hungarianMappingFrom = TEMPORARY;
+	HungarianMapping hungarianMappingTo = TEMPORARY;
+	bool isIncludedInHungarianMapping(string keyType, HungarianMapping mapping);
+	// These key mappings are the byproduct of the hungarian algorithm, and
+	// should be applied in the step before filtering.
+	map<string, string> keyMappings;
+	// What is the recursion limit of the mappings? (for safety)
+	int keyMappingRecursionLimit = 100;
+
+
+
+
+
 	// Filters for smoothing data, etc.
 	ofxFilterGroup filters;
-	// Filter keys will be:
-	// if frame.ID < 0:		key = ofToString(frame.ID)		variable length (< 16 digits)
-	// else:				key = frame.cuid				16 characters long
-	string getFilterKey(const Trackable& t);
 	// When was the last time filters were culled? (ms)
 	uint64_t lastFilterCullingTime = 0;
 	// What is the period by which filters are culled? (ms)
