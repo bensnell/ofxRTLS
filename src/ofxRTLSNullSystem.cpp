@@ -58,7 +58,7 @@ void ofxRTLSNullSystem::threadedFunction() {
 
 				// Update all points
 				for (int i = 0; i < points.size(); i++) {
-					points[i] += glm::vec3(ofRandom(-0.1, 0.1), ofRandom(-0.1, 0.1), ofRandom(-0.1, 0.1));
+					points[i] += glm::vec3(ofRandom(-0.01, 0.01), ofRandom(-0.01, 0.01), ofRandom(-0.01, 0.01));
 
 				}
 
