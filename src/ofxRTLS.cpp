@@ -226,8 +226,10 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 		((uint64_t*)byte_array)[0] = args.markers[i].cuid.LowBits();
 		((uint64_t*)byte_array)[1] = args.markers[i].cuid.HighBits();
 		trackable->set_cuid(byte_array, 16);
-		// Set the ID (-1 for passive, >=0 for active)
-		trackable->set_id(getActiveMarkerID(args.markers[i].cuid));
+		// If the marker is active, set an ID. If passive, don't set the ID.
+		if (isMarkerActive(args.markers[i].cuid)) {
+			trackable->set_id(getActiveMarkerID(args.markers[i].cuid));
+		}
 		Trackable::Position* position = trackable->mutable_position();
 		position->set_x(args.markers[i].position.x);
 		position->set_y(args.markers[i].position.y);

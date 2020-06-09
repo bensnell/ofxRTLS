@@ -23,6 +23,10 @@ using namespace RTLSProtocol;
 // https://www.modernescpp.com/index.php/c-core-guidelines-be-aware-of-the-traps-of-condition-variables
 // http://jakascorner.com/blog/2016/02/lock_guard-and-unique_lock.html
 
+// Note: The RTLS Protocol by default places zero in empty fields. Therefore,
+// an ID of 0 is not supported by the postprocessor. It will be treated as
+// an invalid value.
+
 class ofxRTLSPostprocessor : public ofThread {
 public:
 
@@ -81,12 +85,14 @@ private:
 		KEY_INVALID = 0,
 		KEY_ID,			// integer
 		KEY_CUID,		// 16 digit string, representing two uint64_t values
-		KEY_NAME		// string, any length
+		KEY_NAME,		// string, any length
+		NUM_KEYS
 	};
 	//	Characters 1+ ("Data"):
 	//		string of variable length that is parsed according to the Prefix
 	// This function will return the key used to track each point.
 	string getTrackableKey(const Trackable& t);
+	string getTrackableKey(const Trackable& t, TrackableKeyType& keyType);
 	// This function will return the type of the key.
 	TrackableKeyType getTrackableKeyType(const Trackable& t);
 	TrackableKeyType getTrackableKeyType(string key);
@@ -104,10 +110,10 @@ private:
 
 	// Hungarian Algorithm-related Parameters
 	// Temporary and Permanently Identifiable Fields
-	string tempIDFieldsStr = "cuid";
-	string permIDFieldsStr = "id,name";
-	set<string> tempIDFields;
-	set<string> permIDFields;
+	string tempKeyTypesStr = "cuid";	// key types that may change per trackable
+	string permKeyTypesStr = "id,name";	// key types that will not change per trackable
+	set<TrackableKeyType> tempKeyTypes;
+	set<TrackableKeyType> permKeyTypes;
 	// Radius of the items (for calculating intersection)
 	// (If items are farther apart then this, no intersection is calculated and 
 	// the item cannot be tracked).
@@ -120,7 +126,7 @@ private:
 	};
 	HungarianMapping hungarianMappingFrom = TEMPORARY;
 	HungarianMapping hungarianMappingTo = TEMPORARY;
-	bool isIncludedInHungarianMapping(string keyType, HungarianMapping mapping);
+	bool isIncludedInHungarianMapping(TrackableKeyType keyType, HungarianMapping mapping);
 	// These key mappings are the byproduct of the hungarian algorithm, and
 	// should be applied in the step before filtering.
 	map<string, string> keyMappings;

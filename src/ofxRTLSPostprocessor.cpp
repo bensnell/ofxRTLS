@@ -33,6 +33,7 @@ void ofxRTLSPostprocessor::setup(string _name, string _abbr, string _dictPath,
 	RUI_NEW_GROUP(ruiGroupFull);
 	RUI_SHARE_PARAM_WCN(ruiGroupAbbr + "- Map IDs", bMapIDs);
 	RUI_SHARE_PARAM_WCN(ruiGroupAbbr + "- Remove Invalid IDs", bRemoveInvalidIDs);
+	RUI_SHARE_PARAM_WCN(ruiGroupAbbr + "- Apply Hungarian", bApplyHungarian);
 	RUI_SHARE_PARAM_WCN(ruiGroupAbbr + "- Apply Filters", bApplyFilters);
 	RUI_SHARE_PARAM_WCN(ruiGroupAbbr + "- ID Dict Path", dictPath);
 	
@@ -41,23 +42,37 @@ void ofxRTLSPostprocessor::setup(string _name, string _abbr, string _dictPath,
 
 	// Setup the hungarian algorithm
 	RUI_NEW_GROUP("Hungarian - " + abbr);
-	RUI_SHARE_PARAM_WCN("HU_RTLS" + abbr + "- Temporary ID Fields", tempIDFieldsStr);
-	RUI_SHARE_PARAM_WCN("HU_RTLS" + abbr + "- Permanent ID Fields", permIDFieldsStr);
+	RUI_SHARE_PARAM_WCN("HU_RTLS" + abbr + "- Temporary ID Fields", tempKeyTypesStr);
+	RUI_SHARE_PARAM_WCN("HU_RTLS" + abbr + "- Permanent ID Fields", permKeyTypesStr);
 	RUI_SHARE_PARAM_WCN("HU_RTLS" + abbr + "- Item Radius", hungarianRadius, 0, 1000000);
 	vector<string> hungarianMappings = { "Temporary", "Permanent", "Both" };
 	RUI_SHARE_ENUM_PARAM_WCN("HU_RTLS" + abbr + "- Mapping From", hungarianMappingFrom, HungarianMapping::TEMPORARY, HungarianMapping::TEMPORARY_AND_PERMANENT, hungarianMappings);
 	RUI_SHARE_ENUM_PARAM_WCN("HU_RTLS" + abbr + "- Mapping To", hungarianMappingTo, HungarianMapping::TEMPORARY, HungarianMapping::TEMPORARY_AND_PERMANENT, hungarianMappings);
-
+	RUI_SHARE_PARAM_WCN("HU_RTLS" + abbr + "- Map Recursion Limit", keyMappingRecursionLimit, 0, 10000);
 
 	// Parse the identifiable fields and create a mapping from the string
 	// type to a more mappable integer index.
 	{
-		vector<string> tmp = ofSplitString(tempIDFieldsStr, ",");
-		for (auto& s : tmp) tempIDFields.insert(s);
+		vector<string> tmp = ofSplitString(tempKeyTypesStr, ",");
+		for (auto& s : tmp) {
+			for (int i = 0; i < NUM_KEYS - 1; i++) {
+				if (s.compare(getTrackableKeyTypeDescription(TrackableKeyType(i))) == 0) {
+					// match
+					tempKeyTypes.insert(TrackableKeyType(i));
+				}
+			}
+		}
 	}
 	{
-		vector<string> tmp = ofSplitString(permIDFieldsStr, ",");
-		for (auto& s : tmp) permIDFields.insert(s);
+		vector<string> tmp = ofSplitString(permKeyTypesStr, ",");
+		for (auto& s : tmp) {
+			for (int i = 0; i < NUM_KEYS - 1; i++) {
+				if (s.compare(getTrackableKeyTypeDescription(TrackableKeyType(i))) == 0) {
+					// match
+					permKeyTypes.insert(TrackableKeyType(i));
+				}
+			}
+		}
 	}
 
 	// Setup the filters
@@ -196,12 +211,12 @@ void ofxRTLSPostprocessor::_process_applyHungarian(RTLSProtocol::TrackableFrame&
 	vector<HungarianSample> fromSamples;
 	for (int i = 0; i < lastFrame.trackables_size(); i++) {
 
-		string keyType = "";
-		getFilterKey(lastFrame.trackables(i), keyType);
+		TrackableKeyType keyType;
+		string key = getTrackableKey(lastFrame.trackables(i), keyType);
 		if (isIncludedInHungarianMapping(keyType, hungarianMappingFrom)) {
 			// Found a sample in the "FROM" set
 			HungarianSample sample;
-			sample.key = keyType;
+			sample.key = key;
 			sample.index = i;
 			sample.position = glm::vec3(
 				lastFrame.trackables(i).position().x(),
@@ -215,13 +230,12 @@ void ofxRTLSPostprocessor::_process_applyHungarian(RTLSProtocol::TrackableFrame&
 	vector<HungarianSample> toSamples;
 	for (int i = 0; i < frame.trackables_size(); i++) {
 
-		string keyType = "";
-		string key = getFilterKey(frame.trackables(i), keyType);
+		TrackableKeyType keyType;
+		string key = getTrackableKey(frame.trackables(i), keyType);
 		if (isIncludedInHungarianMapping(keyType, hungarianMappingTo)) {
 			// Found a sample in the "TO" set
 			HungarianSample sample;
 			sample.key = key;
-			sample.keyType = keyType;
 			sample.index = i;
 			sample.position = glm::vec3(
 				frame.trackables(i).position().x(),
@@ -272,9 +286,14 @@ void ofxRTLSPostprocessor::_process_applyHungarian(RTLSProtocol::TrackableFrame&
 	// ---------------------------------------
 
 	// Apply the mappings to the trackables
+	
+	// Iterate through all TO samples
+	for (auto& sample : toSamples) {
+		if (sample.mapTo < 0) continue; // no mapping found
 
-
-
+		// A Mapping has been found for this trackable. Set the new identifiable information.
+		reconcileTrackableWithKey(*(frame.mutable_trackables(sample.index)), keyMappings[sample.key]);
+	}
 }
 
 // --------------------------------------------------------------
@@ -290,7 +309,7 @@ void ofxRTLSPostprocessor::_process_applyFilters(RTLSProtocol::TrackableFrame& f
 			frame.trackables(i).position().x(),
 			frame.trackables(i).position().y(),
 			frame.trackables(i).position().z());
-		auto* filter = filters.getFilter(getFilterKey(frame.trackables(i)));
+		auto* filter = filters.getFilter(getTrackableKey(frame.trackables(i)));
 		filter->process(position);
 	}
 
@@ -303,7 +322,7 @@ void ofxRTLSPostprocessor::_process_applyFilters(RTLSProtocol::TrackableFrame& f
 	int i = 0;
 	while (i < frame.trackables_size()) {
 		// Check if this trackable's data is invalid.
-		ofxFilter* filter = filters.getFilter(getFilterKey(frame.trackables(i)));
+		ofxFilter* filter = filters.getFilter(getTrackableKey(frame.trackables(i)));
 		if (!filter->isDataValid()) {
 			// If not, delete it
 			frame.mutable_trackables()->SwapElements(i, frame.trackables_size() - 1);
@@ -311,7 +330,7 @@ void ofxRTLSPostprocessor::_process_applyFilters(RTLSProtocol::TrackableFrame& f
 		}
 		else {
 			// Save that this ID has valid data
-			existingDataIDs.insert(getFilterKey(frame.trackables(i)));
+			existingDataIDs.insert(getTrackableKey(frame.trackables(i)));
 
 			// Set this new processed data
 			glm::vec3 data = filter->getPosition();
@@ -327,15 +346,11 @@ void ofxRTLSPostprocessor::_process_applyFilters(RTLSProtocol::TrackableFrame& f
 	for (auto& it : filters.getFilters()) {
 		// Check if this is a new ID and if it has valid data.
 		if (existingDataIDs.find(it.first) == existingDataIDs.end() && it.second->isDataValid()) {
-			// If so, add a trackable with this ID				
+			// If so, add a trackable			
 			Trackable* trackable = frame.add_trackables();
-			if (it.first.size() == 16) {	// cuid
-				trackable->set_id(-1);
-				trackable->set_cuid(it.first);
-			}
-			else if (!it.first.empty()) {	// id
-				trackable->set_id(ofToInt(it.first));
-			}
+			// Set the identifiable information of this trackable
+			reconcileTrackableWithKey(*trackable, it.first);
+			// Set the position
 			Trackable::Position* position = trackable->mutable_position();
 			glm::vec3 data = it.second->getPosition();
 			position->set_x(data.x);
@@ -355,6 +370,13 @@ void ofxRTLSPostprocessor::_process_applyFilters(RTLSProtocol::TrackableFrame& f
 string ofxRTLSPostprocessor::getTrackableKey(const Trackable& t) {
 
 	TrackableKeyType keyType = getTrackableKeyType(t);
+	return getTrackableKey(t, keyType);
+}
+
+// --------------------------------------------------------------
+string ofxRTLSPostprocessor::getTrackableKey(const Trackable& t, TrackableKeyType& keyType) {
+
+	keyType = getTrackableKeyType(t);
 	string prefix = ofToString(int(keyType));
 	string data = "";
 	switch (keyType) {
@@ -380,6 +402,7 @@ ofxRTLSPostprocessor::TrackableKeyType ofxRTLSPostprocessor::getTrackableKeyType
 	if (t.id() > 0) return KEY_ID;
 	if (!t.cuid().empty()) return KEY_CUID;
 	if (!t.name().empty()) return KEY_NAME;
+	// If an ID is 0, it will be marked as invalid.
 	return KEY_INVALID;
 }
 
@@ -445,45 +468,17 @@ bool ofxRTLSPostprocessor::reconcileTrackableWithKey(Trackable& t, string key) {
 }
 
 // --------------------------------------------------------------
-
-
-// --------------------------------------------------------------
-bool ofxRTLSPostprocessor::isIncludedInHungarianMapping(string keyType, HungarianMapping mapping) {
+bool ofxRTLSPostprocessor::isIncludedInHungarianMapping(TrackableKeyType keyType, HungarianMapping mapping) {
 
 	if (mapping == HungarianMapping::TEMPORARY || mapping == HungarianMapping::TEMPORARY_AND_PERMANENT) {
-		if (tempIDFields.find(keyType) != tempIDFields.end()) return true;
+		if (tempKeyTypes.find(keyType) != tempKeyTypes.end()) return true;
 	}
 
 	if (mapping == HungarianMapping::PERMANENT || mapping == HungarianMapping::TEMPORARY_AND_PERMANENT) {
-		if (permIDFields.find(keyType) != permIDFields.end()) return true;
+		if (permKeyTypes.find(keyType) != permKeyTypes.end()) return true;
 	}
 
 	return false;
-}
-
-// --------------------------------------------------------------
-void ofxRTLSPostprocessor::reconcileKeyMapping(Trackable& t) {
-
-	string key = getFilterKey(t);
-	if (keyMappings.find(key) != keyMappings.end()) {
-
-		// Get the key we want to map to
-		key = keyMappings[key];
-
-		// Reconcile the key inside the trackable
-		if (ofToInt(key))
-
-
-	}
-
-
-
-
-}
-
-// --------------------------------------------------------------
-void ofxRTLSPostprocessor::isFilterKeyID() {
-
 }
 
 // --------------------------------------------------------------
