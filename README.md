@@ -10,12 +10,13 @@ This addon also supports optional realtime post-processing of the data. Options 
 - ID re-mappings
 - Smoothing and filtering (easing, kalman)
 - Predictive gap-filling filters (continuity)
+- Hungarian Algorithm
 - etc.
 
 
 ### System Requirements
 
-This requires a Windows 10, x64 computer since Optitrack maintains these requirements.
+This requires a Windows 10, x64 computer if using the Optitrack Motive system.
 
 This has been developed with OpenFrameworks version 0.11.0
 
@@ -43,6 +44,7 @@ If the macro `RTLS_ENABLE_POSTPROCESS` is defined, then ofxRTLS expects a number
 - [ofxCv](https://github.com/local-projects/ofxCv/tree/project/lp.rtls-server) (branch: `project/lp.rtls-server`)
 - [ofxFDeep](https://github.com/local-projects/ofxFDeep/tree/fdeep-v0.12.1-p0) (branch: `fdeep-v0.12.1-p0`)
 - [ofxFilter](https://github.com/local-projects/ofxFilter/tree/master)
+- [ofxHungarian](https://github.com/local-projects/ofxHungarian)
 
 ## How to use this addon with your project
 
@@ -119,7 +121,7 @@ The data exported over the RTLS-protocol protobuf format is detailed [here](http
 | `t` for "type"                      | `0` for markers (tracked objects)<br />`1` for reference (cameras, base stations, etc.) |
 | `m` for "might need re-calibration" | `0` for false (by default)<br />`1` for true                 |
 
- 
+ An `id` of `0` is not allowed, since it is the default field value for the RTLS Protocol protobuf objects. Using 0 may result in unexpected behaviors.
 
 ## Examples
 Examples have been provided with and without postprocessing. Following Setup Step 3 above to change the example's tracking system.
