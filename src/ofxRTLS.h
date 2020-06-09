@@ -49,6 +49,9 @@ public:
 	// Event that occurs when new data is received
 	ofEvent< ofxRTLSEventArgs > newFrameReceived;
 
+	// What systems does this version of RTLS support?
+	string getSupport();
+
 #ifdef RTLS_NULL
 	ofxRTLSNullSystem nsys;
 	void nsysDataReceived(NullSystemEventArgs& args);

@@ -13,6 +13,7 @@ ofxRTLS::~ofxRTLS() {
 
 // --------------------------------------------------------------
 void ofxRTLS::setup() {
+	ofLogNotice("ofxRTLS") << getSupport();
 
 	// Setup general RTLS params
 	//RUI_NEW_GROUP("ofxRTLS");
@@ -371,6 +372,30 @@ bool ofxRTLS::isReceivingData() {
 }
 
 // --------------------------------------------------------------
+string ofxRTLS::getSupport() {
+	string supportStr = "ofxRTLS compiled to support systems { ";
+	string systems = "";
+#ifdef RTLS_NULL
+	systems += "NULL, ";
+#endif
+#ifdef RTLS_OPENVR
+	systems += "OPENVR, ";
+#endif
+#ifdef RTLS_MOTIVE
+	systems += "MOTIVE, ";
+#endif
+	if (systems.empty()) systems = "--";
+	else systems = systems.substr(0, systems.size() - 2);
+	supportStr += systems + " } ";
+	supportStr += "with postprocessing ";
+#ifdef RTLS_POSTPROCESS
+	supportStr += "ON";
+#else
+	supportStr += "OFF";
+#endif
+	supportStr += ".";
+	return supportStr;
+}
 
 // --------------------------------------------------------------
 
