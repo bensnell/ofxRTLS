@@ -104,6 +104,8 @@ private:
 	// Reconcile a trackable with its trackable key. Align the trackable's 
 	// internal information so that the key would be correct.
 	bool reconcileTrackableWithKey(Trackable& t, string key);
+	// Is a trackable unidentifiable (not possessing a valid key)? 
+	bool isTrackableIdentifiable(const Trackable& t);
 
 
 
@@ -132,6 +134,10 @@ private:
 	map<string, string> keyMappings;
 	// What is the recursion limit of the mappings? (for safety)
 	int keyMappingRecursionLimit = 100;
+	// Before solving, should samples with keys that appear in both the FROM and 
+	// TO sets be removed? This likely speeds up the solver by removing superfluous
+	// samples for which there are already matches.
+	bool bRemoveMatchingKeysBeforeSolve = true;
 
 
 

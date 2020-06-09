@@ -49,6 +49,7 @@ void ofxRTLSPostprocessor::setup(string _name, string _abbr, string _dictPath,
 	RUI_SHARE_ENUM_PARAM_WCN("HU_RTLS" + abbr + "- Mapping From", hungarianMappingFrom, HungarianMapping::TEMPORARY, HungarianMapping::TEMPORARY_AND_PERMANENT, hungarianMappings);
 	RUI_SHARE_ENUM_PARAM_WCN("HU_RTLS" + abbr + "- Mapping To", hungarianMappingTo, HungarianMapping::TEMPORARY, HungarianMapping::TEMPORARY_AND_PERMANENT, hungarianMappings);
 	RUI_SHARE_PARAM_WCN("HU_RTLS" + abbr + "- Map Recursion Limit", keyMappingRecursionLimit, 0, 10000);
+	RUI_SHARE_PARAM_WCN("HU_RTLS" + abbr + "- Remove Matching Keys", bRemoveMatchingKeysBeforeSolve);
 
 	// Parse the identifiable fields and create a mapping from the string
 	// type to a more mappable integer index.
@@ -204,8 +205,51 @@ void ofxRTLSPostprocessor::_process_applyHungarian(RTLSProtocol::TrackableFrame&
 	// Use the hungarian algorithm to attempt to identify continuity across samples.
 
 	// ---------------------------------------
-	// ----------- UPDATE MAPPINGS -----------
+	// ------- APPLY EXISTING MAPPINGS -------
 	// ---------------------------------------
+
+	// First, apply existing mappings to the current frame
+	for (int i = 0; i < frame.trackables_size(); i++) {
+		string key = getTrackableKey(frame.trackables(i));
+		if (keyMappings.find(key) != keyMappings.end()) {
+			// found a mapping
+			reconcileTrackableWithKey(*frame.mutable_trackables(i), keyMappings[key]);
+		}
+	}
+
+	// ---------------------------------------
+	// -------- COLLECT SOLVER DATA ----------
+	// ---------------------------------------
+
+	// Remove matching keys if necessary
+	set<string> matchingKeys;
+	if (bRemoveMatchingKeysBeforeSolve) {
+
+		// Collect keys
+		vector<string> fromKeys;
+		for (int i = 0; i < lastFrame.trackables_size(); i++) {
+			fromKeys.push_back(getTrackableKey(lastFrame.trackables(i)));
+		}
+		vector<string> toKeys;
+		for (int i = 0; i < frame.trackables_size(); i++) {
+			toKeys.push_back(getTrackableKey(frame.trackables(i)));
+		}
+
+		// Sort keys
+		sort(fromKeys.begin(), fromKeys.end());
+		sort(toKeys.begin(), toKeys.end());
+
+		// Find the union of both sorted sets
+		vector<string> _matchingKeys(fromKeys.size() + toKeys.size());
+		vector<string>::iterator it;
+		it = set_intersection(fromKeys.begin(), fromKeys.end(), toKeys.begin(), toKeys.end(), _matchingKeys.begin());
+		_matchingKeys.resize(it - _matchingKeys.begin());
+
+		// Place this data in a set for quicker lookup
+		for (auto& s : _matchingKeys) {
+			matchingKeys.insert(s);
+		}
+	}
 
 	// Collect data from the previous frame.
 	vector<HungarianSample> fromSamples;
@@ -213,17 +257,20 @@ void ofxRTLSPostprocessor::_process_applyHungarian(RTLSProtocol::TrackableFrame&
 
 		TrackableKeyType keyType;
 		string key = getTrackableKey(lastFrame.trackables(i), keyType);
-		if (isIncludedInHungarianMapping(keyType, hungarianMappingFrom)) {
-			// Found a sample in the "FROM" set
-			HungarianSample sample;
-			sample.key = key;
-			sample.index = i;
-			sample.position = glm::vec3(
-				lastFrame.trackables(i).position().x(),
-				lastFrame.trackables(i).position().y(),
-				lastFrame.trackables(i).position().z());
-			fromSamples.push_back(sample);
-		}
+
+		// Confirm that this sample should be in the dataset which the solver operates on.
+		if ((bRemoveMatchingKeysBeforeSolve && matchingKeys.find(key) != matchingKeys.end())) continue;
+		if (!isIncludedInHungarianMapping(keyType, hungarianMappingFrom)) continue;
+
+		// Found a sample in the "FROM" set
+		HungarianSample sample;
+		sample.key = key;
+		sample.index = i;
+		sample.position = glm::vec3(
+			lastFrame.trackables(i).position().x(),
+			lastFrame.trackables(i).position().y(),
+			lastFrame.trackables(i).position().z());
+		fromSamples.push_back(sample);
 	}
 
 	// Collect data from the current frame.
@@ -232,21 +279,35 @@ void ofxRTLSPostprocessor::_process_applyHungarian(RTLSProtocol::TrackableFrame&
 
 		TrackableKeyType keyType;
 		string key = getTrackableKey(frame.trackables(i), keyType);
-		if (isIncludedInHungarianMapping(keyType, hungarianMappingTo)) {
-			// Found a sample in the "TO" set
-			HungarianSample sample;
-			sample.key = key;
-			sample.index = i;
-			sample.position = glm::vec3(
-				frame.trackables(i).position().x(),
-				frame.trackables(i).position().y(),
-				frame.trackables(i).position().z());
-			toSamples.push_back(sample);
-		}
+
+		// Confirm that this sample should be in the dataset which the solver operates on.
+		if ((bRemoveMatchingKeysBeforeSolve && matchingKeys.find(key) != matchingKeys.end())) continue;
+		if (!isIncludedInHungarianMapping(keyType, hungarianMappingTo)) continue;
+
+		// Found a sample in the "TO" set
+		HungarianSample sample;
+		sample.key = key;
+		sample.index = i;
+		sample.position = glm::vec3(
+			frame.trackables(i).position().x(),
+			frame.trackables(i).position().y(),
+			frame.trackables(i).position().z());
+		toSamples.push_back(sample);
 	}
+
+	// TODO: Would this work if no IDs were provided?
+	// If a marker is unidentifiable, include it.
+
+	// ---------------------------------------
+	// ------- SOLVE FOR NEW MAPPINGS --------
+	// ---------------------------------------
 
 	// Solve the assignment problem
 	ofxHungarian::solve(fromSamples, toSamples, hungarianRadius);
+
+	// ---------------------------------------
+	// -------- COLLECT NEW MAPPINGS ---------
+	// ---------------------------------------
 
 	// Iterate through all of the TO samples. If the mapped to index is valid, then
 	// this point correlates with a sample from the previous frame.
@@ -254,6 +315,7 @@ void ofxRTLSPostprocessor::_process_applyHungarian(RTLSProtocol::TrackableFrame&
 	// set for which mappings are changed? (e.g. if both mappings are temporary, we are
 	// throwing away a-priori information about permanent, given points that may influence 
 	// the assignment)?
+	vector<HungarianSample*> reconcileToSamples;
 	for (auto& toSample : toSamples) {
 		if (toSample.mapTo < 0) continue;
 
@@ -264,6 +326,9 @@ void ofxRTLSPostprocessor::_process_applyHungarian(RTLSProtocol::TrackableFrame&
 		// FROM ID (which already exists in filters).
 		string newKey = toSample.key;
 		string existingKey = fromSamples[toSample.mapTo].key;
+
+		// If the keys are the same, then skip
+		if (newKey.compare(existingKey) == 0) continue;
 
 		// Check if the existing key is already in the mappings. If so, find the last key
 		// in the chain.
@@ -279,20 +344,22 @@ void ofxRTLSPostprocessor::_process_applyHungarian(RTLSProtocol::TrackableFrame&
 
 		// Set the new key mapping
 		keyMappings[newKey] = existingKey;
+
+		// Save this sample to be reconciled later
+		reconcileToSamples.push_back(&toSample);
 	}
 
 	// ---------------------------------------
-	// ----------- APPLY MAPPINGS ------------
+	// --------- APPLY NEW MAPPINGS ----------
 	// ---------------------------------------
 
 	// Apply the mappings to the trackables
 	
 	// Iterate through all TO samples
-	for (auto& sample : toSamples) {
-		if (sample.mapTo < 0) continue; // no mapping found
+	for (auto sample : reconcileToSamples) {
 
 		// A Mapping has been found for this trackable. Set the new identifiable information.
-		reconcileTrackableWithKey(*(frame.mutable_trackables(sample.index)), keyMappings[sample.key]);
+		reconcileTrackableWithKey(*(frame.mutable_trackables(sample->index)), keyMappings[sample->key]);
 	}
 }
 
@@ -482,6 +549,10 @@ bool ofxRTLSPostprocessor::isIncludedInHungarianMapping(TrackableKeyType keyType
 }
 
 // --------------------------------------------------------------
+bool ofxRTLSPostprocessor::isTrackableIdentifiable(const Trackable& t) {
+
+	return getTrackableKeyType(t) == KEY_INVALID;
+}
 
 // --------------------------------------------------------------
 
