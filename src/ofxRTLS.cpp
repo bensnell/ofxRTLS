@@ -7,24 +7,39 @@ ofxRTLS::ofxRTLS() {
 
 // --------------------------------------------------------------
 ofxRTLS::~ofxRTLS() {
-	stopThread();
+
+	waitForThread(true);
 }
 
 // --------------------------------------------------------------
 void ofxRTLS::setup() {
+	ofLogNotice("ofxRTLS") << getSupport();
 
 	// Setup general RTLS params
 	//RUI_NEW_GROUP("ofxRTLS");
-
 	
-#ifdef RTLS_OPENVR
+#ifdef RTLS_NULL
+	// Setup params
+	nsys.setup();
+	// Add listener for new data
+	ofAddListener(nsys.newDataReceived, this, &ofxRTLS::nsysDataReceived);
 	
-	// Add listeners for new data
-	ofAddListener(vive.newDataReceived, this, &ofxRTLS::openvrDataReceived);
-
+#ifdef RTLS_POSTPROCESS
+	nsysPostM.setup("NullSysMarkers", "NM");
 #endif
-#ifdef RTLS_MOTIVE
+#endif
 
+#ifdef RTLS_OPENVR
+	// Add listeners for new data
+	ofAddListener(openvr.newDataReceived, this, &ofxRTLS::openvrDataReceived);
+	
+#ifdef RTLS_POSTPROCESS
+	// Setup the postprocessor
+	openvrPostM.setup("OpenVRMarkers", "OM");
+#endif
+#endif
+
+#ifdef RTLS_MOTIVE
 	// Setup parameters for Motive
 	motive.setupParams();
 
@@ -36,18 +51,12 @@ void ofxRTLS::setup() {
 	// Add listeners for new data
 	ofAddListener(motive.newDataReceived, this, &ofxRTLS::motiveDataReceived);
 
+#ifdef RTLS_POSTPROCESS
+	// Setup the postprocessors
+	motivePostM.setup("MotiveMarkers", "MM", "id-dictionary.json", 
+		"age,axes,kalman,easing,add-rate,continuity,easing");
+	motivePostR.setup("MotiveRef", "MR", "", "axes");
 #endif
-
-#ifdef RTLS_ENABLE_POSTPROCESS
-	// Setup postprocessing params
-	RUI_NEW_GROUP("ofxRTLS Postprocessing");
-	RUI_SHARE_PARAM_WCN("RTLSPost- Map IDs", bMapIDs);
-	RUI_SHARE_PARAM_WCN("RTLSPost- Remove Invalid IDs", bRemoveInvalidIDs);
-	RUI_SHARE_PARAM_WCN("RTLSPost- Apply Filters", bApplyFilters);
-
-	// Setup processing helpers
-	dict.setup("id-dictionary.json");
-	filters.setup("RTLS", "kalman,easing,add-rate,continuity,easing");
 #endif
 
 	// Set target frame rate
@@ -59,20 +68,25 @@ void ofxRTLS::setup() {
 // --------------------------------------------------------------
 void ofxRTLS::start() {
 	// Start communications with the trackers
+#ifdef RTLS_NULL
+	nsys.start();
+#endif
 #ifdef RTLS_OPENVR
-	vive.connect();
+	openvr.connect();
 #endif
 #ifdef RTLS_MOTIVE
 	motive.start();
 #endif
-
 }
 
 // --------------------------------------------------------------
 void ofxRTLS::stop() {
 	// Stop communication with the trackers
+#ifdef RTLS_NULL
+	nsys.stop();
+#endif
 #ifdef RTLS_OPENVR
-	vive.disconnect();
+	openvr.disconnect();
 #endif
 #ifdef RTLS_MOTIVE
 	motive.stop();
@@ -80,83 +94,48 @@ void ofxRTLS::stop() {
 }
 
 // --------------------------------------------------------------
-#ifdef RTLS_MOTIVE
+#ifdef RTLS_NULL
 
-void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
+void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
 
 	lastReceive = ofGetElapsedTimeMillis();
-	mtx.lock();
+	mutex.lock();
 	dataTimestamps.push(lastReceive);
-	mtx.unlock();
+	mutex.unlock();
 
 	// ==============================================
-	// Marker Trackables
+	// Fake Data
 	// Send every frame
 	// ==============================================
 
-	// Send each identified marker
-	RTLSEventArgs mOutArgs;
-	mOutArgs.frame.set_context("m"); // 'm' for marker
-	mOutArgs.frame.set_frame_id(frameID);
-	mOutArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
+	ofJson js;
+	js["s"] = 0; // system = null
+	js["t"] = 0; // type = marker
+
+	ofxRTLSEventArgs outArgs;
+	outArgs.frame.set_context(js.dump());
+	outArgs.frame.set_frame_id(nsysFrameID);
+	outArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
 
 	for (int i = 0; i < args.markers.size(); i++) {
 
-		Trackable* trackable = mOutArgs.frame.add_trackables();
-		char byte_array[16];
-		((uint64_t*)byte_array)[0] = args.markers[i].cuid.LowBits();
-		((uint64_t*)byte_array)[1] = args.markers[i].cuid.HighBits();
-		trackable->set_cuid(byte_array, 16);
-		// Set the ID (-1 for passive, >=0 for active)
-		trackable->set_id(getActiveMarkerID(args.markers[i].cuid));
+		Trackable* trackable = outArgs.frame.add_trackables();
+		trackable->set_id(i + 1);
 		Trackable::Position* position = trackable->mutable_position();
-		position->set_x(args.markers[i].position.x);
-		position->set_y(args.markers[i].position.y);
-		position->set_z(args.markers[i].position.z);
+		position->set_x(args.markers[i].x);
+		position->set_y(args.markers[i].y);
+		position->set_z(args.markers[i].z);
 	}
 
-	// Post-process the data
-	postprocess(mOutArgs.frame);
+#ifdef RTLS_POSTPROCESS
+	// Post-process the data, then send it out when ready
+	nsysPostM.processAndSend(outArgs, newFrameReceived);
+#else
+	// Send out data immediately
+	ofNotifyEvent(newFrameReceived, outArgs);
+#endif
 
-	// Send out marker data
-	ofNotifyEvent(newFrameReceived, mOutArgs);
-
-	// ==============================================
-	// Camera Trackables
-	// Send with specified period.
-	// ==============================================
-
-	uint64_t thisTime = ofGetElapsedTimeMillis();
-	if (bSendCameraData && ((lastSendTime == 0) || (thisTime - lastSendTime >= cameraDataFrequency*1000.0))) {
-		lastSendTime = thisTime;
-
-		RTLSEventArgs cOutArgs;
-		cOutArgs.frame.set_context("c"); // 'c' for camera
-		cOutArgs.frame.set_frame_id(frameID);
-		cOutArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
-
-		// Add all cameras (after postprocessing)
-		for (int i = 0; i < args.cameras.size(); i++) {
-
-			Trackable* trackable = cOutArgs.frame.add_trackables();
-			trackable->set_id(args.cameras[i].ID);
-			trackable->set_cuid(ofToString(args.cameras[i].serial));
-			Trackable::Position* position = trackable->mutable_position();
-			position->set_x(args.cameras[i].position.x);
-			position->set_y(args.cameras[i].position.y);
-			position->set_z(args.cameras[i].position.z);
-			Trackable::Orientation* orientation = trackable->mutable_orientation();
-			orientation->set_w(args.cameras[i].orientation.w);
-			orientation->set_x(args.cameras[i].orientation.x);
-			orientation->set_y(args.cameras[i].orientation.y);
-			orientation->set_z(args.cameras[i].orientation.z);
-		}
-
-		// Send out camera data
-		ofNotifyEvent(newFrameReceived, cOutArgs);
-	}
-	
-	frameID++;
+	nsysFrameID++;
 }
 
 #endif
@@ -167,13 +146,22 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 
 	lastReceive = ofGetElapsedTimeMillis();
-	mtx.lock();
+	mutex.lock();
 	dataTimestamps.push(lastReceive);
-	mtx.unlock();
+	mutex.unlock();
 
-	// Send each identified point
-	RTLSEventArgs outArgs;
-	outArgs.frame.set_frame_id(frameID);
+	// ==============================================
+	// Generic Tracker Trackables
+	// Send every frame
+	// ==============================================
+
+	ofJson js;
+	js["s"] = 1; // system = openvr
+	js["t"] = 0; // type = marker
+
+	ofxRTLSEventArgs outArgs;
+	outArgs.frame.set_context(js.dump());
+	outArgs.frame.set_frame_id(openvrFrameID);
 	outArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
 
 	for (int i = 0; i < (*args.devices->getTrackers()).size(); i++) {
@@ -194,14 +182,120 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 		}
 	}
 
-	// Post-process the data
-	postprocess(outArgs.frame);
-
+#ifdef RTLS_POSTPROCESS
+	// Post-process the data, then send it out when ready
+	openvrPostM.processAndSend(outArgs, newFrameReceived);
+#else
+	// Send out data immediately
 	ofNotifyEvent(newFrameReceived, outArgs);
+#endif
 
-	frameID++;
+	openvrFrameID++;
 }
 
+#endif
+
+// --------------------------------------------------------------
+#ifdef RTLS_MOTIVE
+
+void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
+
+	lastReceive = ofGetElapsedTimeMillis();
+	mutex.lock();
+	dataTimestamps.push(lastReceive);
+	mutex.unlock();
+
+	// ==============================================
+	// Marker Trackables
+	// Send every frame
+	// ==============================================
+
+	ofJson js;
+	js["s"] = 2; // system = motive
+	js["t"] = 0; // type = marker
+
+	// Send each identified marker
+	ofxRTLSEventArgs mOutArgs;
+	mOutArgs.frame.set_context(js.dump());
+	mOutArgs.frame.set_frame_id(motiveFrameID);
+	mOutArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
+
+	for (int i = 0; i < args.markers.size(); i++) {
+
+		Trackable* trackable = mOutArgs.frame.add_trackables();
+		char byte_array[16];
+		((uint64_t*)byte_array)[0] = args.markers[i].cuid.LowBits();
+		((uint64_t*)byte_array)[1] = args.markers[i].cuid.HighBits();
+		trackable->set_cuid(byte_array, 16);
+		// If the marker is active, set an ID. If passive, don't set the ID.
+		if (isMarkerActive(args.markers[i].cuid)) {
+			trackable->set_id(getActiveMarkerID(args.markers[i].cuid));
+		}
+		Trackable::Position* position = trackable->mutable_position();
+		position->set_x(args.markers[i].position.x);
+		position->set_y(args.markers[i].position.y);
+		position->set_z(args.markers[i].position.z);
+	}
+
+#ifdef RTLS_POSTPROCESS
+	// Post-process the data, then send it out when ready
+	motivePostM.processAndSend(mOutArgs, newFrameReceived);
+#else
+	// Send out the data immediately
+	ofNotifyEvent(newFrameReceived, mOutArgs);
+#endif
+
+	// ==============================================
+	// Camera Trackables
+	// Send with specified period.
+	// ==============================================
+
+	uint64_t thisTime = ofGetElapsedTimeMillis();
+	if (bSendCameraData && ((lastSendTime == 0) || (thisTime - lastSendTime >= cameraDataFrequency*1000.0))) {
+		lastSendTime = thisTime;
+
+		js.clear();
+		js["s"] = 2; // system = motive
+		js["t"] = 1; // type = reference
+		js["m"] = int(args.maybeNeedsCalibration);
+
+		ofxRTLSEventArgs cOutArgs;
+		cOutArgs.frame.set_context(js.dump());
+		cOutArgs.frame.set_frame_id(motiveFrameID);
+		cOutArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
+
+		// Add all cameras (after postprocessing)
+		for (int i = 0; i < args.cameras.size(); i++) {
+
+			js.clear();
+			js["m"] = int(args.cameras[i].maybeNeedsCalibration);
+
+			Trackable* trackable = cOutArgs.frame.add_trackables();
+			trackable->set_id(args.cameras[i].ID);
+			trackable->set_cuid(ofToString(args.cameras[i].serial));
+			trackable->set_context(js.dump());
+			Trackable::Position* position = trackable->mutable_position();
+			position->set_x(args.cameras[i].position.x);
+			position->set_y(args.cameras[i].position.y);
+			position->set_z(args.cameras[i].position.z);
+			Trackable::Orientation* orientation = trackable->mutable_orientation();
+			orientation->set_w(args.cameras[i].orientation.w);
+			orientation->set_x(args.cameras[i].orientation.x);
+			orientation->set_y(args.cameras[i].orientation.y);
+			orientation->set_z(args.cameras[i].orientation.z);
+		}
+
+#ifdef RTLS_POSTPROCESS
+		// Post-process the data, then send it out when ready
+		motivePostR.processAndSend(cOutArgs, newFrameReceived);
+#else
+		// Send out camera data immediately
+		ofNotifyEvent(newFrameReceived, cOutArgs);
+#endif
+	}
+	
+	motiveFrameID++;
+}
 #endif
 
 // --------------------------------------------------------------
@@ -216,39 +310,60 @@ void ofxRTLS::threadedFunction() {
 		bReceivingData = thisTime - lastReceive < stopGap;
 
 		// Determine the frame rate of the data
-		mtx.lock();
+		mutex.lock();
 		while (!dataTimestamps.empty() && dataTimestamps.front() < (thisTime-1000)) {
 			dataTimestamps.pop();
 		}
 		dataFPS = float(dataTimestamps.size());
-		mtx.unlock();
+		mutex.unlock();
+		
+		sleep(16);
 	}
 }
 
 // --------------------------------------------------------------
 void ofxRTLS::exit() {
 
+#ifdef RTLS_NULL
+#ifdef RTLS_POSTPROCESS
+	nsysPostM.exit();
+#endif
+	ofRemoveListener(nsys.newDataReceived, this, &ofxRTLS::nsysDataReceived);
+	nsys.stop();
+#endif
 #ifdef RTLS_OPENVR
+#ifdef RTLS_POSTPROCESS
+	openvrPostM.exit();
+#endif
 	// Remove listener for new device data
-	ofRemoveListener(vive.newDataReceived, this, &ofxRTLS::openvrDataReceived);
-	vive.exit();
+	ofRemoveListener(openvr.newDataReceived, this, &ofxRTLS::openvrDataReceived);
+	openvr.exit();
 #endif
 #ifdef RTLS_MOTIVE
+#ifdef RTLS_POSTPROCESS
+	motivePostM.exit();
+	motivePostR.exit();
+#endif
 	ofRemoveListener(motive.newDataReceived, this, &ofxRTLS::motiveDataReceived);
 #endif
 }
 
 // --------------------------------------------------------------
-bool ofxRTLS::isConnected() {
+int ofxRTLS::isConnected() {
 
+	int nConnections = 0;
+
+#ifdef RTLS_NULL
+	nConnections += int(nsys.isConnected());
+#endif
 #ifdef RTLS_OPENVR
-	return vive.isConnected();
+	nConnections += int(openvr.isConnected());
 #endif
 #ifdef RTLS_MOTIVE
-	return motive.isConnected();
+	nConnections += int(motive.isConnected());
 #endif
 
-	return false;
+	return nConnections;
 }
 
 // --------------------------------------------------------------
@@ -257,118 +372,33 @@ bool ofxRTLS::isReceivingData() {
 }
 
 // --------------------------------------------------------------
-void ofxRTLS::postprocess(RTLSProtocol::TrackableFrame& frame) {
-#ifdef RTLS_ENABLE_POSTPROCESS
-
-	if (bMapIDs) {	// Map IDs if they are valid
-		for (int i = 0; i < frame.trackables_size(); i++) {
-			int ID = frame.trackables(i).id();
-			if (ID < 0) continue;
-			frame.mutable_trackables(i)->set_id(dict.lookup(ID));
-		}
-	}
-
-	if (bRemoveInvalidIDs) { // Remove IDs that are invalid (< 0)
-		int i = 0;
-		while (i < frame.trackables_size()) {
-
-			// Check if this trackable's ID is invalid
-			if (frame.trackables(i).id() < 0) {
-				// Arbitrary elements cannot be deleted. Swap this element with the last
-				// and remove the last element.
-				frame.mutable_trackables()->SwapElements(i, frame.trackables_size() - 1);
-				frame.mutable_trackables()->RemoveLast();
-			}
-			else {
-				i++;
-			}
-		}
-	}
-
-	// For all that remain in the filter, set their new coordinates and export them
-	if (bApplyFilters) {
-		// Input the new data
-		for (int i = 0; i < frame.trackables_size(); i++) {
-			// Add new data to the filter 
-			glm::vec3 position = glm::vec3(
-				frame.trackables(i).position().x(),
-				frame.trackables(i).position().y(),
-				frame.trackables(i).position().z());
-			auto* filter = filters.getFilter(getFilterKey(frame.trackables(i)));
-			filter->process(position);
-		}
-
-		// Process any remaining filters that haven't seen data
-		filters.processRemaining();
-
-		// Delete any data that is invalid.
-		// Also save IDs for all data that is valid.
-		set<string> existingDataIDs;
-		int i = 0;
-		while (i < frame.trackables_size()) {
-			// Check if this trackable's data is invalid.
-			ofxFilter* filter = filters.getFilter(getFilterKey(frame.trackables(i)));
-			if (!filter->isDataValid()) {
-				// If not, delete it
-				frame.mutable_trackables()->SwapElements(i, frame.trackables_size() - 1);
-				frame.mutable_trackables()->RemoveLast();
-			}
-			else {
-				// Save that this ID has valid data
-				existingDataIDs.insert(getFilterKey(frame.trackables(i)));
-
-				// Set this new processed data
-				glm::vec3 data = filter->getPosition();
-				frame.mutable_trackables(i)->mutable_position()->set_x(data.x);
-				frame.mutable_trackables(i)->mutable_position()->set_y(data.y);
-				frame.mutable_trackables(i)->mutable_position()->set_z(data.z);
-
-				i++;
-			}
-		}
-
-		// Add any data that isn't present
-		for (auto& it : filters.getFilters()) {
-			// Check if this is a new ID and if it has valid data.
-			if (existingDataIDs.find(it.first) == existingDataIDs.end() && it.second->isDataValid()) {
-				// If so, add a trackable with this ID				
-				Trackable* trackable = frame.add_trackables();
-				if (it.first.size() == 16) {	// cuid
-					trackable->set_id(-1);
-					trackable->set_cuid(it.first);
-				}
-				else if (!it.first.empty()) {	// id
-					trackable->set_id(ofToInt(it.first));
-				}
-				Trackable::Position* position = trackable->mutable_position();
-				glm::vec3 data = it.second->getPosition();
-				position->set_x(data.x);
-				position->set_y(data.y);
-				position->set_z(data.z);
-			}
-		}
-
-		// Delete any filters that haven't been used recently
-		if (ofGetElapsedTimeMillis() - lastFilterCullingTime > filterCullingPeriod) {
-			lastFilterCullingTime = ofGetElapsedTimeMillis();
-			filters.removeUnused();
-		}
-	}
+string ofxRTLS::getSupport() {
+	string supportStr = "ofxRTLS compiled to support systems { ";
+	string systems = "";
+#ifdef RTLS_NULL
+	systems += "NULL, ";
 #endif
+#ifdef RTLS_OPENVR
+	systems += "OPENVR, ";
+#endif
+#ifdef RTLS_MOTIVE
+	systems += "MOTIVE, ";
+#endif
+	if (systems.empty()) systems = "--";
+	else systems = systems.substr(0, systems.size() - 2);
+	supportStr += systems + " } ";
+	supportStr += "with postprocessing ";
+#ifdef RTLS_POSTPROCESS
+	supportStr += "ON";
+#else
+	supportStr += "OFF";
+#endif
+	supportStr += ".";
+	return supportStr;
 }
 
 // --------------------------------------------------------------
-#ifdef RTLS_ENABLE_POSTPROCESS
-string ofxRTLS::getFilterKey(const Trackable& t) {
 
-	// Use the ID as the key, if valid (>= 0)
-	if (t.id() >= 0) return ofToString(t.id());
+// --------------------------------------------------------------
 
-	// Otherwise, use the cuid
-	if (!t.cuid().empty()) return t.cuid();
-
-	// Otherwise, return an empty string
-	return "";
-}
-#endif
 // --------------------------------------------------------------

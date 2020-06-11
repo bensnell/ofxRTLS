@@ -1,22 +1,18 @@
 #pragma once
 
-#if !defined(RTLS_OPENVR) && !defined(RTLS_MOTIVE)
-#error "ofxRTLS: Please add one of the following definitions to your project RTLS_OPENVR, RTLS_MOTIVE"
-#endif
-
+//#if !defined(RTLS_OPENVR) && !defined(RTLS_MOTIVE)
+//#error "ofxRTLS: Please add one of the following definitions to your project RTLS_OPENVR, RTLS_MOTIVE"
+//#endif
 
 #include "ofMain.h"
 #include "ofxRemoteUIServer.h"
+#include "ofxRTLSEventArgs.h"
 #include "Trackable.pb.h"
-
-#ifdef RTLS_ENABLE_POSTPROCESS
-#include "IDDictionary.h"
-#include "ofxFDeep.h"
-#include "ofxFilterGroup.h"
-#endif
-
 using namespace RTLSProtocol;
 
+#ifdef RTLS_NULL
+#include "ofxRTLSNullSystem.h"
+#endif
 #ifdef RTLS_OPENVR
 #include "ofxOpenVRTracker.h"
 #endif
@@ -24,45 +20,67 @@ using namespace RTLSProtocol;
 #include "ofxMotive.h"
 #endif
 
-// The event args output
-class RTLSEventArgs : public ofEventArgs {
-public:
-	TrackableFrame frame;
-};
+#ifdef RTLS_POSTPROCESS
+#include "ofxRTLSPostprocessor.h"
+#endif
 
 class ofxRTLS : public ofThread {
 public:
 
-	/// \brief Create an object to connect with motive's cameras. There should only be one per program.
+	// Create an object to connect with the tracking system.
 	ofxRTLS();
 	~ofxRTLS();
 
-	/// \brief Setup this addon
+	// Setup this addon.
 	void setup();
 
-	/// \brief Begin streaming and reconstructing information from the cameras
+	// Start the tracking system.
 	void start();
 
-	/// \brief Stop streaming and reconstructing
+	// Stop the tracking system.
 	void stop();
 
 	void exit();
 
-	bool isConnected();
+	int isConnected();
 	bool isReceivingData();
 	float getFPS() { return dataFPS; }
 
 	// Event that occurs when new data is received
-	ofEvent< RTLSEventArgs > newFrameReceived;
+	ofEvent< ofxRTLSEventArgs > newFrameReceived;
 
+	// What systems does this version of RTLS support?
+	string getSupport();
+
+#ifdef RTLS_NULL
+	ofxRTLSNullSystem nsys;
+	void nsysDataReceived(NullSystemEventArgs& args);
+	uint64_t nsysFrameID = 0;
+
+#ifdef RTLS_POSTPROCESS
+	ofxRTLSPostprocessor nsysPostM;
+#endif
+#endif
 
 #ifdef RTLS_OPENVR
-	ofxOpenVRTracker vive;
+	ofxOpenVRTracker openvr;
 	void openvrDataReceived(ofxOpenVRTrackerEventArgs& args);
+	uint64_t openvrFrameID = 0; 
+
+#ifdef RTLS_POSTPROCESS
+	ofxRTLSPostprocessor openvrPostM; // marker postprocessor
 #endif
+#endif
+
 #ifdef RTLS_MOTIVE
 	ofxMotive motive;
 	void motiveDataReceived(MotiveEventArgs& args);
+	uint64_t motiveFrameID = 0; // increment for every packet sent
+
+#ifdef RTLS_POSTPROCESS
+	ofxRTLSPostprocessor motivePostM;	// marker postprocessor
+	ofxRTLSPostprocessor motivePostR;	// reference (camera) postprocessor
+#endif
 
 	bool bSendCameraData = true;
 	float cameraDataFrequency = 10.0; // what is the sending period in seconds?
@@ -74,40 +92,11 @@ private:
 	void threadedFunction();
 
 	// last time a packet of data was received
-	bool bReceivingData = false;
+	atomic<bool> bReceivingData = false;
 	uint64_t lastReceive = 0;
 	int stopGap = 100; // number of milliseconds before we decide no data is being received
 
 	// Contains timestamps at which data was received in the last second
 	queue<uint64_t> dataTimestamps;
 	float dataFPS = 0.0;
-	ofMutex mtx;
-
-	// Post-process the data
-	void postprocess(RTLSProtocol::TrackableFrame& frame);
-#ifdef RTLS_ENABLE_POSTPROCESS
-	// Toggles
-	bool bMapIDs = true;
-	bool bRemoveInvalidIDs = true;
-	bool bApplyFilters = true;
-
-	// Post-processing helpers
-	IDDictionary dict;
-	ofxFilterGroup filters;
-
-	// Filter keys will be:
-	// if frame.ID < 0:		key = ofToString(frame.ID)		variable length (< 16 digits)
-	// else:				key = frame.cuid				16 characters long
-	string getFilterKey(const Trackable& t);
-	
-	// When was the last time filters were culled? (ms)
-	uint64_t lastFilterCullingTime = 0;
-	// What is the period by which filters are culled? (ms)
-	uint64_t filterCullingPeriod = 1000; // each second
-#endif
-	
-	// Frame ID
-	// Increment for each new packet of data sent.
-	uint64_t frameID = 0;
-
 };

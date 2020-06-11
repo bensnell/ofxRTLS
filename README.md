@@ -10,12 +10,13 @@ This addon also supports optional realtime post-processing of the data. Options 
 - ID re-mappings
 - Smoothing and filtering (easing, kalman)
 - Predictive gap-filling filters (continuity)
+- Hungarian Algorithm / Tracking
 - etc.
 
 
 ### System Requirements
 
-This requires a Windows 10, x64 computer since Optitrack maintains these requirements.
+This requires a Windows 10, x64 computer if using the Optitrack Motive system.
 
 This has been developed with OpenFrameworks version 0.11.0
 
@@ -30,19 +31,20 @@ This has been developed with OpenFrameworks version 0.11.0
 #### Tracking System-Specific Dependencies
 
 - Motive (Optitrack)
-    - Using Motive requires the addon [ofxMotive](https://github.com/local-projects/ofxMotive). See its repo for any additional dependencies that are not listed here.
+    - Using Motive requires the addon [ofxMotive](https://github.com/local-projects/ofxMotive/tree/version/2.2.0) (branch: `version/2.2.0`). See its repo for any additional dependencies that are not listed here.
     - [Motive](https://www.optitrack.com/downloads/motive.html) must be installed on the system you are working on and a valid license key generated and stored on your computer. If not, ofxRTLS will not compile and/or Motive will not connect to the Motive API.
 - OpenVR (e.g. HTC Vive, etc.)
     - Using OpenVR requires the addon [ofxOpenVRTracker](https://github.com/local-projects/ofxOpenVRTracker). See its repo for any additional dependencies that are not listed here.
 
 #### Post-Processing Dependencies
 
-If the macro `RTLS_ENABLE_POSTPROCESS` is defined, then ofxRTLS expects a number of additional dependencies. Make sure they are included in the *addons.make* file of your project. See the *example_motive_postprocess/addons.make* for an example using Motive.
+If the macro `RTLS_POSTPROCESS` is defined, then ofxRTLS expects a number of additional dependencies. Make sure they are included in the *addons.make* file of your project. See the *example_motive_postprocess/addons.make* for an example using Motive.
 
 - ofxOpenCv (this comes with OF v0.11.0)
-- [ofxCv](https://github.com/local-projects/ofxCv/tree/project/lp.rtls-server) (use this branch)
-- [ofxFDeep](https://github.com/local-projects/ofxFDeep/tree/fdeep-v0.12.1-p0) (use this branch)
+- [ofxCv](https://github.com/local-projects/ofxCv/tree/project/lp.rtls-server) (branch: `project/lp.rtls-server`)
+- [ofxFDeep](https://github.com/local-projects/ofxFDeep/tree/fdeep-v0.12.1-p0) (branch: `fdeep-v0.12.1-p0`)
 - [ofxFilter](https://github.com/local-projects/ofxFilter/tree/master)
+- [ofxHungarian](https://github.com/local-projects/ofxHungarian)
 
 ## How to use this addon with your project
 
@@ -50,23 +52,48 @@ First, make sure you have properly installed all of the dependencies; there are 
 
 ### Setup
 
-1. Include the relative path to `ofxRTLS` in your *addons.make* file, as usual. Regenerate your project files using OpenFrameworks' ProjectGenerator.
+1. Include the relative path to `ofxRTLS` in your *addons.make* file, as usual. However, <u>do not</u> include the path to `ofxMotive` or `ofxOpenVRTracker` in your *addons.make* file. Then, regenerate your project files using OpenFrameworks' ProjectGenerator.
 
-2. In Visual Studios, in the *Property Manager*, right click your entire project and select *Add Existing Property Sheet...*. Then, choose the appropriate sheet. Available property sheets are listed below and included in the *ofxRTLS* directory. 
+   *Note: If you plan on using any of the postprocessing options, include all of the Postprocessing-dependent addons defined above to the addons.make file.*
 
-   *Note: If your application directly interfaces with a tracking system, choose the corresponding sheet `RTLS_[SYSTEM].props`. If your application does not directly interface with a tracking system, but instead receives data in the protobuf format, use the `Protobuf.props` sheet instead.*
+2. In Visual Studios, in the *Property Manager*, right click your entire project and select *Add Existing Property Sheet...*. Then, choose `ofxRTLS.props`. <u>Do not</u> include any other RTLS-related property sheets.
 
-   *Note: Only one of these property sheets may be added to a project. Each application that uses ofxRTLS may only directly interface with a single tracking system. For example, to interface with both Motive and OpenVR, two applications would be needed.*
+   *If your application does not directly interface with a tracking system, but instead receives data in the protobuf format, use only the `Protobuf.props` sheet instead.*
 
-| Property Sheet      | Tracking System        | Supported <br />Configuration | Supported <br />Platform | Notes                                    |
-| ------------------- | ---------------------- | ----------------------------- | ------------------------ | ---------------------------------------- |
-| `RTLS_MOTIVE.props` | Motive (Optitrack)     | Release, Debug                | x64                      | 32-bit (x86) is not supported by Motive. |
-| `RTLS_OPENVR.props` | OpenVR (e.g. HTC Vive) | Release, Debug                | x64 (x86?)               |                                          |
-| `Protobuf.props`    | None                   | Release, Debug                | x64, x86                 |                                          |
+3. Instruct RTLS to build the tracking systems of your choice by passing the appropriate properties to MSBuild. Currently available tracking systems and their corresponding properties include those listed below. Tracking systems whose property equals `true` will be built. If a property equals `false`, it will not be built. Multiple systems can be built at once. If no systems are defined, ofxRTLS defaults to the Null System. Available systems include:
 
-3. In your project *Properties* window, under *Configuration Properties  > C/C++ > Preprocessor > Preprocessor Definitions*, select *Edit* from the dropdown menu on the right and at the bottom of the window, check the box that says *Inherit from parent or project defaults*.
+| Tracking System          | Visual Studio Property | Supported <br />Platform | Notes                                                        |
+| ------------------------ | ---------------------- | ------------------------ | ------------------------------------------------------------ |
+| Optitrack Motive Tracker | RTLS_MOTIVE = true     | x64                      | 32-bit (x86) is not supported by Motive.<br />This uses Motive v2.2.0 |
+| OpenVR (e.g. HTC Vive)   | RTLS_OPENVR = true     | x64 (x86?)               |                                                              |
+| Null System              | RTLS_NULL = true       | x64, x86                 | This system exports fake data.                               |
 
-4. If you plan on using any of the postprocessing options, pass the macro `RTLS_ENABLE_POSTPROCESS` in the Project Properties' *Preprocessor Definitions*.
+  There are many ways to set a property in a Visual Studio project. It is important that this property must be defined before property sheets are imported in the project. The easiest way to add a property is to open up your **.vcxproj* file and add the following lines below (following XML structure) before property sheets are imported:
+
+  ```xml
+  <PropertyGroup>
+      <!-- Instruct RTLS to build support for ofxMotive: -->
+      <RTLS_MOTIVE>true</RTLS_MOTIVE>
+  </PropertyGroup>
+  ```
+
+4. In your project *Properties* window, under *Configuration Properties  > C/C++ > Preprocessor > Preprocessor Definitions*, select *Edit* from the dropdown menu on the right and at the bottom of the window, check the box that says *Inherit from parent or project defaults*.
+
+5. If you plan on using any of the postprocessing options (and have already included the appropriate addons according to the instructions in Step 1), pass the macro `RTLS_POSTPROCESS` in the Project Properties' *Preprocessor Definitions* <u>or</u> define `<RTLS_POSTPROCESS>true</RTLS_POSTPROCESS>` in **.vcproj* as above.
+
+This approach to building ofxRTLS using defined properties allows MSBuild (and CI pipelines like TeamCity) to build any configuration without regenerating project files, by passing different options to the compiler on the command line like so:
+
+```bash
+-p:RTLS_MOTIVE=true
+```
+
+You can pass multiple options to the compiler like below. This would build the NULL and MOTIVE systems with postprocessing enabled.
+
+```bash
+-p:RTLS_NULL=true;RTLS_MOTIVE=true;RTLS_OPENVR=false;RTLS_POSTPROCESS=true
+```
+
+
 
 ### Usage
 
@@ -92,14 +119,100 @@ Finally, implement your handler, e.g.:
 
 Take a look at the examples for a more in-depth look at using ofxRTLS with ofxMotive and ofxOpenVRTracker.
 
+The data exported over the RTLS-protocol protobuf format is detailed [here](https://github.com/local-projects/rtls-protocol). However, the context field will also contain useful information about the data's source. A trackable's `context` field will be a json string. When parsed, this json object possess the following information in key-value pairs:
+
+| Key                                 | Possible Values (one of the following)                       |
+| ----------------------------------- | ------------------------------------------------------------ |
+| `s` for "system"                    | `0` for Null System<br />`1` for OpenVR<br />`2` for Motive  |
+| `t` for "type"                      | `0` for markers (tracked objects)<br />`1` for reference (cameras, base stations, etc.) |
+| `m` for "might need re-calibration" | `0` for false (by default)<br />`1` for true                 |
+
+ An `id` of `0` is not allowed, since it is the default field value for the RTLS Protocol protobuf objects. Using 0 may result in unexpected behaviors.
+
+
+
 ## Examples
-There are examples for Motive and for OpenVR. When possible, another example has been provided with postprocessing enabled. The only differences between the examples include:
+Examples have been provided with and without postprocessing. Following Setup Step 3 above to change the example's tracking system.
 
-- The Property Sheet included, either `RTLS_MOTIVE.props` or `RTLS_OPENVR.props`
-- The Addons included in `addons.make`
-- The definition of `RTLS_ENABLE_POSTPROCESS`
 
-To run the examples, follow the specific setup instructions for whichever addon you are using, then run.
+
+## Postprocessing Options
+
+If postprocessing is enabled, the following actions are available and can be individually toggled ON and OFF. They will be executed in this order. See below for more documentation on each action.
+
+| Action                                 | Description                                                  |
+| -------------------------------------- | ------------------------------------------------------------ |
+| Map IDs                                | Map the `ID` parameter from one value to another, using a json dictionary supplied in the data folder. |
+| Remove Unidentifiable Before Hungarian | Remove trackables that are unable to be identified. A trackable with an `id <= 0`, no `cuid`, and no `name`, will be considered unidentifiable. |
+| Apply Hungarian                        | Use the Hungarian (linear assignment) algorithm to track objects and provide continuity to identifiable information. See below for a detailed explanation of options. |
+| Remove Unidentifiable Before Filters   | Same as above, but applied again, before Filters.            |
+| Apply Filters                          | Apply smoothing and filtering to all remaining trackables with adjustable sets of filter operators. |
+
+### Map IDs
+
+Parameters include:
+
+| Parameter      | Description                  |
+| -------------- | ---------------------------- |
+| `ID Dict Path` | Path to the json dictionary. |
+
+The json dictionary should resemble this structure, where  `2 ** nBits` indicates the number of values in the dictionary. The `dict` contains a list of this length, where each index will be a key mapped to the value in its spot in the list. For example, the ID `0` maps to the value `-1`, while the ID `5` maps to the value `10`.
+
+```json
+{
+   "nBits":3,
+   "dict":[
+      -1,
+      2,
+      4,
+      6,
+      8,
+      10,
+      12,
+      14
+   ]
+}
+```
+
+### Remove Unidentifiable (at multiple locations)
+
+Remove any trackables which cannot be identified. Unidentifiable trackables have the `TrackableKeyType` `none`. The key type is found using the following function.
+
+```C++
+TrackableKeyType getTrackableKeyType(const Trackable& t) {
+	if (t.id() > 0) return KEY_ID;
+	if (!t.cuid().empty()) return KEY_CUID;
+	if (!t.name().empty()) return KEY_NAME;
+	return KEY_NONE;
+}
+```
+Note that zero and negative `id`'s are considered invalid and will be removed by this action.
+
+### Apply Hungarian
+
+Parameters include:
+
+| Parameter                 | Description                                                  |
+| ------------------------- | ------------------------------------------------------------ |
+| `Temporary Key Types`     | A string list of temporary key types, comma-delimited. Key types include: `id`, `cuid`, `name`, `none`. A trackable with a temporary key contains a key that is likely to change. The trackable is not defined by its key; rather, it is passively identified by its key. |
+| `Permanent  Key Types`    | A string list of permanent key types, comma-delimited. Key types include: `id`, `cuid`, `name`, `none`. A trackable with a permanent key contains a key that will not change. The trackable is defined by its key. |
+| `Item Radius`             | In the trackable's native units, the approximate radius of a trackable. This is used for calculating the intersection over union within the Hungarian solver. A smaller radius will result in greater sensitivity of cost, but may lose out on spatial relations and dependencies. |
+| `From Dataset Permanance` | The permanence of samples used in the Hungarian solver's `FROM` dataset. An enumerated value with the available values `TEMPORARY`, `PERMANENT`, `TEMPORARY_AND_PERMANENT`.  By default, this should be `TEMPORARY`. Including `PERMANENT` will provide additional, perhaps superfluous content, for the solver. If included, it is recommended not to allow remapping using permanent keys (see below parameters). |
+| `To Dataset Permanance`   | The permanence of samples used in the Hungarian solver's `TO` dataset. An enumerated value with the available values `TEMPORARY`, `PERMANENT`, `TEMPORARY_AND_PERMANENT`.  By default, this should be `TEMPORARY`. Including `PERMANENT` will provide additional, perhaps superfluous content, for the solver. If included, it is recommended not to allow remapping using permanent keys (see below parameters). |
+| `Map Recursion Limit`     | The recursion limit of the key mapping search.               |
+| `Remove Matching Keys`    | Remove trackables whose keys match from the dataset before passing to the solver. Including these trackables may provide additional, superfluous context to the solver, but may also open you up to vulnerabilities in trackable matching. By default, this should be `true`. |
+| `Assign CUIDs to UnID`    | Assign a ` cuid` to an unidentifiable trackable. By default, this value is `false`. Only set to `true` if you plan to provide the postprocessor with trackables without IDs and would like to track them. |
+| `CUID Start Counter`      | What positive integer value should assigned `cuid`'s start at? |
+| `Allow Remap From Perm`   | Are remappings from permanent key types allowed? If so, it is highly recommended that you remove matching keys before solve, since this will prevent permanent IDs from separating during tracking. By default, this value is `false`. Setting to `true` under most circumstances defeats the purpose of distinguishing temporary and permanent key types. |
+| `Allow Remap To Perm`     | Are remappings to permanent key types allowed? By default, this value is `false`. Setting to `true` under most circumstances defeats the purpose of distinguishing temporary and permanent key types. |
+
+
+
+### Apply Filters
+
+Filter parameters are documented [here](https://github.com/local-projects/ofxFilter).
+
+
 
 
 ## Troubleshooting
