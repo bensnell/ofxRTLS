@@ -27,6 +27,15 @@ using namespace RTLSProtocol;
 // an ID of 0 is not supported by the postprocessor. It will be treated as
 // an invalid value.
 
+class CuidGenerator {
+public:
+	CuidGenerator(uint64_t startCounter) { counter = startCounter; }
+	~CuidGenerator() {};
+	uint64_t getNewCuid() { counter++; return counter; }
+private:
+	uint64_t counter = 0;
+};
+
 class ofxRTLSPostprocessor : public ofThread {
 public:
 
@@ -62,12 +71,13 @@ private:
 	// Process a data element
 	void _process(RTLSProtocol::TrackableFrame& frame);
 	void _process_mapIDs(RTLSProtocol::TrackableFrame& frame);
-	void _process_removeInvalidIDs(RTLSProtocol::TrackableFrame& frame);
 	void _process_applyHungarian(RTLSProtocol::TrackableFrame& frame);
+	void _process_removeUnidentifiable(RTLSProtocol::TrackableFrame& frame);
 	void _process_applyFilters(RTLSProtocol::TrackableFrame& frame);
 	bool bMapIDs = true;
-	bool bRemoveInvalidIDs = true;
+	bool bRemoveUnidentifiableBeforeHungarian = true;
 	bool bApplyHungarian = true;
+	bool bRemoveUnidentifiableBeforeFilters = true;
 	bool bApplyFilters = true;
 
 	RTLSProtocol::TrackableFrame lastFrame;
@@ -82,7 +92,7 @@ private:
 	//	Character 0 ("Prefix"):
 	//		TrackableKeyType
 	enum TrackableKeyType {
-		KEY_INVALID = 0,
+		KEY_NONE = 0,
 		KEY_ID,			// integer
 		KEY_CUID,		// 16 digit string, representing two uint64_t values
 		KEY_NAME,		// string, any length
@@ -93,6 +103,7 @@ private:
 	// This function will return the key used to track each point.
 	string getTrackableKey(const Trackable& t);
 	string getTrackableKey(const Trackable& t, TrackableKeyType& keyType);
+	string getTrackableKey(TrackableKeyType keyType, string data);
 	// This function will return the type of the key.
 	TrackableKeyType getTrackableKeyType(const Trackable& t);
 	TrackableKeyType getTrackableKeyType(string key);
@@ -106,13 +117,17 @@ private:
 	bool reconcileTrackableWithKey(Trackable& t, string key);
 	// Is a trackable unidentifiable (not possessing a valid key)? 
 	bool isTrackableIdentifiable(const Trackable& t);
-
-
+	bool isTrackableIdentifiable(string& key);
+	bool isTrackableIdentifiable(TrackableKeyType keyType);
+	// Is a trackable identifiable by a specific type?
+	bool isTrackableIdentifiableByType(const Trackable& t, TrackableKeyType keyType);
+	// Is a trackable identifiable by ID valid?
+	bool isTrackableIDValid(const Trackable& t);
 
 
 	// Hungarian Algorithm-related Parameters
 	// Temporary and Permanently Identifiable Fields
-	string tempKeyTypesStr = "cuid";	// key types that may change per trackable
+	string tempKeyTypesStr = "cuid,none";	// key types that may change per trackable
 	string permKeyTypesStr = "id,name";	// key types that will not change per trackable
 	set<TrackableKeyType> tempKeyTypes;
 	set<TrackableKeyType> permKeyTypes;
@@ -138,9 +153,21 @@ private:
 	// TO sets be removed? This likely speeds up the solver by removing superfluous
 	// samples for which there are already matches.
 	bool bRemoveMatchingKeysBeforeSolve = true;
-
-
-
+	// Generator of cuids for unidentifiable points
+	bool bAssignCuidsToUnidentifiableTrackables = false;
+	// What number should the counter start at?
+	int cuidStartCounter = 80000;
+	CuidGenerator* cuidGen;
+	// Are remappings from permanent key types allowed?
+	// (If so, it is highly recommended that you remove matching keys before solve, 
+	// since this will prevent permanent IDs from separating during tracking.)
+	// For example, what if a trackable with a permanent ID suddenly
+	// loses identification and is now identifiable only by a temporary CUID?
+	bool bAllowRemappingFromPermKeyTypes = false;
+	// Are remappings to permanent key types allowed?
+	// For example, what if a trackable with a temporary CUID suddently turns
+	// into an identifiable trackable with a permanent ID?
+	bool bAllowRemappingToPermKeyTypes = false;
 
 
 	// Filters for smoothing data, etc.

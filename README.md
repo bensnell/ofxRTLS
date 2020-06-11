@@ -10,7 +10,7 @@ This addon also supports optional realtime post-processing of the data. Options 
 - ID re-mappings
 - Smoothing and filtering (easing, kalman)
 - Predictive gap-filling filters (continuity)
-- Hungarian Algorithm
+- Hungarian Algorithm / Tracking
 - etc.
 
 
@@ -38,7 +38,7 @@ This has been developed with OpenFrameworks version 0.11.0
 
 #### Post-Processing Dependencies
 
-If the macro `RTLS_ENABLE_POSTPROCESS` is defined, then ofxRTLS expects a number of additional dependencies. Make sure they are included in the *addons.make* file of your project. See the *example_motive_postprocess/addons.make* for an example using Motive.
+If the macro `RTLS_POSTPROCESS` is defined, then ofxRTLS expects a number of additional dependencies. Make sure they are included in the *addons.make* file of your project. See the *example_motive_postprocess/addons.make* for an example using Motive.
 
 - ofxOpenCv (this comes with OF v0.11.0)
 - [ofxCv](https://github.com/local-projects/ofxCv/tree/project/lp.rtls-server) (branch: `project/lp.rtls-server`)
@@ -81,10 +81,16 @@ First, make sure you have properly installed all of the dependencies; there are 
 
 5. If you plan on using any of the postprocessing options (and have already included the appropriate addons according to the instructions in Step 1), pass the macro `RTLS_POSTPROCESS` in the Project Properties' *Preprocessor Definitions* <u>or</u> define `<RTLS_POSTPROCESS>true</RTLS_POSTPROCESS>` in **.vcproj* as above.
 
-This approach to building ofxRTLS using defined properties allows TeamCity to build any configuration without regenerating project files, by passing different options to the compiler on the command line like so:
+This approach to building ofxRTLS using defined properties allows MSBuild (and CI pipelines like TeamCity) to build any configuration without regenerating project files, by passing different options to the compiler on the command line like so:
 
 ```bash
 -p:RTLS_MOTIVE=true
+```
+
+You can pass multiple options to the compiler like below. This would build the NULL and MOTIVE systems with postprocessing enabled.
+
+```bash
+-p:RTLS_NULL=true;RTLS_MOTIVE=true;RTLS_OPENVR=false;RTLS_POSTPROCESS=true
 ```
 
 
@@ -123,8 +129,90 @@ The data exported over the RTLS-protocol protobuf format is detailed [here](http
 
  An `id` of `0` is not allowed, since it is the default field value for the RTLS Protocol protobuf objects. Using 0 may result in unexpected behaviors.
 
+
+
 ## Examples
 Examples have been provided with and without postprocessing. Following Setup Step 3 above to change the example's tracking system.
+
+
+
+## Postprocessing Options
+
+If postprocessing is enabled, the following actions are available and can be individually toggled ON and OFF. They will be executed in this order. See below for more documentation on each action.
+
+| Action                                 | Description                                                  |
+| -------------------------------------- | ------------------------------------------------------------ |
+| Map IDs                                | Map the `ID` parameter from one value to another, using a json dictionary supplied in the data folder. |
+| Remove Unidentifiable Before Hungarian | Remove trackables that are unable to be identified. A trackable with an `id <= 0`, no `cuid`, and no `name`, will be considered unidentifiable. |
+| Apply Hungarian                        | Use the Hungarian (linear assignment) algorithm to track objects and provide continuity to identifiable information. See below for a detailed explanation of options. |
+| Remove Unidentifiable Before Filters   | Same as above, but applied again, before Filters.            |
+| Apply Filters                          | Apply smoothing and filtering to all remaining trackables with adjustable sets of filter operators. |
+
+### Map IDs
+
+Parameters include:
+
+| Parameter      | Description                  |
+| -------------- | ---------------------------- |
+| `ID Dict Path` | Path to the json dictionary. |
+
+The json dictionary should resemble this structure, where  `2 ** nBits` indicates the number of values in the dictionary. The `dict` contains a list of this length, where each index will be a key mapped to the value in its spot in the list. For example, the ID `0` maps to the value `-1`, while the ID `5` maps to the value `10`.
+
+```json
+{
+   "nBits":3,
+   "dict":[
+      -1,
+      2,
+      4,
+      6,
+      8,
+      10,
+      12,
+      14
+   ]
+}
+```
+
+### Remove Unidentifiable (at multiple locations)
+
+Remove any trackables which cannot be identified. Unidentifiable trackables have the `TrackableKeyType` `none`. The key type is found using the following function.
+
+```C++
+TrackableKeyType getTrackableKeyType(const Trackable& t) {
+	if (t.id() > 0) return KEY_ID;
+	if (!t.cuid().empty()) return KEY_CUID;
+	if (!t.name().empty()) return KEY_NAME;
+	return KEY_NONE;
+}
+```
+Note that zero and negative `id`'s are considered invalid and will be removed by this action.
+
+### Apply Hungarian
+
+Parameters include:
+
+| Parameter                 | Description                                                  |
+| ------------------------- | ------------------------------------------------------------ |
+| `Temporary Key Types`     | A string list of temporary key types, comma-delimited. Key types include: `id`, `cuid`, `name`, `none`. A trackable with a temporary key contains a key that is likely to change. The trackable is not defined by its key; rather, it is passively identified by its key. |
+| `Permanent  Key Types`    | A string list of permanent key types, comma-delimited. Key types include: `id`, `cuid`, `name`, `none`. A trackable with a permanent key contains a key that will not change. The trackable is defined by its key. |
+| `Item Radius`             | In the trackable's native units, the approximate radius of a trackable. This is used for calculating the intersection over union within the Hungarian solver. A smaller radius will result in greater sensitivity of cost, but may lose out on spatial relations and dependencies. |
+| `From Dataset Permanance` | The permanence of samples used in the Hungarian solver's `FROM` dataset. An enumerated value with the available values `TEMPORARY`, `PERMANENT`, `TEMPORARY_AND_PERMANENT`.  By default, this should be `TEMPORARY`. Including `PERMANENT` will provide additional, perhaps superfluous content, for the solver. If included, it is recommended not to allow remapping using permanent keys (see below parameters). |
+| `To Dataset Permanance`   | The permanence of samples used in the Hungarian solver's `TO` dataset. An enumerated value with the available values `TEMPORARY`, `PERMANENT`, `TEMPORARY_AND_PERMANENT`.  By default, this should be `TEMPORARY`. Including `PERMANENT` will provide additional, perhaps superfluous content, for the solver. If included, it is recommended not to allow remapping using permanent keys (see below parameters). |
+| `Map Recursion Limit`     | The recursion limit of the key mapping search.               |
+| `Remove Matching Keys`    | Remove trackables whose keys match from the dataset before passing to the solver. Including these trackables may provide additional, superfluous context to the solver, but may also open you up to vulnerabilities in trackable matching. By default, this should be `true`. |
+| `Assign CUIDs to UnID`    | Assign a ` cuid` to an unidentifiable trackable. By default, this value is `false`. Only set to `true` if you plan to provide the postprocessor with trackables without IDs and would like to track them. |
+| `CUID Start Counter`      | What positive integer value should assigned `cuid`'s start at? |
+| `Allow Remap From Perm`   | Are remappings from permanent key types allowed? If so, it is highly recommended that you remove matching keys before solve, since this will prevent permanent IDs from separating during tracking. By default, this value is `false`. Setting to `true` under most circumstances defeats the purpose of distinguishing temporary and permanent key types. |
+| `Allow Remap To Perm`     | Are remappings to permanent key types allowed? By default, this value is `false`. Setting to `true` under most circumstances defeats the purpose of distinguishing temporary and permanent key types. |
+
+
+
+### Apply Filters
+
+Filter parameters are documented [here](https://github.com/local-projects/ofxFilter).
+
+
 
 
 ## Troubleshooting

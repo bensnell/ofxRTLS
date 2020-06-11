@@ -109,7 +109,7 @@ void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
 	// ==============================================
 
 	ofJson js;
-	js["s"] = 0; // system = motive
+	js["s"] = 0; // system = null
 	js["t"] = 0; // type = marker
 
 	ofxRTLSEventArgs outArgs;
@@ -120,7 +120,7 @@ void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
 	for (int i = 0; i < args.markers.size(); i++) {
 
 		Trackable* trackable = outArgs.frame.add_trackables();
-		trackable->set_id(i);
+		trackable->set_id(i + 1);
 		Trackable::Position* position = trackable->mutable_position();
 		position->set_x(args.markers[i].x);
 		position->set_y(args.markers[i].y);
