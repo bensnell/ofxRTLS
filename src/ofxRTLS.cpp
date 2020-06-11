@@ -117,14 +117,15 @@ void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
 	outArgs.frame.set_frame_id(nsysFrameID);
 	outArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
 
-	for (int i = 0; i < args.markers.size(); i++) {
+	for (auto& t : args.trackables) {
 
 		Trackable* trackable = outArgs.frame.add_trackables();
-		trackable->set_id(i + 1);
+		if (t.hasId()) trackable->set_id(t.getId());
+		if (t.hasCuid()) trackable->set_cuid(t.getCuid());
 		Trackable::Position* position = trackable->mutable_position();
-		position->set_x(args.markers[i].x);
-		position->set_y(args.markers[i].y);
-		position->set_z(args.markers[i].z);
+		position->set_x(t.getPosition().x);
+		position->set_y(t.getPosition().y);
+		position->set_z(t.getPosition().z);
 	}
 
 #ifdef RTLS_POSTPROCESS
