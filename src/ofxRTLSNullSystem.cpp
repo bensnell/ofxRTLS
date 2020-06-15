@@ -21,8 +21,8 @@ void ofxRTLSNullSystem::setup() {
 	RUI_SHARE_PARAM_WCN("NuS- Space Hi Bound", hiBound, -10000, 10000);
 	RUI_SHARE_PARAM_WCN("NuS- Position Speed", positionSpeed, -1000, 1000);
 	RUI_SHARE_PARAM_WCN("NuS- Position Noise", positionNoise, -100, 100);
-	RUI_SHARE_PARAM_WCN("NuS- Target Presence", presenceThreshold, 0, 1);
-	RUI_SHARE_PARAM_WCN("NuS- Presence Rapidness", presenceRapidness, -10, 10);
+	RUI_SHARE_PARAM_WCN("NuS- Target Presence Density", targetPresenceDensity, 0, 1);
+	RUI_SHARE_PARAM_WCN("NuS- Presence Return Rapidness", presenceReturnRapidness, 0, 10);
 	RUI_SHARE_PARAM_WCN("NuS- Set ID", bSetID);
 	RUI_SHARE_PARAM_WCN("NuS- Set CUID", bSetCUID);
 }
@@ -64,7 +64,7 @@ void ofxRTLSNullSystem::threadedFunction() {
 					// Initialize any new trackables
 					for (int i = lastSize; i < thisSize; i++) {
 						// Set the position
-						trackables[i].setPosition(glm::vec3(
+						trackables[i].setKnownPosition(glm::vec3(
 							ofRandom(loBound, hiBound), 
 							ofRandom(loBound, hiBound), 
 							ofRandom(loBound, hiBound)));
@@ -75,47 +75,43 @@ void ofxRTLSNullSystem::threadedFunction() {
 							trackables[i].setCuid(ofToString(cuidCounter));
 							cuidCounter++;
 						}
-						// Set the presence
-						trackables[i].presence = presenceThreshold;
 					}
 				}
+
+				
+				// Calculate the probability that a trackable becomes present or absent
+				float rapidnessMultiplier = 1.0 / (1.0 + fps * presenceReturnRapidness);
+				float probBecomesPresent = targetPresenceDensity / max(targetPresenceDensity, float(1.0 - targetPresenceDensity)) * rapidnessMultiplier;
+				float probBecomesAbsent = (1.0 - targetPresenceDensity) / max(targetPresenceDensity, float(1.0 - targetPresenceDensity)) * rapidnessMultiplier;
 
 				// Update all trackables
 				for (int i = 0; i < trackables.size(); i++) {
 					auto& t = trackables[i];
 
 					// Update whether this trackable is occluded or present.
-					// Clamp the vector of samples.
-					while (t.presentSamples.size() > fps) {
-						t.presentSamplesSum -= t.presentSamples.front();
-						t.presentSamples.pop();
-					}
-					// Update presence fraction.
-					if (t.presentSamples.size() == fps) {
-						t.presence = t.presentSamplesSum / fps;
-					}
-					// Attempt to converge on target presence and update the bool.
-					float likelihood = pow(ofRandom(1), pow(2.0, (presenceThreshold - t.presence) * presenceRapidness));
-					bool bNextPresent = likelihood <= presenceThreshold;
-					if (t.bPresent && !bNextPresent) {
+					float prob = ofRandom(1);
+					if (t.bPresent && prob < probBecomesAbsent) {
 						// goes absent
 						t.bPresent = false;
 						t.clearCuid();
 					}
-					else if (!t.bPresent && bNextPresent) {
+					else if (!t.bPresent && prob < probBecomesPresent) {
 						// goes present
 						t.bPresent = true;
 					}
-					// Save this sample
-					t.presentSamples.push(int(t.bPresent));
-					t.presentSamplesSum += int(t.bPresent);
 
 					// Update the position with brownian motion
-					glm::vec3 lastPos = t.getPosition();
+					glm::vec3 lastPos = t.getKnownPosition();
 					float speed = positionSpeed / fps;
 					glm::vec3 changePos = glm::vec3(ofRandom(-speed, speed), ofRandom(-speed, speed), ofRandom(-speed, speed));
 					glm::vec3 newPos = lastPos + changePos;
-					t.setPosition(newPos);
+					t.setKnownPosition(newPos);
+
+					// Set the noise associated with the position
+					t.setPositionNoise(glm::vec3(
+						ofRandom(-positionNoise, positionNoise), 
+						ofRandom(-positionNoise, positionNoise),
+						ofRandom(-positionNoise, positionNoise)));
 
 					// Set or clear the ID
 					if (bSetID && !t.hasId()) t.setId(i + 1);

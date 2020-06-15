@@ -10,8 +10,10 @@ public:
 	~NullSystemTrackable() {};
 
 	bool hasPosition() { return bPosition; }
-	glm::vec3 getPosition() { return position; }
-	void setPosition(glm::vec3 _position) { position = _position; bPosition = true; }
+	glm::vec3 getPosition() { return position + noise; }
+	glm::vec3 getKnownPosition() { return position; }
+	void setKnownPosition(glm::vec3 _position) { position = _position; bPosition = true; }
+	void setPositionNoise(glm::vec3 _noise) { noise = _noise; }
 	void clearPosition() { bPosition = false; }
 
 	bool hasId() { return bId; }
@@ -27,6 +29,7 @@ public:
 private:
 	bool bPosition = false;
 	glm::vec3 position;
+	glm::vec3 noise;
 
 	bool bId = false;
 	int id;
@@ -37,11 +40,7 @@ private:
 
 class _NullSystemTrackable : public NullSystemTrackable {
 public:
-	float presence = 1.0;
-	queue<bool> presentSamples;
-	float presentSamplesSum = 0.0;
 	bool bPresent = true;
-
 };
 
 // The event args output
@@ -83,19 +82,17 @@ private:
 	float positionSpeed = 0.5;
 	// Amount of spatial noise in output position.
 	// (in spatial units; standard deviation of gaussian normal)
-	float positionNoise = 0.01;
-	// This threshold describes the target presence in the range [0,1].
-	// If 0, then the point will rarely, if ever, be present.
-	// If 1, then the point will always be present.
-	float presenceThreshold = 1.0;
-	// This rapidness describes the quickness to return to threshold.
-	// It exists in the range (-inf, +inf). It it correlated to the length
-	// of absences.
-	// If -1, then absences will be longer and it will take more time
-	// to return to target presence (threshold).
-	// If +1, then absences will be shorted and it will take less time
-	// to return to target presence.
-	float presenceRapidness = 0;
+	float positionNoise = 0.001;
+	// What is the target presence density?
+	// In other words, what fraction of the time should the trackable be present?
+	// Range: [0, 1]
+	float targetPresenceDensity = 0.95;
+	// How quickly should the trackable return to being present after becoming absent?
+	// Range: [0, +inf)
+	// This value is related to time. 0 indicates that it returns as fast as possible,
+	// usually the next frame. 1 indicates that it will on average take a full second
+	// to return. 2 indicates that it will take about 2 seconds to return, etc.
+	float presenceReturnRapidness = 1.0;
 	// Should ID be exported?
 	bool bSetID = true;
 	// Should CUID be exported?
