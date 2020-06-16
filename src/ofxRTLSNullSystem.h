@@ -26,6 +26,10 @@ public:
 	void setCuid(string _cuid) { cuid = _cuid; bCuid = true; }
 	void clearCuid() { bCuid = false; }
 
+	glm::vec3 force;	// forces
+	glm::vec3 velocity;	// velocity
+	float maxSpeedFraction = 1.0;
+
 private:
 	bool bPosition = false;
 	glm::vec3 position;
@@ -73,6 +77,15 @@ private:
 
 	// Params
 	bool bSendFakeData = false;
+	// Mode of the fake data
+	enum RTLSNullSystemMode {
+		ELASTIC = 0,
+		BROWNIAN,
+		NUM_MODES
+	};
+	RTLSNullSystemMode mode = ELASTIC;
+	float elasticForce = 1.0; // [0, +inf)
+	float elasticWinds = 0.01; // amount [0, 1]
 	float fps = 30;		// framerate at which to send data
 	int nPoints = 1;	// numbers of points to send
 	// Bounds of the space that constrains the trackables.
