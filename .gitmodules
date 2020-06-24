@@ -1,0 +1,3 @@
+[submodule "ezc3d"]
+	path = ezc3d
+	url = https://github.com/local-projects/ezc3d.git

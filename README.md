@@ -124,7 +124,7 @@ The data exported over the RTLS-protocol protobuf format is detailed [here](http
 | Key                                 | Possible Values (one of the following)                       |
 | ----------------------------------- | ------------------------------------------------------------ |
 | `s` for "system"                    | `0` for Null System<br />`1` for OpenVR<br />`2` for Motive  |
-| `t` for "type"                      | `0` for markers (tracked objects)<br />`1` for reference (cameras, base stations, etc.) |
+| `t` for "type"                      | `0` for markers (tracked objects)<br />`1` for reference, contributors, or observers (cameras, base stations, etc.) |
 | `m` for "might need re-calibration" | `0` for false (by default)<br />`1` for true                 |
 
  An `id` of `0` is not allowed, since it is the default field value for the RTLS Protocol protobuf objects. Using 0 may result in unexpected behaviors.

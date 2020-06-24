@@ -257,7 +257,7 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 
 		js.clear();
 		js["s"] = 2; // system = motive
-		js["t"] = 1; // type = reference
+		js["t"] = 1; // type = reference / contribution / observer (camera)
 		js["m"] = int(args.maybeNeedsCalibration);
 
 		ofxRTLSEventArgs cOutArgs;
