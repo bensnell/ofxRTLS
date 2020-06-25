@@ -59,6 +59,10 @@ void ofxRTLS::setup() {
 #endif
 #endif
 
+#ifdef RTLS_PLAYER
+	recorder.setup();
+#endif
+
 	// Set target frame rate
 	dataFPS = ofGetTargetFrameRate();
 
@@ -128,6 +132,11 @@ void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
 		position->set_z(t.getPosition().z);
 	}
 
+#ifdef RTLS_PLAYER
+	// Pass this raw data to the recorder
+	recorder.update(outArgs.frame);
+#endif
+
 #ifdef RTLS_POSTPROCESS
 	// Post-process the data, then send it out when ready
 	nsysPostM.processAndSend(outArgs, newFrameReceived);
@@ -182,6 +191,11 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 			orientation->set_z(tkr->quaternion.z);
 		}
 	}
+
+#ifdef RTLS_PLAYER
+	// Pass this raw data to the recorder
+	recorder.update(outArgs.frame);
+#endif
 
 #ifdef RTLS_POSTPROCESS
 	// Post-process the data, then send it out when ready
@@ -238,6 +252,11 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 		position->set_z(args.markers[i].position.z);
 	}
 
+#ifdef RTLS_PLAYER
+	// Pass this raw data to the recorder
+	recorder.update(mOutArgs.frame);
+#endif
+
 #ifdef RTLS_POSTPROCESS
 	// Post-process the data, then send it out when ready
 	motivePostM.processAndSend(mOutArgs, newFrameReceived);
@@ -285,6 +304,11 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 			orientation->set_y(args.cameras[i].orientation.y);
 			orientation->set_z(args.cameras[i].orientation.z);
 		}
+
+#ifdef RTLS_PLAYER
+		// Pass this raw data to the recorder
+		recorder.update(cOutArgs.frame);
+#endif
 
 #ifdef RTLS_POSTPROCESS
 		// Post-process the data, then send it out when ready
@@ -390,9 +414,15 @@ string ofxRTLS::getSupport() {
 	supportStr += systems + " } ";
 	supportStr += "with postprocessing ";
 #ifdef RTLS_POSTPROCESS
-	supportStr += "ON";
+	supportStr += "ENABLED ";
 #else
-	supportStr += "OFF";
+	supportStr += "DISABLED ";
+#endif
+	supportStr += "and player ";
+#ifdef RTLS_PLAYER
+	supportStr += "ENABLED";
+#else 
+	supportStr += "DISABLED"
 #endif
 	supportStr += ".";
 	return supportStr;

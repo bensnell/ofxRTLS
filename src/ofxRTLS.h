@@ -24,6 +24,11 @@ using namespace RTLSProtocol;
 #include "ofxRTLSPostprocessor.h"
 #endif
 
+#ifdef RTLS_PLAYER
+#include "ofxRTLSRecorder.h"
+//#include "ofxRTLSPlayer.h"
+#endif
+
 class ofxRTLS : public ofThread {
 public:
 
@@ -85,6 +90,10 @@ public:
 	bool bSendCameraData = true;
 	float cameraDataFrequency = 10.0; // what is the sending period in seconds?
 	uint64_t lastSendTime = 0;
+#endif
+
+#ifdef RTLS_PLAYER
+	ofxRTLSRecorder recorder;
 #endif
 
 private:

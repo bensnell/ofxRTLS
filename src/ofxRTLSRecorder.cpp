@@ -1,5 +1,7 @@
 #include "ofxRTLSRecorder.h"
 
+#ifdef RTLS_PLAYER
+
 // --------------------------------------------------------------
 ofxRTLSRecorder::ofxRTLSRecorder() {
 
@@ -23,15 +25,19 @@ void ofxRTLSRecorder::setup(string _takeFolder, string _takePrefix) {
 	if (!_takeFolder.empty()) takeFolder = _takeFolder;
 	if (!_takePrefix.empty()) takePrefix = _takePrefix;
 
+	RUI_NEW_GROUP("ofxRTLSRecorder");
+	RUI_SHARE_PARAM_WCN("RTLS-R- Enable", bEnableRecorder);
+	RUI_SHARE_PARAM_WCN("RTLS-R- Record", bRecord);
 
 
 
 
-	bFlagStart = false;
-	bFlagStop = false;
+
+
+	bRecord = false;
 	RUI_PUSH_TO_CLIENT();
 
-	ofAddListener(RUI_GET_OF_EVENT(), this, &ofxRTLSRecorder::clientDidSomething);
+	ofAddListener(RUI_GET_OF_EVENT(), this, &ofxRTLSRecorder::paramChanged);
 
 
 	startThread();
@@ -40,10 +46,11 @@ void ofxRTLSRecorder::setup(string _takeFolder, string _takePrefix) {
 // --------------------------------------------------------------
 void ofxRTLSRecorder::threadedFunction() {
 
-	RTLSProtocol::TrackableFrame* frame = NULL;
+	RTLSTake* take = NULL;
+	vector<RTLSProtocol::TrackableFrame*> frames;
 	while (isThreadRunning()) {
-		frame = NULL;
 
+		bool bProcessQueue = false;
 		{
 			// Lock the mutex
 			std::unique_lock<std::mutex> lk(mutex);
@@ -52,51 +59,93 @@ void ofxRTLSRecorder::threadedFunction() {
 			// the predicate (whether the queue contains items). If false, the mutex 
 			// is unlocked and waits for the condition variable to receive a signal
 			// to check again. If true, code execution continues.
-			cv.wait(lk, [this] { return flagUnlock || !dataQueue.empty(); });
+			cv.wait(lk, [this] { return flagUnlock || !takeQueue.empty(); });
 
 			if (!flagUnlock) {
-				// The queue contains elements. Get an element.
-				frame = dataQueue.front();
-				dataQueue.pop();
+				bProcessQueue = true;
+			}
+			else {
+				// Is it still possible for the queue to contain elements here?
 			}
 		}
 
-		// If an element has been received, process it.
-		if (frame) {
+		// If there is data waiting, then process it
+		while (bProcessQueue) {
 
-			// Save this frame to file
+			// Get the oldest element (at the front of the queue)
+			take = NULL;
+			{
+				std::lock_guard<std::mutex> lk(mutex);
+				// Remove any null elements
+				while (takeQueue.front() == NULL) takeQueue.pop();
+				// Get the next take to process
+				if (!takeQueue.empty()) take = takeQueue.front();
+			}
+			// Don't continue if there's nothing to process
+			if (take == NULL) break;
+
+			// Get the next set of elements to write
+			frames.clear(); // should already be clear
+			{
+				std::lock_guard<std::mutex> lk(mutex);
+
+				// Remove any null elements
+				while (takeQueue.front() == NULL) takeQueue.pop();
+				// Get the next take to process
+				if (!takeQueue.empty()) take = takeQueue.front();
+			}
 
 
 
-			// Delete this data
-			delete frame;
+			//// The queue contains elements. Get an element.
+			//frame = takeQueue.front();
+			//takeQueue.pop();
+
+
+
 		}
+
+		//// If an element has been received, process it.
+		//if (frame) {
+
+		//	// Save this frame to file
+
+
+
+		//	// Delete this data
+		//	delete frame;
+		//}
 	}
 }
 
 // --------------------------------------------------------------
 void ofxRTLSRecorder::update(RTLSProtocol::TrackableFrame& _frame) {
 
-	// Add the element to the queue
+	// Add the element to the appropriate recording
 	{
-		RTLSProtocol::TrackableFrame* frame = new RTLSProtocol::TrackableFrame(_frame);
 		std::lock_guard<std::mutex> lk(mutex);
-		dataQueue.push(frame);
+		if (isRecordingPrecise()) {
+			RTLSProtocol::TrackableFrame* frame = new RTLSProtocol::TrackableFrame(_frame);
+			takeQueue.back()->data.push(frame);
+		}
 	}
 	// Notify the thread that the condition has been met to proceed
+	// TODO: should this be done less frequently?
 	cv.notify_one();
 }
 
 // --------------------------------------------------------------
 string ofxRTLSRecorder::getStatus() {
 
+	// TODO: make this safe
+
 	stringstream ss;
 	if (!bEnableRecorder) ss << "Recorder is DISABLED";
-	if (!bRecording) ss << "Recording OFF";
+	if (!isRecording()) ss << "Recording OFF";
 	else {
-		ss << "Recording to file " << thisTakePath;
+		ss << "Recording to file " << takeQueue.back()->takePath;
 		ss << setprecision(2);
-		ss << " [" << float(ofGetElapsedTimeMillis() - thisTakeStartTimeMS) / 1000.0 << " sec]";
+		ss << " [" << float(ofGetElapsedTimeMillis() - takeQueue.back()->startTimeMS) / 1000.0 << " sec]";
 	}
 
 	return ss.str();
@@ -105,11 +154,32 @@ string ofxRTLSRecorder::getStatus() {
 // --------------------------------------------------------------
 void ofxRTLSRecorder::paramChanged(RemoteUIServerCallBackArg& arg) {
 	if (!arg.action == CLIENT_UPDATED_PARAM) return;
+	if (!isSetup) return;
 
 	if (arg.paramName.compare("RTLS-R- Record") == 0) {
-
+		if (bRecord && !bRecording) {
+			// Begin recording
+			// Add a new recording to the queue.
+			RTLSTake* take = new RTLSTake();
+			take->takePath = ofToDataPath(takeFolder + "/" + takePrefix + "_" + ofGetTimestampString() + ".c3d");
+			take->startTimeMS = ofGetElapsedTimeMillis();
+			// finalize the start time again with the first measurement
+			std::lock_guard<std::mutex> lk(mutex);
+			takeQueue.push(take);
+		}
+		else if (!bRecord && bRecording) {
+			// Stop recording
+			// Indicate this by adding a NULL to the queue.
+			std::lock_guard<std::mutex> lk(mutex);
+			takeQueue.push(NULL);
+		}
+		else {
+			// Can't perform this action. Already recording or not recording.
+		}
 	}
 }
 
 
 // --------------------------------------------------------------
+
+#endif

@@ -6,6 +6,8 @@
 #include "Trackable.pb.h"
 using namespace RTLSProtocol;
 
+#ifdef RTLS_PLAYER
+
 // Locking with Condition Variables, Queues and Mutex follows the 
 // examples set forth here:
 // https://ncona.com/2019/04/using-condition-variables-in-cpp/
@@ -20,7 +22,7 @@ using namespace RTLSProtocol;
 // able to be recoreded by the C3D filetype:
 // https://www.c3d.org/
 
-
+// Records data to the C3D filetype.
 class ofxRTLSRecorder : public ofThread {
 public:
 
@@ -33,19 +35,20 @@ public:
 
 	string getStatus();
 
+	// not safe
+	bool isRecording() { return bRecord; }
+
 private:
 
 	bool bEnableRecorder = true;
-	bool bFlagStart = false;
-	bool bFlagStop = false;
+	bool bRecord = false;
+	bool isSetup = false;
 
 	bool bRecording = false;
 	string takeFolder = "takes";
 	string takePrefix = "take"; // name will be takePrefix + "_" + timestamp + ".c3d"
 
-
-	string thisTakePath = "";
-	uint64_t thisTakeStartTimeMS = 0;
+	bool isRecordingPrecise() { return !takeQueue.empty() && takeQueue.back() != NULL; }
 
 	void paramChanged(RemoteUIServerCallBackArg& arg);
 
@@ -54,6 +57,13 @@ private:
 	atomic<bool> flagUnlock = false;
 
 	// Queue holds data ready to be saved
-	queue< RTLSProtocol::TrackableFrame* > dataQueue;
+	struct RTLSTake {
+		queue<RTLSProtocol::TrackableFrame*> data;
+		string takePath = "";
+		uint64_t startTimeMS = 0;
+	};
+	queue< RTLSTake* > takeQueue;
 
 };
+
+#endif
