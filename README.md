@@ -13,6 +13,8 @@ This addon also supports optional realtime post-processing of the data. Options 
 - Hungarian Algorithm / Tracking
 - etc.
 
+The addon also allows data to be saved and played back from the [C3D](https://www.c3d.org/) file format.
+
 
 ### System Requirements
 
@@ -78,8 +80,8 @@ First, make sure you have properly installed all of the dependencies; there are 
   ```
 
 4. In your project *Properties* window, under *Configuration Properties  > C/C++ > Preprocessor > Preprocessor Definitions*, select *Edit* from the dropdown menu on the right and at the bottom of the window, check the box that says *Inherit from parent or project defaults*.
-
 5. If you plan on using any of the postprocessing options (and have already included the appropriate addons according to the instructions in Step 1), pass the macro `RTLS_POSTPROCESS` in the Project Properties' *Preprocessor Definitions* <u>or</u> define `<RTLS_POSTPROCESS>true</RTLS_POSTPROCESS>` in **.vcproj* as above.
+6. If you plan on using the recording or playback functionality, pass the macro `RTLS_PLAYER` in the Project Properties' *Preprocessor Definitions* <u>or</u> define `<RTLS_PLAYER>true</RTLS_PLAYER>` in **.vcproj* as above.
 
 This approach to building ofxRTLS using defined properties allows MSBuild (and CI pipelines like TeamCity) to build any configuration without regenerating project files, by passing different options to the compiler on the command line like so:
 
@@ -87,10 +89,10 @@ This approach to building ofxRTLS using defined properties allows MSBuild (and C
 -p:RTLS_MOTIVE=true
 ```
 
-You can pass multiple options to the compiler like below. This would build the NULL and MOTIVE systems with postprocessing enabled.
+You can pass multiple options to the compiler like below. This would build the NULL and MOTIVE systems with postprocessing and recorder/player enabled.
 
 ```bash
--p:RTLS_NULL=true;RTLS_MOTIVE=true;RTLS_OPENVR=false;RTLS_POSTPROCESS=true
+-p:RTLS_NULL=true;RTLS_MOTIVE=true;RTLS_OPENVR=false;RTLS_POSTPROCESS=true;RTLS_PLAYER=true
 ```
 
 
