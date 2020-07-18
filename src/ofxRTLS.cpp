@@ -426,7 +426,7 @@ string ofxRTLS::getSupport() {
 #ifdef RTLS_PLAYER
 	supportStr += "ENABLED";
 #else 
-	supportStr += "DISABLED"
+	supportStr += "DISABLED";
 #endif
 	supportStr += ".";
 	return supportStr;
