@@ -17,6 +17,10 @@ void ofxRTLS::setup() {
 
 	// Setup general RTLS params
 	//RUI_NEW_GROUP("ofxRTLS");
+
+#ifdef RTLS_PLAYER
+	recorder.setup();
+#endif
 	
 #ifdef RTLS_NULL
 	// Setup params

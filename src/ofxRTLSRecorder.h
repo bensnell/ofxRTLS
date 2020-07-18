@@ -23,6 +23,7 @@ using namespace RTLSProtocol;
 // https://www.c3d.org/
 
 // Records data to the C3D filetype.
+// Waits for all data to be added to a recording before writing it to file.
 class ofxRTLSRecorder : public ofThread {
 public:
 
@@ -32,23 +33,25 @@ public:
 	void setup(string _takeFolder = "", string _takePrefix = "");
 
 	void update(RTLSProtocol::TrackableFrame& _frame);
+	//void update(vector<RTLSProtocol::TrackableFrame*> _frames);
 
 	string getStatus();
 
-	// not safe
-	bool isRecording() { return bRecord; }
+	bool isRecording() { return bRecording; }
 
 private:
 
 	bool bEnableRecorder = true;
-	bool bRecord = false;
 	bool isSetup = false;
 
-	bool bRecording = false;
+	bool bShouldRecord = false; // signal from user
+
+	atomic<bool> bRecording = false; // are we currently recording?
 	string takeFolder = "takes";
 	string takePrefix = "take"; // name will be takePrefix + "_" + timestamp + ".c3d"
 
-	bool isRecordingPrecise() { return !takeQueue.empty() && takeQueue.back() != NULL; }
+	string thisTakePath = "";
+	uint64_t thisTakeStartTimeMS = 0;
 
 	void paramChanged(RemoteUIServerCallBackArg& arg);
 
@@ -56,14 +59,21 @@ private:
 	std::condition_variable cv;
 	atomic<bool> flagUnlock = false;
 
-	// Queue holds data ready to be saved
-	struct RTLSTake {
+	// Queue holds data that is actively being written to or saved
+	class RTLSTake {
+	public:
 		queue<RTLSProtocol::TrackableFrame*> data;
 		string takePath = "";
 		uint64_t startTimeMS = 0;
+		bool bFlagSave = false;
+		void clear() {
+			while (!data.empty()) {
+				delete data.front();
+				data.pop();
+			}
+		}
 	};
 	queue< RTLSTake* > takeQueue;
-
 };
 
 #endif

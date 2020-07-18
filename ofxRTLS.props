@@ -10,6 +10,7 @@
     <RTLS_NULL Condition="('$(RTLS_MOTIVE)'=='false')And('$(RTLS_OPENVR)'=='false')">true</RTLS_NULL>
 
     <RTLS_POSTPROCESS Condition="'$(RTLS_POSTPROCESS)'==''">false</RTLS_POSTPROCESS>
+
     <RTLS_PLAYER Condition="'$(RTLS_PLAYER)'==''">false</RTLS_PLAYER>
   </PropertyGroup>
 <!--   <ItemGroup>

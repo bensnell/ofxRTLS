@@ -26,7 +26,6 @@ using namespace RTLSProtocol;
 
 #ifdef RTLS_PLAYER
 #include "ofxRTLSRecorder.h"
-//#include "ofxRTLSPlayer.h"
 #endif
 
 class ofxRTLS : public ofThread {
