@@ -229,6 +229,7 @@
     <ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSNullSystem.cpp" />
     <ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSPostprocessor.cpp" />
     <ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSRecorder.cpp" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSTrackableKey.cpp" />
     <ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\Trackable.pb.cc" />
   </ItemGroup>
   <ItemGroup>
@@ -275,6 +276,7 @@
     <ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSNullSystem.h" />
     <ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSPostprocessor.h" />
     <ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSRecorder.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSTrackableKey.h" />
     <ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\Trackable.pb.h" />
   </ItemGroup>
   <ItemGroup>

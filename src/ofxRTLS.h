@@ -49,6 +49,7 @@ public:
 	int isConnected();
 	bool isReceivingData();
 	float getFPS() { return dataFPS; }
+	float getMaxSystemFPS();
 
 	// Event that occurs when new data is received
 	ofEvent< ofxRTLSEventArgs > newFrameReceived;
@@ -94,6 +95,18 @@ public:
 #ifdef RTLS_PLAYER
 	ofxRTLSRecorder recorder;
 #endif
+
+	enum RTLS_SYSTEM_TYPE {
+		RTLS_SYSTEM_TYPE_NULL = 0,
+		RTLS_SYSTEM_TYPE_OPENVR,
+		RTLS_SYSTEM_TYPE_MOTIVE,
+		NUM_RTLS_SYSTEM_TYPES
+	};
+	enum RTLS_TRACKABLE_TYPE {
+		RTLS_TRACKABLE_TYPE_SAMPLE = 0, // marker
+		RTLS_TRACKABLE_TYPE_OBSERVER, // camera, reference
+		NUM_RTLS_TRACKABLE_TYPES
+	};
 
 private:
 

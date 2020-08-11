@@ -69,6 +69,8 @@ public:
 
 	ofEvent< NullSystemEventArgs > newDataReceived;
 
+	float getFrameRate() { return fps; }
+
 private:
 
 	bool bConnected = false;

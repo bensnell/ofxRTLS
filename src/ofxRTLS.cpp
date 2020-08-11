@@ -34,6 +34,8 @@ void ofxRTLS::setup() {
 #endif
 
 #ifdef RTLS_OPENVR
+	// Setup Params
+	openvr.setup();
 	// Add listeners for new data
 	ofAddListener(openvr.newDataReceived, this, &ofxRTLS::openvrDataReceived);
 	
@@ -61,10 +63,6 @@ void ofxRTLS::setup() {
 		"age,axes,kalman,easing,add-rate,continuity,easing");
 	motivePostR.setup("MotiveRef", "MR", "", "axes");
 #endif
-#endif
-
-#ifdef RTLS_PLAYER
-	recorder.setup();
 #endif
 
 	// Set target frame rate
@@ -117,8 +115,8 @@ void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
 	// ==============================================
 
 	ofJson js;
-	js["s"] = 0; // system = null
-	js["t"] = 0; // type = marker
+	js["s"] = int(RTLS_SYSTEM_TYPE_NULL);
+	js["t"] = int(RTLS_TRACKABLE_TYPE_SAMPLE);
 
 	ofxRTLSEventArgs outArgs;
 	outArgs.frame.set_context(js.dump());
@@ -138,7 +136,8 @@ void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
 
 #ifdef RTLS_PLAYER
 	// Pass this raw data to the recorder
-	recorder.update(outArgs.frame);
+	recorder.add(RTLS_SYSTEM_TYPE_NULL, nsys.getFrameRate(), outArgs.frame);
+	recorder.update(RTLS_SYSTEM_TYPE_NULL);
 #endif
 
 #ifdef RTLS_POSTPROCESS
@@ -170,8 +169,8 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 	// ==============================================
 
 	ofJson js;
-	js["s"] = 1; // system = openvr
-	js["t"] = 0; // type = marker
+	js["s"] = int(RTLS_SYSTEM_TYPE_OPENVR);
+	js["t"] = int(RTLS_TRACKABLE_TYPE_SAMPLE);
 
 	ofxRTLSEventArgs outArgs;
 	outArgs.frame.set_context(js.dump());
@@ -198,7 +197,8 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 
 #ifdef RTLS_PLAYER
 	// Pass this raw data to the recorder
-	recorder.update(outArgs.frame);
+	recorder.add(RTLS_SYSTEM_TYPE_OPENVR, openvr.getFPS(), outArgs.frame);
+	recorder.update(RTLS_SYSTEM_TYPE_OPENVR);
 #endif
 
 #ifdef RTLS_POSTPROCESS
@@ -230,8 +230,8 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 	// ==============================================
 
 	ofJson js;
-	js["s"] = 2; // system = motive
-	js["t"] = 0; // type = marker
+	js["s"] = int(RTLS_SYSTEM_TYPE_MOTIVE);
+	js["t"] = int(RTLS_TRACKABLE_TYPE_SAMPLE);
 
 	// Send each identified marker
 	ofxRTLSEventArgs mOutArgs;
@@ -258,7 +258,7 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 
 #ifdef RTLS_PLAYER
 	// Pass this raw data to the recorder
-	recorder.update(mOutArgs.frame);
+	recorder.add(RTLS_SYSTEM_TYPE_MOTIVE, motive.getMaxFPS(), mOutArgs.frame);
 #endif
 
 #ifdef RTLS_POSTPROCESS
@@ -270,7 +270,7 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 #endif
 
 	// ==============================================
-	// Camera Trackables
+	// Observer Trackables
 	// Send with specified period.
 	// ==============================================
 
@@ -279,8 +279,8 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 		lastSendTime = thisTime;
 
 		js.clear();
-		js["s"] = 2; // system = motive
-		js["t"] = 1; // type = reference / contribution / observer (camera)
+		js["s"] = int(RTLS_SYSTEM_TYPE_MOTIVE);
+		js["t"] = int(RTLS_TRACKABLE_TYPE_OBSERVER);
 		js["m"] = int(args.maybeNeedsCalibration);
 
 		ofxRTLSEventArgs cOutArgs;
@@ -311,7 +311,7 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 
 #ifdef RTLS_PLAYER
 		// Pass this raw data to the recorder
-		recorder.update(cOutArgs.frame);
+		recorder.add(RTLS_SYSTEM_TYPE_MOTIVE, motive.getMaxFPS(), cOutArgs.frame);
 #endif
 
 #ifdef RTLS_POSTPROCESS
@@ -322,6 +322,11 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 		ofNotifyEvent(newFrameReceived, cOutArgs);
 #endif
 	}
+
+#ifdef RTLS_PLAYER
+	// Update the recorder
+	recorder.update(RTLS_SYSTEM_TYPE_MOTIVE);
+#endif
 	
 	motiveFrameID++;
 }
@@ -433,6 +438,20 @@ string ofxRTLS::getSupport() {
 }
 
 // --------------------------------------------------------------
+float ofxRTLS::getMaxSystemFPS() {
+
+	float maxFPS = 0;
+#ifdef RTLS_NULL
+	maxFPS = max(maxFPS, nsys.getFrameRate());
+#endif
+#ifdef RTLS_OPENVR
+	maxFPS = max(maxFPS, openvr.getFPS());
+#endif
+#ifdef RTLS_MOTIVE
+	maxFPS = max(maxFPS, float(motive.getMaxFPS()));
+#endif
+	return maxFPS;
+}
 
 // --------------------------------------------------------------
 
