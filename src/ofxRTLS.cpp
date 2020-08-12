@@ -348,7 +348,7 @@ void ofxRTLS::threadedFunction() {
 		while (!dataTimestamps.empty() && dataTimestamps.front() < (thisTime-1000)) {
 			dataTimestamps.pop();
 		}
-		dataFPS = float(dataTimestamps.size());
+		dataFPS = dataFPS * 0.95 + float(dataTimestamps.size()) * 0.05;
 		mutex.unlock();
 		
 		sleep(16);
@@ -406,8 +406,9 @@ bool ofxRTLS::isReceivingData() {
 }
 
 // --------------------------------------------------------------
-string ofxRTLS::getSupport() {
-	string supportStr = "ofxRTLS compiled to support systems { ";
+string ofxRTLS::getSupportedSystems() {
+
+	string out = "{ ";
 	string systems = "";
 #ifdef RTLS_NULL
 	systems += "NULL, ";
@@ -420,19 +421,41 @@ string ofxRTLS::getSupport() {
 #endif
 	if (systems.empty()) systems = "--";
 	else systems = systems.substr(0, systems.size() - 2);
-	supportStr += systems + " } ";
-	supportStr += "with postprocessing ";
+	out += systems + " }";
+	return out;
+}
+
+// --------------------------------------------------------------
+bool ofxRTLS::isPostprocessSupported() {
 #ifdef RTLS_POSTPROCESS
-	supportStr += "ENABLED ";
+	return true;
 #else
-	supportStr += "DISABLED ";
+	return false;
 #endif
-	supportStr += "and player ";
+}
+
+// --------------------------------------------------------------
+bool ofxRTLS::isPlayerSupported() {
 #ifdef RTLS_PLAYER
-	supportStr += "ENABLED";
-#else 
-	supportStr += "DISABLED";
+	return true;
+#else
+	return false;
 #endif
+}
+
+// --------------------------------------------------------------
+string ofxRTLS::getSupport() {
+	string supportStr = "ofxRTLS compiled to support systems ";
+	supportStr += getSupportedSystems();
+	supportStr += " ";
+
+	supportStr += "with postprocessing ";
+	supportStr += isPostprocessSupported() ? "ENABLED" : "DISABLED";
+	supportStr += " ";
+	
+	supportStr += "and player ";
+	supportStr += isPlayerSupported() ? "ENABLED" : "DISABLED";
+	
 	supportStr += ".";
 	return supportStr;
 }

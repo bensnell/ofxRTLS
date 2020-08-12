@@ -56,6 +56,9 @@ public:
 
 	// What systems does this version of RTLS support?
 	string getSupport();
+	string getSupportedSystems();
+	bool isPostprocessSupported();
+	bool isPlayerSupported();
 
 #ifdef RTLS_NULL
 	ofxRTLSNullSystem nsys;
