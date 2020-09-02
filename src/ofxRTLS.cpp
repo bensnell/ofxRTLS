@@ -65,9 +65,6 @@ void ofxRTLS::setup() {
 #endif
 #endif
 
-	// Set target frame rate
-	dataFPS = ofGetTargetFrameRate();
-
 	startThread();
 }
 
