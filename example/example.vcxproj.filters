@@ -100,11 +100,23 @@
 		<ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSEventArgs.cpp">
 			<Filter>local_addons\ofxRTLS\src</Filter>
 		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSNullSystem.cpp">
+			<Filter>local_addons\ofxRTLS\src</Filter>
+		</ClCompile>
 		<ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSPostprocessor.cpp">
+			<Filter>local_addons\ofxRTLS\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSRecorder.cpp">
+			<Filter>local_addons\ofxRTLS\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSTrackableKey.cpp">
 			<Filter>local_addons\ofxRTLS\src</Filter>
 		</ClCompile>
 		<ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\Trackable.pb.cc">
 			<Filter>local_addons\ofxRTLS\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxTemporalResampler\src\ofxTemporalResampler.cpp">
+			<Filter>local_addons\ofxTemporalResampler\src</Filter>
 		</ClCompile>
 	</ItemGroup>
 	<ItemGroup>
@@ -167,6 +179,12 @@
 		</Filter>
 		<Filter Include="local_addons\ofxRTLS\src">
 			<UniqueIdentifier>{141E2C9B-FA16-C9EB-EFE6-F734}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxTemporalResampler">
+			<UniqueIdentifier>{89EE5067-E467-8C7F-7866-F0F6}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxTemporalResampler\src">
+			<UniqueIdentifier>{5BF50C12-1FF1-048E-25ED-0BEA}</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>
@@ -293,11 +311,23 @@
 		<ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSEventArgs.h">
 			<Filter>local_addons\ofxRTLS\src</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSNullSystem.h">
+			<Filter>local_addons\ofxRTLS\src</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSPostprocessor.h">
+			<Filter>local_addons\ofxRTLS\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSRecorder.h">
+			<Filter>local_addons\ofxRTLS\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSTrackableKey.h">
 			<Filter>local_addons\ofxRTLS\src</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\Trackable.pb.h">
 			<Filter>local_addons\ofxRTLS\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxTemporalResampler\src\ofxTemporalResampler.h">
+			<Filter>local_addons\ofxTemporalResampler\src</Filter>
 		</ClInclude>
 	</ItemGroup>
 	<ItemGroup>
