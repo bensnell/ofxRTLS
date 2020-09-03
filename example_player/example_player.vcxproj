@@ -107,7 +107,7 @@
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;..\..\..\OpenFrameworks\addons\ofxOsc\libs;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\posix;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\win32;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc;..\..\..\OpenFrameworks\addons\ofxOsc\src;..\..\..\OpenFrameworks\addons\ofxPoco\libs\poco\include;..\..\..\OpenFrameworks\addons\ofxPoco\src;..\..\..\OpenFrameworks\addons\ofxXmlSettings\libs;..\..\..\OpenFrameworks\addons\ofxXmlSettings\src;..\..\..\ExternalAddons\ofxRemoteUI\src;..\..\..\ExternalAddons\ofxRTLS\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;..\..\..\OpenFrameworks\addons\ofxOsc\libs;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\posix;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\win32;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc;..\..\..\OpenFrameworks\addons\ofxOsc\src;..\..\..\OpenFrameworks\addons\ofxPoco\libs\poco\include;..\..\..\OpenFrameworks\addons\ofxPoco\src;..\..\..\OpenFrameworks\addons\ofxXmlSettings\libs;..\..\..\OpenFrameworks\addons\ofxXmlSettings\src;..\..\..\ExternalAddons\ofxRemoteUI\src;..\..\..\ExternalAddons\ofxRTLS\src;..\..\..\ExternalAddons\ofxTemporalResampler\src</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <PreprocessorDefinitions>OSC_HOST_LITTLE_ENDIAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -129,7 +129,7 @@
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;..\..\..\OpenFrameworks\addons\ofxOsc\libs;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\posix;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\win32;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc;..\..\..\OpenFrameworks\addons\ofxOsc\src;..\..\..\OpenFrameworks\addons\ofxPoco\libs\poco\include;..\..\..\OpenFrameworks\addons\ofxPoco\src;..\..\..\OpenFrameworks\addons\ofxXmlSettings\libs;..\..\..\OpenFrameworks\addons\ofxXmlSettings\src;..\..\..\ExternalAddons\ofxRemoteUI\src;..\..\..\ExternalAddons\ofxRTLS\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;..\..\..\OpenFrameworks\addons\ofxOsc\libs;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\posix;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\win32;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc;..\..\..\OpenFrameworks\addons\ofxOsc\src;..\..\..\OpenFrameworks\addons\ofxPoco\libs\poco\include;..\..\..\OpenFrameworks\addons\ofxPoco\src;..\..\..\OpenFrameworks\addons\ofxXmlSettings\libs;..\..\..\OpenFrameworks\addons\ofxXmlSettings\src;..\..\..\ExternalAddons\ofxRemoteUI\src;..\..\..\ExternalAddons\ofxRTLS\src;..\..\..\ExternalAddons\ofxTemporalResampler\src</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ObjectFileName>$(IntDir)</ObjectFileName>
@@ -151,7 +151,7 @@
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;..\..\..\OpenFrameworks\addons\ofxOsc\libs;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\posix;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\win32;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc;..\..\..\OpenFrameworks\addons\ofxOsc\src;..\..\..\OpenFrameworks\addons\ofxPoco\libs\poco\include;..\..\..\OpenFrameworks\addons\ofxPoco\src;..\..\..\OpenFrameworks\addons\ofxXmlSettings\libs;..\..\..\OpenFrameworks\addons\ofxXmlSettings\src;..\..\..\ExternalAddons\ofxRemoteUI\src;..\..\..\ExternalAddons\ofxRTLS\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;..\..\..\OpenFrameworks\addons\ofxOsc\libs;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\posix;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\win32;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc;..\..\..\OpenFrameworks\addons\ofxOsc\src;..\..\..\OpenFrameworks\addons\ofxPoco\libs\poco\include;..\..\..\OpenFrameworks\addons\ofxPoco\src;..\..\..\OpenFrameworks\addons\ofxXmlSettings\libs;..\..\..\OpenFrameworks\addons\ofxXmlSettings\src;..\..\..\ExternalAddons\ofxRemoteUI\src;..\..\..\ExternalAddons\ofxRTLS\src;..\..\..\ExternalAddons\ofxTemporalResampler\src</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ObjectFileName>$(IntDir)</ObjectFileName>
@@ -176,7 +176,7 @@
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;..\..\..\OpenFrameworks\addons\ofxOsc\libs;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\posix;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\win32;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc;..\..\..\OpenFrameworks\addons\ofxOsc\src;..\..\..\OpenFrameworks\addons\ofxPoco\libs\poco\include;..\..\..\OpenFrameworks\addons\ofxPoco\src;..\..\..\OpenFrameworks\addons\ofxXmlSettings\libs;..\..\..\OpenFrameworks\addons\ofxXmlSettings\src;..\..\..\ExternalAddons\ofxRemoteUI\src;..\..\..\ExternalAddons\ofxRTLS\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;..\..\..\OpenFrameworks\addons\ofxOsc\libs;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\posix;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\ip\win32;..\..\..\OpenFrameworks\addons\ofxOsc\libs\oscpack\src\osc;..\..\..\OpenFrameworks\addons\ofxOsc\src;..\..\..\OpenFrameworks\addons\ofxPoco\libs\poco\include;..\..\..\OpenFrameworks\addons\ofxPoco\src;..\..\..\OpenFrameworks\addons\ofxXmlSettings\libs;..\..\..\OpenFrameworks\addons\ofxXmlSettings\src;..\..\..\ExternalAddons\ofxRemoteUI\src;..\..\..\ExternalAddons\ofxRTLS\src;..\..\..\ExternalAddons\ofxTemporalResampler\src</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <PreprocessorDefinitions>OSC_HOST_LITTLE_ENDIAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -231,6 +231,7 @@
     <ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSRecorder.cpp" />
     <ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSTrackableKey.cpp" />
     <ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\Trackable.pb.cc" />
+    <ClCompile Include="..\..\..\ExternalAddons\ofxTemporalResampler\src\ofxTemporalResampler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ofApp.h" />
@@ -278,6 +279,7 @@
     <ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSRecorder.h" />
     <ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSTrackableKey.h" />
     <ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\Trackable.pb.h" />
+    <ClInclude Include="..\..\..\ExternalAddons\ofxTemporalResampler\src\ofxTemporalResampler.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(OF_ROOT)\libs\openFrameworksCompiled\project\vs\openframeworksLib.vcxproj">
