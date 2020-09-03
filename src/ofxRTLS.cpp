@@ -59,7 +59,7 @@ void ofxRTLS::setup() {
 
 #ifdef RTLS_POSTPROCESS
 	// Setup the postprocessors
-	motivePostM.setup("MotiveMarkers", "MM", "id-dictionary.json", 
+	motivePostM.setup("MotiveMarkers", "MM", "", 
 		"age,axes,kalman,easing,add-rate,continuity,easing");
 	motivePostR.setup("MotiveRef", "MR", "", "axes");
 #endif
