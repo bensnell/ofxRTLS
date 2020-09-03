@@ -3,6 +3,7 @@
 #include "ofMain.h"
 
 #include "ofxRemoteUIServer.h"
+#include "ofxTemporalResampler.h"
 
 class NullSystemTrackable {
 public:
@@ -122,11 +123,12 @@ private:
 	int systemOverride = 0;
 	int typeOverride = 0;
 
-	
+	void getNextFrame(NullSystemEventArgs& args);
 	vector<_NullSystemTrackable> trackables;
 
-
-	uint64_t lastTime = 0; // ms
-
 	uint64_t cuidCounter = 1;
+
+	// dynamically sets the output frame rate
+	void paramChanged(RemoteUIServerCallBackArg& arg);
+	ofxTemporalResampler temporalResampler;
 };
