@@ -50,9 +50,13 @@ public:
 	bool isReceivingData();
 	float getFPS() { return dataFPS; }
 	float getMaxSystemFPS();
+	double getLatencyMS() { return latencyMS; }
 
 	// Event that occurs when new data is received
 	ofEvent< ofxRTLSEventArgs > newFrameReceived;
+
+	// Event that occurs when new latency is calculated
+	ofEvent< ofxRTLSLatencyArgs > latencyCalculated;
 
 	// What systems does this version of RTLS support?
 	string getSupport();
@@ -122,5 +126,8 @@ private:
 
 	// Contains timestamps at which data was received in the last second
 	queue<uint64_t> dataTimestamps;
-	float dataFPS = 0.0;
+	double dataFPS = 0.0;
+
+	atomic<double> latencyMS = 0.0;
+	void newLatencyCalculated(ofxRTLSLatencyArgs& args);
 };

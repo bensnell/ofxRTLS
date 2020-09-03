@@ -65,6 +65,9 @@ void ofxRTLS::setup() {
 #endif
 #endif
 
+	// Add a listener for any new latency measurements
+	ofAddListener(latencyCalculated, this, &ofxRTLS::newLatencyCalculated);
+
 	startThread();
 }
 
@@ -101,6 +104,8 @@ void ofxRTLS::stop() {
 
 void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
 
+	uint64_t thisMicros = ofGetElapsedTimeMicros();
+
 	lastReceive = ofGetElapsedTimeMillis();
 	mutex.lock();
 	dataTimestamps.push(lastReceive);
@@ -115,7 +120,8 @@ void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
 	js["s"] = args.bOverrideContext ? args.systemOverride : int(RTLS_SYSTEM_TYPE_NULL);
 	js["t"] = args.bOverrideContext ? args.typeOverride : int(RTLS_TRACKABLE_TYPE_SAMPLE);
 
-	ofxRTLSEventArgs outArgs;
+	ofxRTLSEventArgs outArgs(latencyCalculated);
+	outArgs.setStartAssemblyTime(thisMicros);
 	outArgs.frame.set_context(js.dump());
 	outArgs.frame.set_frame_id(nsysFrameID);
 	outArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
@@ -155,6 +161,8 @@ void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
 
 void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 
+	uint64_t thisMicros = ofGetElapsedTimeMicros();
+
 	lastReceive = ofGetElapsedTimeMillis();
 	mutex.lock();
 	dataTimestamps.push(lastReceive);
@@ -169,7 +177,8 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 	js["s"] = int(RTLS_SYSTEM_TYPE_OPENVR);
 	js["t"] = int(RTLS_TRACKABLE_TYPE_SAMPLE);
 
-	ofxRTLSEventArgs outArgs;
+	ofxRTLSEventArgs outArgs(latencyCalculated);
+	outArgs.setStartAssemblyTime(thisMicros);
 	outArgs.frame.set_context(js.dump());
 	outArgs.frame.set_frame_id(openvrFrameID);
 	outArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
@@ -216,6 +225,8 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 
 void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 
+	uint64_t thisMicros = ofGetElapsedTimeMicros();
+
 	lastReceive = ofGetElapsedTimeMillis();
 	mutex.lock();
 	dataTimestamps.push(lastReceive);
@@ -231,7 +242,8 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 	js["t"] = int(RTLS_TRACKABLE_TYPE_SAMPLE);
 
 	// Send each identified marker
-	ofxRTLSEventArgs mOutArgs;
+	ofxRTLSEventArgs mOutArgs(latencyCalculated);
+	mOutArgs.setStartAssemblyTime(thisMicros);
 	mOutArgs.frame.set_context(js.dump());
 	mOutArgs.frame.set_frame_id(motiveFrameID);
 	mOutArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
@@ -280,7 +292,8 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 		js["t"] = int(RTLS_TRACKABLE_TYPE_OBSERVER);
 		js["m"] = int(args.maybeNeedsCalibration);
 
-		ofxRTLSEventArgs cOutArgs;
+		ofxRTLSEventArgs cOutArgs(latencyCalculated);
+		cOutArgs.setStartAssemblyTime(thisMicros);
 		cOutArgs.frame.set_context(js.dump());
 		cOutArgs.frame.set_frame_id(motiveFrameID);
 		cOutArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
@@ -474,5 +487,10 @@ float ofxRTLS::getMaxSystemFPS() {
 }
 
 // --------------------------------------------------------------
+void ofxRTLS::newLatencyCalculated(ofxRTLSLatencyArgs& args) {
+
+	double latency = double(args.stopTimeUS - args.startTimeUS)/1000.0;
+	latencyMS = latencyMS * 0.95 + latency * 0.05;
+}
 
 // --------------------------------------------------------------

@@ -153,7 +153,8 @@ void ofxRTLSPostprocessor::processAndSend(ofxRTLSEventArgs& data,
 
 	// Create a data element
 	DataElem* elem = new DataElem();
-	elem->data = data;
+	elem->data.copyFrom(data); // move over the data
+	data.nullify(); // nullify the original data
 	elem->dataReadyEvent = &dataReadyEvent;
 
 	// Add the element to the queue
