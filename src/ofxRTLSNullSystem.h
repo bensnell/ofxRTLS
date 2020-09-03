@@ -51,6 +51,9 @@ public:
 class NullSystemEventArgs : public ofEventArgs {
 public:
 	vector<NullSystemTrackable> trackables;
+	bool bOverrideContext = false;
+	int systemOverride = 0;
+	int typeOverride = 0;
 };
 
 class ofxRTLSNullSystem : private ofThread {
@@ -114,6 +117,12 @@ private:
 	// CUID will be new after every absence.
 	bool bSetCUID = false;
 
+	// Force a different system and/or type
+	bool bOverrideContext = false;
+	int systemOverride = 0;
+	int typeOverride = 0;
+
+	
 	vector<_NullSystemTrackable> trackables;
 
 

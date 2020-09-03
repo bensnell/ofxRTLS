@@ -111,9 +111,9 @@ void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
 	// Send every frame
 	// ==============================================
 
-	ofJson js;
-	js["s"] = int(RTLS_SYSTEM_TYPE_NULL);
-	js["t"] = int(RTLS_TRACKABLE_TYPE_SAMPLE);
+	ofJson js; 
+	js["s"] = args.bOverrideContext ? args.systemOverride : int(RTLS_SYSTEM_TYPE_NULL);
+	js["t"] = args.bOverrideContext ? args.typeOverride : int(RTLS_TRACKABLE_TYPE_SAMPLE);
 
 	ofxRTLSEventArgs outArgs;
 	outArgs.frame.set_context(js.dump());

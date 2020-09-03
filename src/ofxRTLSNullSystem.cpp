@@ -28,6 +28,9 @@ void ofxRTLSNullSystem::setup() {
 	RUI_SHARE_PARAM_WCN("NuS- Presence Return Rapidness", presenceReturnRapidness, 0, 10);
 	RUI_SHARE_PARAM_WCN("NuS- Set ID", bSetID);
 	RUI_SHARE_PARAM_WCN("NuS- Set CUID", bSetCUID);
+	RUI_SHARE_PARAM_WCN("NuS- Override Context", bOverrideContext);
+	RUI_SHARE_PARAM_WCN("NuS- System Override", systemOverride, 0, 100);
+	RUI_SHARE_PARAM_WCN("NuS- Type Override", typeOverride, 0, 100);
 }
 
 // --------------------------------------------------------------
@@ -178,6 +181,13 @@ void ofxRTLSNullSystem::threadedFunction() {
 				for (auto& t : trackables) {
 					if (!t.bPresent) continue;
 					args.trackables.push_back(NullSystemTrackable(t));
+				}
+				// Override context if necessary
+				if (bOverrideContext)
+				{
+					args.bOverrideContext = true;
+					args.systemOverride = systemOverride;
+					args.typeOverride = typeOverride;
 				}
 				ofNotifyEvent(newDataReceived, args);
 
