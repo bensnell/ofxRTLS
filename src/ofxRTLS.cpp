@@ -19,7 +19,11 @@ void ofxRTLS::setup() {
 	//RUI_NEW_GROUP("ofxRTLS");
 
 #ifdef RTLS_PLAYER
+	// Setup recorder
 	recorder.setup();
+
+	// Add a listener for finished recordings
+	ofAddListener(recorder.recordingComplete, &player, &ofxRTLSPlayer::newRecording);
 #endif
 	
 #ifdef RTLS_NULL
@@ -67,11 +71,6 @@ void ofxRTLS::setup() {
 
 	// Add a listener for any new latency measurements
 	ofAddListener(latencyCalculated, this, &ofxRTLS::newLatencyCalculated);
-
-#ifdef RTLS_PLAYER
-	// Add a listener for finished recordings
-	ofAddListener(recorder.recordingComplete, &player, &ofxRTLSPlayer::newRecording);
-#endif
 	
 	startThread();
 }
