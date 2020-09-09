@@ -50,6 +50,8 @@ public:
 	string getRecordingFile() { return thisTakePath; }
 	void toggleRecording();
 
+	ofEvent<ofxRTLSRecordingCompleteArgs> recordingComplete;
+
 private:
 
 	bool bEnableRecorder = true;

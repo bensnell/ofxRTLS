@@ -25,10 +25,9 @@ using namespace RTLSProtocol;
 // able to be recoreded by the C3D filetype:
 // https://www.c3d.org/
 
-// Records data to the C3D filetype.
-// Waits for all data to be added to a recording before writing it to file.
-// NOTE: The recorder can save data from different tracking systems,
-// but all systems must have the same frame rate.
+
+
+// Plays data back from a c3d file
 class ofxRTLSPlayer : public ofThread {
 public:
 
@@ -49,9 +48,12 @@ public:
 	bool isRecording() { return bRecording; }
 	bool isPlaying() { return bPlaying; }
 
+	void setPlayingFile(string filePath); // absolute path
 	string getPlayingFile() { return thisTakePath; }
 	void promptUserOpenFile();
 	void togglePlayback();
+
+	void newRecording(ofxRTLSRecordingCompleteArgs& args);
 
 private:
 

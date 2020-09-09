@@ -71,3 +71,13 @@ private:
 		ofNotifyEvent(*newLatencyCalculated, latency);
 	}
 };
+
+// Argument when a recording is complete
+class ofxRTLSRecordingCompleteArgs : public ofEventArgs {
+public:
+
+	string filePath = "";
+
+
+
+};

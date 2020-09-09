@@ -100,6 +100,11 @@ void ofxRTLSRecorder::threadedFunction() {
 			}
 			if (bTakeSaved) {
 				ofLogNotice("ofxRTLSRecorder") << "Saved take to file \"" << take->path << "\"" << endl;
+
+				// Also notify that we successfully saved it
+				ofxRTLSRecordingCompleteArgs args;
+				args.filePath = take->path;
+				ofNotifyEvent(recordingComplete, args);
 			} else
 			{
 				ofLogNotice("ofxRTLSRecorder") << "Could not save take to file \"" << take->path << "\"" << endl;
@@ -413,7 +418,7 @@ bool ofxRTLSRecorder::saveTake(RTLSTake* take) {
 	}
 	
 	// Save the c3d to file
-	ofFilePath::createEnclosingDirectory(thisTakePath);
+	ofFilePath::createEnclosingDirectory(take->path);
 	c3d.write(take->path);
 
 	return true;

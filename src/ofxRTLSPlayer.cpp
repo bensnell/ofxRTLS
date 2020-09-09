@@ -424,13 +424,8 @@ void ofxRTLSPlayer::promptUserOpenFile() {
 
 	ofFileDialogResult result = ofSystemLoadDialog("Select a .c3d file to playback", false, ofFilePath::getCurrentExeDir());
 	if (!result.bSuccess) return;
-	string ext = ofToLower(ofFilePath::getFileExt(result.fileName));
-	if (ext.compare("c3d") != 0) {
-		ofLogNotice("ofxRTLSPlayer") << "Please provide a path to a .c3d file.";
-		return;
-	}
-	ofLogNotice("ofxRTLSPlayer") << "Loaded file \"" << result.filePath << "\"";
-	thisTakePath = result.filePath;
+
+	setPlayingFile(result.filePath);
 }
 
 // --------------------------------------------------------------
@@ -445,8 +440,43 @@ void ofxRTLSPlayer::togglePlayback() {
 }
 
 // --------------------------------------------------------------
+void ofxRTLSPlayer::setPlayingFile(string filePath) {
+
+	// Remove whitespace
+	filePath = ofTrim(filePath);
+
+	// Get the absolute path
+	if (!ofFilePath::isAbsolute(filePath)) {
+		filePath = ofToDataPath(filePath, true);
+	}
+
+	// Make sure the file exists
+	if (!ofFile::doesFileExist(filePath)) {
+		ofLogNotice("ofxRTLSPlayer") << "File does not exist: \"" << filePath << "\"";
+		return;
+	}
+
+	// Make sure it has the correct extension
+	string ext = ofToLower(ofFilePath::getFileExt(filePath));
+	if (ext.compare("c3d") != 0) {
+		ofLogNotice("ofxRTLSPlayer") << "Please provide a path to a .c3d file.";
+		return;
+	}
+
+	// Load this file
+	ofLogNotice("ofxRTLSPlayer") << "Loaded file \"" << filePath << "\"";
+
+	thisTakePath = filePath;
+}
 
 // --------------------------------------------------------------
+void ofxRTLSPlayer::newRecording(ofxRTLSRecordingCompleteArgs& args) {
+
+	// If we aren't playing, set this file as the playback file
+	if (!bRecording) {
+		setPlayingFile(args.filePath);
+	}
+}
 
 // --------------------------------------------------------------
 
