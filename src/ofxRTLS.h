@@ -26,6 +26,7 @@ using namespace RTLSProtocol;
 
 #ifdef RTLS_PLAYER
 #include "ofxRTLSRecorder.h"
+#include "ofxRTLSPlayer.h"
 #endif
 
 class ofxRTLS : public ofThread {
@@ -63,6 +64,10 @@ public:
 	string getSupportedSystems();
 	bool isPostprocessSupported();
 	bool isPlayerSupported();
+	bool isRecording();
+	bool isPlaying();
+	string getRecordingFile();
+	string getPlayingFile();
 
 #ifdef RTLS_NULL
 	ofxRTLSNullSystem nsys;
@@ -101,6 +106,7 @@ public:
 
 #ifdef RTLS_PLAYER
 	ofxRTLSRecorder recorder;
+	ofxRTLSPlayer player;
 #endif
 
 	enum RTLS_SYSTEM_TYPE {

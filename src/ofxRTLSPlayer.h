@@ -29,11 +29,11 @@ using namespace RTLSProtocol;
 // Waits for all data to be added to a recording before writing it to file.
 // NOTE: The recorder can save data from different tracking systems,
 // but all systems must have the same frame rate.
-class ofxRTLSRecorder : public ofThread {
+class ofxRTLSPlayer : public ofThread {
 public:
 
-	ofxRTLSRecorder();
-	~ofxRTLSRecorder();
+	ofxRTLSPlayer();
+	~ofxRTLSPlayer();
 
 	void setup(string _takeFolder = "", string _takePrefix = "");
 
@@ -47,10 +47,15 @@ public:
 	string getStatus();
 
 	bool isRecording() { return bRecording; }
-	string getRecordingFile() { return thisTakePath; }
-	void toggleRecording();
+	bool isPlaying() { return bPlaying; }
+
+	string getPlayingFile() { return thisTakePath; }
+	void promptUserOpenFile();
+	void togglePlayback();
 
 private:
+
+	bool bPlaying = false;
 
 	bool bEnableRecorder = true;
 	bool isSetup = false;

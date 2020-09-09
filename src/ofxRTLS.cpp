@@ -494,3 +494,41 @@ void ofxRTLS::newLatencyCalculated(ofxRTLSLatencyArgs& args) {
 }
 
 // --------------------------------------------------------------
+bool ofxRTLS::isRecording() {
+#ifdef RTLS_PLAYER
+	return recorder.isRecording();
+#endif
+	return false;
+}
+
+// --------------------------------------------------------------
+bool ofxRTLS::isPlaying() {
+#ifdef RTLS_PLAYER
+	return player.isPlaying();
+#endif
+	return false;
+}
+
+// --------------------------------------------------------------
+string ofxRTLS::getRecordingFile() {
+#ifdef RTLS_PLAYER
+	return recorder.getRecordingFile();
+#endif
+	return "";
+}
+
+// --------------------------------------------------------------
+string ofxRTLS::getPlayingFile() {
+#ifdef RTLS_PLAYER
+	return player.getPlayingFile();
+#endif
+	return "";
+}
+
+// --------------------------------------------------------------
+
+// --------------------------------------------------------------
+
+// --------------------------------------------------------------
+
+// --------------------------------------------------------------

@@ -1,14 +1,14 @@
-#include "ofxRTLSRecorder.h"
+#include "ofxRTLSPlayer.h"
 
 #ifdef RTLS_PLAYER
 
 // --------------------------------------------------------------
-ofxRTLSRecorder::ofxRTLSRecorder() {
+ofxRTLSPlayer::ofxRTLSPlayer() {
 
 }
 
 // --------------------------------------------------------------
-ofxRTLSRecorder::~ofxRTLSRecorder() {
+ofxRTLSPlayer::~ofxRTLSPlayer() {
 
 	// Flag that we should stop waiting 
 	flagUnlock = true;
@@ -20,12 +20,12 @@ ofxRTLSRecorder::~ofxRTLSRecorder() {
 }
 
 // --------------------------------------------------------------
-void ofxRTLSRecorder::setup(string _takeFolder, string _takePrefix) {
+void ofxRTLSPlayer::setup(string _takeFolder, string _takePrefix) {
 	
 	if (!_takeFolder.empty()) takeFolder = _takeFolder;
 	if (!_takePrefix.empty()) takePrefix = _takePrefix;
 
-	RUI_NEW_GROUP("ofxRTLSRecorder");
+	RUI_NEW_GROUP("ofxRTLSPlayer");
 	RUI_SHARE_PARAM_WCN("RTLS-R- Enable", bEnableRecorder);
 	RUI_SHARE_PARAM_WCN("RTLS-R- Record", bShouldRecord);
 	RUI_SHARE_PARAM_WCN("RTLS-R- Take Folder", takeFolder);
@@ -35,7 +35,7 @@ void ofxRTLSRecorder::setup(string _takeFolder, string _takePrefix) {
 	bRecording = false;
 	RUI_PUSH_TO_CLIENT();
 
-	ofAddListener(RUI_GET_OF_EVENT(), this, &ofxRTLSRecorder::paramChanged);
+	ofAddListener(RUI_GET_OF_EVENT(), this, &ofxRTLSPlayer::paramChanged);
 
 	isSetup = true;
 
@@ -43,7 +43,7 @@ void ofxRTLSRecorder::setup(string _takeFolder, string _takePrefix) {
 }
 
 // --------------------------------------------------------------
-void ofxRTLSRecorder::threadedFunction() {
+void ofxRTLSPlayer::threadedFunction() {
 
 	RTLSTake* take = NULL;
 	while (isThreadRunning()) {
@@ -82,7 +82,7 @@ void ofxRTLSRecorder::threadedFunction() {
 				}
 				else {
 					if (takeQueue.size() > 1) {
-						ofLogError("ofxRTLSRecorder") << "Take queue has more than 2 currently recording takes. This should not be happening.";
+						ofLogError("ofxRTLSPlayer") << "Take queue has more than 2 currently recording takes. This should not be happening.";
 					}
 				}
 			}
@@ -96,13 +96,13 @@ void ofxRTLSRecorder::threadedFunction() {
 				bTakeSaved = saveTake(take);
 			}
 			catch (const std::exception&) {
-				ofLogError("ofxRTLSRecorder") << "Encountered error while trying to save the take.";
+				ofLogError("ofxRTLSPlayer") << "Encountered error while trying to save the take.";
 			}
 			if (bTakeSaved) {
-				ofLogNotice("ofxRTLSRecorder") << "Saved take to file \"" << take->path << "\"" << endl;
+				ofLogNotice("ofxRTLSPlayer") << "Saved take to file \"" << take->path << "\"" << endl;
 			} else
 			{
-				ofLogNotice("ofxRTLSRecorder") << "Could not save take to file \"" << take->path << "\"" << endl;
+				ofLogNotice("ofxRTLSPlayer") << "Could not save take to file \"" << take->path << "\"" << endl;
 			}
 
 			// Delete the take
@@ -113,7 +113,7 @@ void ofxRTLSRecorder::threadedFunction() {
 }
 
 // --------------------------------------------------------------
-void ofxRTLSRecorder::add(int systemIndex, float systemFPS, RTLSProtocol::TrackableFrame& _frame) {
+void ofxRTLSPlayer::add(int systemIndex, float systemFPS, RTLSProtocol::TrackableFrame& _frame) {
 	if (!isSetup) return;
 	if (!bEnableRecorder) return;
 	if (!bRecording) return;
@@ -134,7 +134,7 @@ void ofxRTLSRecorder::add(int systemIndex, float systemFPS, RTLSProtocol::Tracka
 		// If not, will it?
 		if (take->fps < 0) take->fps = systemFPS;
 		else if (abs(take->fps - systemFPS) > 0.001) {
-			ofLogWarning("ofxRTLSRecorder") << "Cannot record from multiple systems at once that have different frame rates";
+			ofLogWarning("ofxRTLSPlayer") << "Cannot record from multiple systems at once that have different frame rates";
 			return;
 		}
 		// Take can accept system, so add it
@@ -153,7 +153,7 @@ void ofxRTLSRecorder::add(int systemIndex, float systemFPS, RTLSProtocol::Tracka
 }
 
 // --------------------------------------------------------------
-void ofxRTLSRecorder::update(int systemIndex) {
+void ofxRTLSPlayer::update(int systemIndex) {
 	if (!isSetup) return;
 	if (!bEnableRecorder) return;
 	if (!bRecording) return;
@@ -221,7 +221,7 @@ void ofxRTLSRecorder::update(int systemIndex) {
 }
 
 // --------------------------------------------------------------
-string ofxRTLSRecorder::getStatus() {
+string ofxRTLSPlayer::getStatus() {
 
 	stringstream ss;
 	if (!isSetup) ss << "Recorder not setup";
@@ -240,7 +240,7 @@ string ofxRTLSRecorder::getStatus() {
 }
 
 // --------------------------------------------------------------
-void ofxRTLSRecorder::paramChanged(RemoteUIServerCallBackArg& arg) {
+void ofxRTLSPlayer::paramChanged(RemoteUIServerCallBackArg& arg) {
 	if (!isSetup) return;
 	if (!arg.action == CLIENT_UPDATED_PARAM) return;
 	
@@ -278,19 +278,19 @@ void ofxRTLSRecorder::paramChanged(RemoteUIServerCallBackArg& arg) {
 }
 
 // --------------------------------------------------------------
-bool ofxRTLSRecorder::saveTake(RTLSTake* take) {
+bool ofxRTLSPlayer::saveTake(RTLSTake* take) {
 
 	// Verify the validity of this take
 	if (take == NULL) {
-		ofLogError("ofxRTLSRecorder") << "Cannot save NULL take.";
+		ofLogError("ofxRTLSPlayer") << "Cannot save NULL take.";
 		return false;
 	}
 	if (take->empty()) {
-		ofLogError("ofxRTLSRecorder") << "Cannot save empty take.";
+		ofLogError("ofxRTLSPlayer") << "Cannot save empty take.";
 		return false;
 	}
 	if (!take->valid()) {
-		ofLogError("ofxRTLSRecorder") << "Cannot save invalid take.";
+		ofLogError("ofxRTLSPlayer") << "Cannot save invalid take.";
 		return false;
 	}
 
@@ -420,19 +420,35 @@ bool ofxRTLSRecorder::saveTake(RTLSTake* take) {
 }
 
 // --------------------------------------------------------------
-void ofxRTLSRecorder::toggleRecording() {
+void ofxRTLSPlayer::promptUserOpenFile() {
 
-	// TODO: Make this safer
-
-	bShouldRecord = !bRecording;
-	RUI_PUSH_TO_CLIENT();
-
-	RemoteUIServerCallBackArg arg;
-	arg.action = CLIENT_UPDATED_PARAM;
-	arg.paramName = "RTLS-R- Record";
-	paramChanged(arg);
+	ofFileDialogResult result = ofSystemLoadDialog("Select a .c3d file to playback", false, ofFilePath::getCurrentExeDir());
+	if (!result.bSuccess) return;
+	string ext = ofToLower(ofFilePath::getFileExt(result.fileName));
+	if (ext.compare("c3d") != 0) {
+		ofLogNotice("ofxRTLSPlayer") << "Please provide a path to a .c3d file.";
+		return;
+	}
+	ofLogNotice("ofxRTLSPlayer") << "Loaded file \"" << result.filePath << "\"";
+	thisTakePath = result.filePath;
 }
 
 // --------------------------------------------------------------
+void ofxRTLSPlayer::togglePlayback() {
+
+	// TODO
+
+
+
+
+
+}
+
+// --------------------------------------------------------------
+
+// --------------------------------------------------------------
+
+// --------------------------------------------------------------
+
 
 #endif
