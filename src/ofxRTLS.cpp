@@ -21,9 +21,13 @@ void ofxRTLS::setup() {
 #ifdef RTLS_PLAYER
 	// Setup recorder
 	recorder.setup();
+	// Setup player
+	player.setup();
 
 	// Add a listener for finished recordings
 	ofAddListener(recorder.recordingComplete, &player, &ofxRTLSPlayer::newRecording);
+	// Add a listener for playing back frames
+	ofAddListener(player.newPlaybackData, this, &ofxRTLS::playerDataReceived);
 #endif
 	
 #ifdef RTLS_NULL
@@ -110,10 +114,7 @@ void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
 
 	uint64_t thisMicros = ofGetElapsedTimeMicros();
 
-	lastReceive = ofGetElapsedTimeMillis();
-	mutex.lock();
-	dataTimestamps.push(lastReceive);
-	mutex.unlock();
+	markDataReceived();
 
 	// ==============================================
 	// Fake Data
@@ -147,17 +148,10 @@ void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
 	recorder.update(RTLS_SYSTEM_TYPE_NULL);
 #endif
 
-#ifdef RTLS_POSTPROCESS
-	// Post-process the data, then send it out when ready
-	nsysPostM.processAndSend(outArgs, newFrameReceived);
-#else
-	// Send out data immediately
-	ofNotifyEvent(newFrameReceived, outArgs);
-#endif
+	sendData(outArgs, RTLS_SYSTEM_TYPE_NULL, RTLS_TRACKABLE_TYPE_SAMPLE);
 
 	nsysFrameID++;
 }
-
 #endif
 
 // --------------------------------------------------------------
@@ -167,10 +161,7 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 
 	uint64_t thisMicros = ofGetElapsedTimeMicros();
 
-	lastReceive = ofGetElapsedTimeMillis();
-	mutex.lock();
-	dataTimestamps.push(lastReceive);
-	mutex.unlock();
+	markDataReceived();
 
 	// ==============================================
 	// Generic Tracker Trackables
@@ -211,17 +202,10 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 	recorder.update(RTLS_SYSTEM_TYPE_OPENVR);
 #endif
 
-#ifdef RTLS_POSTPROCESS
-	// Post-process the data, then send it out when ready
-	openvrPostM.processAndSend(outArgs, newFrameReceived);
-#else
-	// Send out data immediately
-	ofNotifyEvent(newFrameReceived, outArgs);
-#endif
+	sendData(outArgs, RTLS_SYSTEM_TYPE_OPENVR, RTLS_TRACKABLE_TYPE_SAMPLE);
 
 	openvrFrameID++;
 }
-
 #endif
 
 // --------------------------------------------------------------
@@ -231,10 +215,7 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 
 	uint64_t thisMicros = ofGetElapsedTimeMicros();
 
-	lastReceive = ofGetElapsedTimeMillis();
-	mutex.lock();
-	dataTimestamps.push(lastReceive);
-	mutex.unlock();
+	markDataReceived();
 
 	// ==============================================
 	// Marker Trackables
@@ -274,13 +255,8 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 	recorder.add(RTLS_SYSTEM_TYPE_MOTIVE, motive.getMaxFPS(), mOutArgs.frame);
 #endif
 
-#ifdef RTLS_POSTPROCESS
-	// Post-process the data, then send it out when ready
-	motivePostM.processAndSend(mOutArgs, newFrameReceived);
-#else
-	// Send out the data immediately
-	ofNotifyEvent(newFrameReceived, mOutArgs);
-#endif
+	sendData(mOutArgs, RTLS_SYSTEM_TYPE_MOTIVE, RTLS_TRACKABLE_TYPE_SAMPLE);
+
 
 	// ==============================================
 	// Observer Trackables
@@ -288,7 +264,8 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 	// ==============================================
 
 	uint64_t thisTime = ofGetElapsedTimeMillis();
-	if (bSendCameraData && ((lastSendTime == 0) || (thisTime - lastSendTime >= cameraDataFrequency*1000.0))) {
+	if (bSendCameraData && ((lastSendTime == 0) || 
+		(thisTime - lastSendTime >= cameraDataFrequency*1000.0))) {
 		lastSendTime = thisTime;
 
 		js.clear();
@@ -328,13 +305,7 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 		recorder.add(RTLS_SYSTEM_TYPE_MOTIVE, motive.getMaxFPS(), cOutArgs.frame);
 #endif
 
-#ifdef RTLS_POSTPROCESS
-		// Post-process the data, then send it out when ready
-		motivePostR.processAndSend(cOutArgs, newFrameReceived);
-#else
-		// Send out camera data immediately
-		ofNotifyEvent(newFrameReceived, cOutArgs);
-#endif
+		sendData(cOutArgs, RTLS_SYSTEM_TYPE_MOTIVE, RTLS_TRACKABLE_TYPE_OBSERVER);
 	}
 
 #ifdef RTLS_PLAYER
@@ -345,6 +316,140 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 	motiveFrameID++;
 }
 #endif
+
+// --------------------------------------------------------------
+#ifdef RTLS_PLAYER
+void ofxRTLS::playerDataReceived(ofxRTLSPlayerDataArgs& args) {
+
+	uint64_t thisMicros = ofGetElapsedTimeMicros();
+
+	markDataReceived();
+
+	// ==============================================
+	// Playback Data
+	// (Only when playback is active)
+	// ==============================================
+
+	ofxRTLSEventArgs outArgs(latencyCalculated);
+	outArgs.setStartAssemblyTime(thisMicros);
+	// Set frame ID or timestamp?
+	outArgs.frame = args.frame; // ?
+
+	// (Don't record played data)
+
+	// Send the data out appropriately
+	sendData(outArgs, args.systemType, args.trackableType);
+
+	// update frame ID?
+
+
+
+	// Make sure to turn off realtime data
+
+	// Make sure to reset postprocessor every loop
+
+
+}
+#endif
+
+// --------------------------------------------------------------
+bool ofxRTLS::sendData(ofxRTLSEventArgs& args, 
+	RTLSSystemType systemType, RTLSTrackableType trackableType) {
+
+	switch (systemType) {
+
+	// ========================================================================
+	case RTLS_SYSTEM_TYPE_NULL: {
+#ifdef RTLS_NULL 
+		switch (trackableType) {
+
+		// --------------------------------------------------------------------
+		case RTLS_TRACKABLE_TYPE_SAMPLE: {
+#ifdef RTLS_POSTPROCESS
+			// Post-process the data, then send it out when ready
+			nsysPostM.processAndSend(args, newFrameReceived);
+#else
+			// Send out data immediately
+			ofNotifyEvent(newFrameReceived, args);
+#endif
+		}; break;
+
+		// --------------------------------------------------------------------
+		default: {
+			return false; // Invalid trackable type
+		}; break;
+		}
+#else 
+		return false; // Not compiled for Null System
+#endif
+	}; break;
+
+	// ========================================================================
+	case RTLS_SYSTEM_TYPE_OPENVR: {
+#ifdef RTLS_OPENVR
+		switch (trackableType) {
+
+		// --------------------------------------------------------------------
+		case RTLS_TRACKABLE_TYPE_SAMPLE: {
+#ifdef RTLS_POSTPROCESS
+			openvrPostM.processAndSend(args, newFrameReceived);
+#else
+			ofNotifyEvent(newFrameReceived, args);
+#endif
+		}; break;
+
+		// --------------------------------------------------------------------
+		default: {
+			return false; // Invalid trackable type
+		}; break;
+		}
+#else
+		return false; // Not compiled for OpenVR
+#endif
+	}; break;
+
+	// ========================================================================
+	case RTLS_SYSTEM_TYPE_MOTIVE: {
+#ifdef RTLS_MOTIVE
+		switch (trackableType) {
+
+		// --------------------------------------------------------------------
+		case RTLS_TRACKABLE_TYPE_OBSERVER: { // Motive Cameras
+#ifdef RTLS_POSTPROCESS
+			motivePostR.processAndSend(args, newFrameReceived);
+#else
+			ofNotifyEvent(newFrameReceived, args);
+#endif
+		}; break;
+
+		// --------------------------------------------------------------------
+		case RTLS_TRACKABLE_TYPE_SAMPLE: { // Motive markers
+#ifdef RTLS_POSTPROCESS
+			motivePostM.processAndSend(args, newFrameReceived);
+#else
+			ofNotifyEvent(newFrameReceived, args);
+#endif
+		}; break;
+
+		// --------------------------------------------------------------------
+		default: {
+			return false; // Invalid trackable type
+		}; break;
+		}
+#else
+		return false; // Not compiled for Motive
+#endif
+	}; break;
+
+	// ========================================================================
+	case RTLS_SYSTEM_TYPE_INVALID:
+	default: {
+		return false; // Invalid system type
+	}; break;
+	}
+
+	return true;
+}
 
 // --------------------------------------------------------------
 void ofxRTLS::threadedFunction() {
@@ -530,6 +635,13 @@ string ofxRTLS::getPlayingFile() {
 }
 
 // --------------------------------------------------------------
+void ofxRTLS::markDataReceived() {
+
+	lastReceive = ofGetElapsedTimeMillis();
+	mutex.lock();
+	dataTimestamps.push(lastReceive);
+	mutex.unlock();
+}
 
 // --------------------------------------------------------------
 

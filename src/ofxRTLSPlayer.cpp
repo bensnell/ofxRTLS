@@ -22,24 +22,24 @@ ofxRTLSPlayer::~ofxRTLSPlayer() {
 // --------------------------------------------------------------
 void ofxRTLSPlayer::setup(string _takeFolder, string _takePrefix) {
 	
-	if (!_takeFolder.empty()) takeFolder = _takeFolder;
-	if (!_takePrefix.empty()) takePrefix = _takePrefix;
+	//if (!_takeFolder.empty()) takeFolder = _takeFolder;
+	//if (!_takePrefix.empty()) takePrefix = _takePrefix;
 
-	RUI_NEW_GROUP("ofxRTLSPlayer");
-	RUI_SHARE_PARAM_WCN("RTLS-R- Enable", bEnableRecorder);
-	RUI_SHARE_PARAM_WCN("RTLS-R- Record", bShouldRecord);
-	RUI_SHARE_PARAM_WCN("RTLS-R- Take Folder", takeFolder);
-	RUI_SHARE_PARAM_WCN("RTLS-R- Take Prefix", takePrefix);
+	//RUI_NEW_GROUP("ofxRTLSPlayer");
+	//RUI_SHARE_PARAM_WCN("RTLS-R- Enable", bEnableRecorder);
+	//RUI_SHARE_PARAM_WCN("RTLS-R- Record", bShouldRecord);
+	//RUI_SHARE_PARAM_WCN("RTLS-R- Take Folder", takeFolder);
+	//RUI_SHARE_PARAM_WCN("RTLS-R- Take Prefix", takePrefix);
 
-	bShouldRecord = false;
-	bRecording = false;
-	RUI_PUSH_TO_CLIENT();
+	//bShouldRecord = false;
+	//bRecording = false;
+	//RUI_PUSH_TO_CLIENT();
 
-	ofAddListener(RUI_GET_OF_EVENT(), this, &ofxRTLSPlayer::paramChanged);
+	//ofAddListener(RUI_GET_OF_EVENT(), this, &ofxRTLSPlayer::paramChanged);
 
-	isSetup = true;
+	//isSetup = true;
 
-	startThread();
+	//startThread();
 }
 
 // --------------------------------------------------------------

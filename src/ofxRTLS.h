@@ -7,6 +7,7 @@
 #include "ofMain.h"
 #include "ofxRemoteUIServer.h"
 #include "ofxRTLSEventArgs.h"
+#include "ofxRTLSTypes.h"
 #include "Trackable.pb.h"
 using namespace RTLSProtocol;
 
@@ -106,20 +107,11 @@ public:
 
 #ifdef RTLS_PLAYER
 	ofxRTLSRecorder recorder;
-	ofxRTLSPlayer player;
-#endif
 
-	enum RTLS_SYSTEM_TYPE {
-		RTLS_SYSTEM_TYPE_NULL = 0,
-		RTLS_SYSTEM_TYPE_OPENVR,
-		RTLS_SYSTEM_TYPE_MOTIVE,
-		NUM_RTLS_SYSTEM_TYPES
-	};
-	enum RTLS_TRACKABLE_TYPE {
-		RTLS_TRACKABLE_TYPE_SAMPLE = 0, // marker
-		RTLS_TRACKABLE_TYPE_OBSERVER, // camera, reference
-		NUM_RTLS_TRACKABLE_TYPES
-	};
+	ofxRTLSPlayer player;
+	void playerDataReceived(ofxRTLSPlayerDataArgs& args);
+	// frame ID?
+#endif
 
 private:
 
@@ -129,6 +121,12 @@ private:
 	atomic<bool> bReceivingData = false;
 	uint64_t lastReceive = 0;
 	int stopGap = 100; // number of milliseconds before we decide no data is being received
+	// Mark that we received a new frame
+	void markDataReceived();
+	// Send event args given a system and type.
+	// If the provided system is not compiled, will return false.
+	bool sendData(ofxRTLSEventArgs& args, RTLSSystemType systemType, 
+		RTLSTrackableType trackableType);
 
 	// Contains timestamps at which data was received in the last second
 	queue<uint64_t> dataTimestamps;
@@ -136,4 +134,7 @@ private:
 
 	atomic<double> latencyMS = 0.0;
 	void newLatencyCalculated(ofxRTLSLatencyArgs& args);
+
+	// If playback is active, is realtime data stopped?
+	bool bPlaybackOverridesRealtimeData = true;
 };

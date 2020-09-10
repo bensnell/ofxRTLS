@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxRemoteUIServer.h"
 #include "ofxRTLSEventArgs.h"
+#include "ofxRTLSTypes.h"
 #include "Trackable.pb.h"
 using namespace RTLSProtocol;
 #include "ofxRTLSTrackableKey.h"
@@ -10,6 +11,14 @@ using namespace RTLSProtocol;
 #ifdef RTLS_PLAYER
 
 #include "ezc3d_all.h"
+
+class ofxRTLSPlayerDataArgs : public ofEventArgs {
+public:
+
+	TrackableFrame frame;
+	RTLSSystemType systemType = RTLS_SYSTEM_TYPE_INVALID;
+	RTLSTrackableType trackableType = RTLS_TRACKABLE_TYPE_INVALID;
+};
 
 // Locking with Condition Variables, Queues and Mutex follows the 
 // examples set forth here:
@@ -21,13 +30,15 @@ using namespace RTLSProtocol;
 // https://www.modernescpp.com/index.php/c-core-guidelines-be-aware-of-the-traps-of-condition-variables
 // http://jakascorner.com/blog/2016/02/lock_guard-and-unique_lock.html
 
-// Note: This recorder does not record *all* information. Instead, it only records what is 
-// able to be recoreded by the C3D filetype:
-// https://www.c3d.org/
-
-
-
 // Plays data back from a c3d file
+// Notes:
+// -	On any build, can play back any system. However, 
+//		can only be piped through pipelines for which 
+//		an app has been built. For example, Motive data can
+//		play on an app compiled for Null systems, but
+//		will be processed using the Null postprocessing pipeilne.
+//		When multiple pipelines exist, user can choose. 
+//		Defaults to the same system pipeline data was recorded from.
 class ofxRTLSPlayer : public ofThread {
 public:
 
@@ -54,6 +65,8 @@ public:
 	void togglePlayback();
 
 	void newRecording(ofxRTLSRecordingCompleteArgs& args);
+
+	ofEvent<ofxRTLSPlayerDataArgs> newPlaybackData;
 
 private:
 
