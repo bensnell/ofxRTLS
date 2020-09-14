@@ -20,9 +20,11 @@ ofxRTLSPostprocessor::~ofxRTLSPostprocessor() {
 }
 
 // --------------------------------------------------------------
-void ofxRTLSPostprocessor::setup(string _name, string _abbr, string _dictPath, 
+void ofxRTLSPostprocessor::setup(RTLSSystemType _systemType, RTLSTrackableType _trackableType, string _name, string _abbr, string _dictPath, 
 	string _filterList) {
 
+	systemType = _systemType;
+	trackableType = _trackableType;
 	name = _name;
 	abbr = _abbr;
 	dictPath = _dictPath;
@@ -109,7 +111,7 @@ void ofxRTLSPostprocessor::threadedFunction() {
 			// the predicate (whether the queue contains items). If false, the mutex 
 			// is unlocked and waits for the condition variable to receive a signal
 			// to check again. If true, code execution continues.
-			cv.wait(lk, [this] { return flagUnlock || !dataQueue.empty(); });
+			cv.wait(lk, [this] { return flagUnlock || !dataQueue.empty() || flagReset; });
 			// alt:
 			//cv.wait(lk, [&] { return !dataQueue.empty(); });
 			// alt:
@@ -117,11 +119,17 @@ void ofxRTLSPostprocessor::threadedFunction() {
 			//	cv.wait(lk); // wait for the condition; wait for notification
 			//}
 
-			if (!flagUnlock) {
+			if (!flagUnlock && !dataQueue.empty()) {
 				// The queue contains elements. Get an element.
 				elem = dataQueue.front();
 				dataQueue.pop();
 			}
+		}
+
+		// Reset the postprocessors, if necessary
+		if (flagReset) {
+			flagReset = false;
+			resetInternalStates();
 		}
 
 		// If an element has been received, process it.
@@ -492,9 +500,45 @@ bool ofxRTLSPostprocessor::isIncludedInHungarianMapping(TrackableKeyType keyType
 }
 
 // --------------------------------------------------------------
+void ofxRTLSPostprocessor::reset() {
+	flagReset = true;
+	cv.notify_one();
+}
+
+// --------------------------------------------------------------
+void ofxRTLSPostprocessor::resetInternalStates() {
+
+	//while (!dataQueue.empty()) { // ?
+	//	delete dataQueue.front();
+	//	dataQueue.pop();
+	//}
+
+	lastFrame.Clear();
+
+	// Clear and reset keyTypes?
+
+	keyMappings.clear();
+
+	filters.reset();
+}
+
+// --------------------------------------------------------------
+void ofxRTLSPostprocessor::resetEventReceved(ofxRTLSPlayerLoopedArgs& args) {
+	
+	// Only proceed if internal types are valid
+	if (systemType == RTLS_SYSTEM_TYPE_INVALID) return;
+	if (trackableType == RTLS_TRACKABLE_TYPE_INVALID) return;
+
+	// Check if this postprocessor needs to reset
+	for (auto& it : args.systems) {
+		if (it.first == systemType && it.second == trackableType) {
+			reset();
+			return;
+		}
+	}
+}
 
 // --------------------------------------------------------------
 
-// --------------------------------------------------------------
 
 #endif

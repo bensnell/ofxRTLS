@@ -60,7 +60,7 @@ public:
 
 	void play();
 	void pause();
-	void reset();
+	void reset(); // to frame 0
 	void togglePlayback();
 	bool isPlaying() { return bPlaying; }
 	bool isPlaying(RTLSSystemType systemType);
@@ -71,6 +71,9 @@ public:
 	// This is called when a recording has been completed.
 	// (Must manually add a listener.)
 	void newRecording(ofxRTLSRecordingCompleteArgs& args);
+
+	// This event is called when the player loops
+	ofEvent<ofxRTLSPlayerLoopedArgs> takeLooped;
 
 	// This event is notified when new data is available from the player.
 	ofEvent<ofxRTLSPlayerDataArgs> newPlaybackData;
@@ -86,6 +89,7 @@ private:
 	bool bShouldPlay = false;
 	atomic<bool> flagPlaybackChange = false;
 	set<RTLSSystemType> playingSystems;
+	atomic<bool> flagReset = false;
 
 	bool bLoop = true;
 
@@ -118,6 +122,10 @@ private:
 	// Get frames from data
 	bool getFrames(RTLSPlayerTake* take);
 	void sendData(RTLSPlayerTake* take);
+
+	// Let the postprocessors know to reset
+	// their filters for the types of this take.
+	void notifyResetPostprocessors(RTLSPlayerTake* take);
 };
 
 #endif

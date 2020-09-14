@@ -37,7 +37,11 @@ void ofxRTLS::setup() {
 	ofAddListener(nsys.newDataReceived, this, &ofxRTLS::nsysDataReceived);
 	
 #ifdef RTLS_POSTPROCESS
-	nsysPostM.setup("NullSysMarkers", "NM");
+	nsysPostM.setup(RTLS_SYSTEM_TYPE_NULL, RTLS_TRACKABLE_TYPE_SAMPLE, 
+		"NullSysMarkers", "NM");
+#ifdef RTLS_PLAYER
+	ofAddListener(player.takeLooped, &nsysPostM, &ofxRTLSPostprocessor::resetEventReceved);
+#endif
 #endif
 #endif
 
@@ -49,7 +53,11 @@ void ofxRTLS::setup() {
 	
 #ifdef RTLS_POSTPROCESS
 	// Setup the postprocessor
-	openvrPostM.setup("OpenVRMarkers", "OM");
+	openvrPostM.setup(RTLS_SYSTEM_TYPE_OPENVR, RTLS_TRACKABLE_TYPE_SAMPLE, 
+		"OpenVRMarkers", "OM");
+#ifdef RTLS_PLAYER
+	ofAddListener(player.takeLooped, &openvrPostM, &ofxRTLSPostprocessor::resetEventReceved);
+#endif
 #endif
 #endif
 
@@ -67,9 +75,15 @@ void ofxRTLS::setup() {
 
 #ifdef RTLS_POSTPROCESS
 	// Setup the postprocessors
-	motivePostM.setup("MotiveMarkers", "MM", "", 
+	motivePostM.setup(RTLS_SYSTEM_TYPE_MOTIVE, RTLS_TRACKABLE_TYPE_SAMPLE, 
+		"MotiveMarkers", "MM", "", 
 		"age,axes,kalman,easing,add-rate,continuity,easing");
-	motivePostR.setup("MotiveRef", "MR", "", "axes");
+	motivePostR.setup(RTLS_SYSTEM_TYPE_MOTIVE, RTLS_TRACKABLE_TYPE_OBSERVER,
+		"MotiveRef", "MR", "", "axes");
+#ifdef RTLS_PLAYER
+	ofAddListener(player.takeLooped, &motivePostM, &ofxRTLSPostprocessor::resetEventReceved);
+	ofAddListener(player.takeLooped, &motivePostR, &ofxRTLSPostprocessor::resetEventReceved);
+#endif
 #endif
 #endif
 
@@ -643,6 +657,38 @@ bool ofxRTLS::isPlaying(RTLSSystemType systemType) {
 #endif
 	return false;
 }
+
+// --------------------------------------------------------------
+void ofxRTLS::toggleRecording() {
+#ifdef RTLS_PLAYER
+	recorder.toggleRecording();
+#endif
+}
+
+// --------------------------------------------------------------
+void ofxRTLS::togglePlayback() {
+#ifdef RTLS_PLAYER
+	player.togglePlayback();
+#endif
+}
+
+// --------------------------------------------------------------
+void ofxRTLS::resetPlayback() {
+#ifdef RTLS_PLAYER
+	player.reset();
+#endif
+}
+
+// --------------------------------------------------------------
+void ofxRTLS::promptOpenPlaybackFile() {
+#ifdef RTLS_PLAYER
+	player.promptUserOpenFile();
+#endif
+}
+
+// --------------------------------------------------------------
+
+// --------------------------------------------------------------
 
 // --------------------------------------------------------------
 

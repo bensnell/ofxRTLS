@@ -66,10 +66,16 @@ public:
 	bool isPostprocessSupported();
 	bool isPlayerSupported();
 	bool isRecording();
+	void toggleRecording();
 	bool isPlaying();
 	bool isPlaying(RTLSSystemType systemType);
+	void togglePlayback();
+	void resetPlayback();
+	void promptOpenPlaybackFile();
 	string getRecordingFile();
 	string getPlayingFile();
+
+private:
 
 #ifdef RTLS_NULL
 	ofxRTLSNullSystem nsys;
@@ -113,8 +119,6 @@ public:
 	void playerDataReceived(ofxRTLSPlayerDataArgs& args);
 	// frame ID?
 #endif
-
-private:
 
 	void threadedFunction();
 

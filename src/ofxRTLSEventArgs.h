@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "Trackable.pb.h"
 using namespace RTLSProtocol;
+#include "ofxRTLSTypes.h"
 
 class ofxRTLSLatencyArgs : public ofEventArgs {
 public:
@@ -77,5 +78,10 @@ class ofxRTLSRecordingCompleteArgs : public ofEventArgs {
 public:
 
 	string filePath = "";
+};
 
+class ofxRTLSPlayerLoopedArgs : public ofEventArgs {
+public:
+	// All system and type pairs that have just looped
+	vector< pair<RTLSSystemType, RTLSTrackableType> > systems;
 };

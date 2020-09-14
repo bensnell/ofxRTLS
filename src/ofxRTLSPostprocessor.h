@@ -13,6 +13,7 @@ using namespace RTLSProtocol;
 #include "ofxFDeep.h"
 #include "ofxFilterGroup.h"
 #include "ofxHungarian.h"
+#include "ofxRTLSTypes.h"
 
 // Locking with Condition Variables, Queues and Mutex follows the 
 // examples set forth here:
@@ -45,16 +46,25 @@ public:
 	~ofxRTLSPostprocessor();
 
 	// Setup this postprocessor.
-	void setup(string name, string abbr, string dictPath="", string filterList="");
+	void setup(RTLSSystemType systemType, RTLSTrackableType trackableType, string name, string abbr, string dictPath="", string filterList="");
 
 	// Process data and send it when ready
 	void processAndSend(ofxRTLSEventArgs& data, ofEvent<ofxRTLSEventArgs>& dataReadyEvent);
 
+	// Reset the postprocessor.
+	// (This will reset the internal states, removing histories.)
+	// (This does not delete existing configurations.)
+	void reset();
+
 	void exit();
+
+	void resetEventReceved(ofxRTLSPlayerLoopedArgs& args);
 
 private:
 
 	// Postprocessor Parameters
+	RTLSSystemType systemType = RTLS_SYSTEM_TYPE_INVALID;
+	RTLSTrackableType trackableType = RTLS_TRACKABLE_TYPE_INVALID;
 	string name = "";
 	string abbr = "";
 
@@ -139,6 +149,9 @@ private:
 	uint64_t lastFilterCullingTime = 0;
 	// What is the period by which filters are culled? (ms)
 	uint64_t filterCullingPeriod = 1000; // each second
+
+	atomic<bool> flagReset = false;
+	void resetInternalStates();
 };
 
 #endif

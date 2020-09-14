@@ -132,25 +132,45 @@ void ofxRTLSPlayer::threadedFunction() {
 			// If there is no take loaded, then break
 			if (take == NULL) break;
 
+			// Does this take have any points in it? If not, don't play it
+			if (take->getC3dNumFrames() == 0) {
+				ofLogNotice("ofxRTLSPlayer") << "No data in take \"" << take->path << "\"";
+				bPlaying = false;
+				break;
+			}
+
 			// At this point, we know we have a valid, loaded take.
 			// Check if we should start or stop playing.
+			// Also check if we're looping.
+			bool _bLoop = false;
 			{
 				std::lock_guard<std::mutex> lk(mutex);
 				bPlaying = bShouldPlay;
+				_bLoop = bLoop;
 			}
-
 			// If we're not playing, then break from this loop.
 			if (!bPlaying) break;
 
-			// Check if we need to stop (if we have a valid frame counter)
-			// (if we're at the end of the loop)
-			if (take->frameCounter >= take->getC3dNumFrames()) {
+			// Check if we aren't looping and need to stop,
+			// since we've reached the end of the file.
+			// Also check if we have a signal to stop playing and reset the
+			// frame counter.
+			if ((!_bLoop && take->frameCounter >= take->getC3dNumFrames())
+				|| flagReset) {
+
+				// Reset the take
+				flagReset = false;
 				bPlaying = false;
 				take->frameCounter = 0;
-			}
 
+				// Signal that filters need to be reset
+				notifyResetPostprocessors(take);
+			}
 			// If we're not playing, then break from this loop.
 			if (!bPlaying) break;
+
+			// If this frame is zero, reset the postprocessors
+			if (take->frameCounter == 0) notifyResetPostprocessors(take);
 
 			// At this point, we have a valid take and are playing.
 			// Attempt to read the next frame and send it.
@@ -160,12 +180,9 @@ void ofxRTLSPlayer::threadedFunction() {
 
 			// Increment the frame counter
 			take->frameCounter++;
-			bool _bLoop = false;
-			{
-				std::lock_guard<std::mutex> lk(mutex);
-				_bLoop = bLoop;
+			if (_bLoop && take->getC3dNumFrames() > 0) {
+				take->frameCounter = take->frameCounter % take->getC3dNumFrames();
 			}
-			if (_bLoop) take->frameCounter = take->frameCounter % take->getC3dNumFrames();
 			// TODO: If we loop, signal that filters need to be reset
 			
 			// Update the fps resampler
@@ -216,9 +233,9 @@ void ofxRTLSPlayer::pause() {
 void ofxRTLSPlayer::reset() {
 	if (!isSetup) return;
 
-	// TODO
-	// Move to the start of the file
-
+	flagReset = true;
+	flagPlaybackChange = true;
+	cv.notify_one();
 }
 
 // --------------------------------------------------------------
@@ -450,6 +467,14 @@ bool ofxRTLSPlayer::isPlaying(RTLSSystemType systemType) {
 }
 
 // --------------------------------------------------------------
+void ofxRTLSPlayer::notifyResetPostprocessors(RTLSPlayerTake* take) {
+
+	ofxRTLSPlayerLoopedArgs args;
+	for (auto& f : take->frames) {
+		args.systems.push_back(make_pair(f.systemType, f.trackableType));
+	}
+	ofNotifyEvent(takeLooped, args);
+}
 
 // --------------------------------------------------------------
 
