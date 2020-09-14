@@ -35,6 +35,7 @@ string getTrackableKeyData(string key);
 	
 // Get the English description of this key type
 string getTrackableKeyTypeDescription(TrackableKeyType keyType);
+vector<string> getTrackableKeyTypeDescriptionAll();
 	
 // Reconcile a trackable with its trackable key. Align the trackable's 
 // internal information so that the key would be correct.

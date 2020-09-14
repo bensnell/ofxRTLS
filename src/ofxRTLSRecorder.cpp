@@ -210,12 +210,12 @@ void ofxRTLSRecorder::update(int systemIndex) {
 				// Add all information to the descriptions
 				// TODO: Allow both trackable and frame context to pass calibration flags 'm'
 				ofJson js;
-				if (frameContext.find("s") != frameContext.end()) js["context"]["s"] = frameContext["s"];
-				if (frameContext.find("t") != frameContext.end()) js["context"]["t"] = frameContext["t"];
-				if (trackableContext.find("m") != trackableContext.end()) js["context"]["m"] = trackableContext["m"];
-				if (!tk.name().empty()) js["name"] = tk.name();
-				if (!tk.cuid().empty()) js["cuid"] = tk.cuid();
-				if (tk.id() != 0) js["id"] = tk.id();
+				if (frameContext.find("s") != frameContext.end()) js["frame"]["context"]["s"] = frameContext["s"];
+				if (frameContext.find("t") != frameContext.end()) js["frame"]["context"]["t"] = frameContext["t"];
+				if (!trackableContext.empty()) js["trackable"]["context"] = trackableContext;				
+				if (!tk.name().empty()) js["trackable"]["name"] = tk.name();
+				if (!tk.cuid().empty()) js["trackable"]["cuid"] = tk.cuid();
+				if (tk.id() != 0) js["trackable"]["id"] = tk.id();
 				take->c3dPointLabels2Desc[key] = js.dump();
 			}
 		}

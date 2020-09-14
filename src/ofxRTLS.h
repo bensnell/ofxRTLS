@@ -67,6 +67,7 @@ public:
 	bool isPlayerSupported();
 	bool isRecording();
 	bool isPlaying();
+	bool isPlaying(RTLSSystemType systemType);
 	string getRecordingFile();
 	string getPlayingFile();
 
@@ -134,7 +135,4 @@ private:
 
 	atomic<double> latencyMS = 0.0;
 	void newLatencyCalculated(ofxRTLSLatencyArgs& args);
-
-	// If playback is active, is realtime data stopped?
-	bool bPlaybackOverridesRealtimeData = true;
 };

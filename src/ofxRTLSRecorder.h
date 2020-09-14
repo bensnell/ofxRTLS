@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxRemoteUIServer.h"
 #include "ofxRTLSEventArgs.h"
+#include "ofxRTLSTake.h"
 #include "Trackable.pb.h"
 using namespace RTLSProtocol;
 #include "ofxRTLSTrackableKey.h"

@@ -111,6 +111,7 @@ void ofxRTLS::stop() {
 #ifdef RTLS_NULL
 
 void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
+	if (isPlaying(RTLS_SYSTEM_TYPE_NULL)) return;
 
 	uint64_t thisMicros = ofGetElapsedTimeMicros();
 
@@ -158,6 +159,7 @@ void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
 #ifdef RTLS_OPENVR
 
 void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
+	if (isPlaying(RTLS_SYSTEM_TYPE_OPENVR)) return;
 
 	uint64_t thisMicros = ofGetElapsedTimeMicros();
 
@@ -212,6 +214,7 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 #ifdef RTLS_MOTIVE
 
 void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
+	if (isPlaying(RTLS_SYSTEM_TYPE_MOTIVE)) return;
 
 	uint64_t thisMicros = ofGetElapsedTimeMicros();
 
@@ -332,23 +335,13 @@ void ofxRTLS::playerDataReceived(ofxRTLSPlayerDataArgs& args) {
 
 	ofxRTLSEventArgs outArgs(latencyCalculated);
 	outArgs.setStartAssemblyTime(thisMicros);
-	// Set frame ID or timestamp?
-	outArgs.frame = args.frame; // ?
+	outArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
+	outArgs.frame = args.frame;
 
 	// (Don't record played data)
 
 	// Send the data out appropriately
 	sendData(outArgs, args.systemType, args.trackableType);
-
-	// update frame ID?
-
-
-
-	// Make sure to turn off realtime data
-
-	// Make sure to reset postprocessor every loop
-
-
 }
 #endif
 
@@ -629,7 +622,7 @@ string ofxRTLS::getRecordingFile() {
 // --------------------------------------------------------------
 string ofxRTLS::getPlayingFile() {
 #ifdef RTLS_PLAYER
-	return player.getPlayingFile();
+	return player.getTakePath();
 #endif
 	return "";
 }
@@ -644,6 +637,12 @@ void ofxRTLS::markDataReceived() {
 }
 
 // --------------------------------------------------------------
+bool ofxRTLS::isPlaying(RTLSSystemType systemType) {
+#ifdef RTLS_PLAYER
+	return player.isPlaying(systemType);
+#endif
+	return false;
+}
 
 // --------------------------------------------------------------
 

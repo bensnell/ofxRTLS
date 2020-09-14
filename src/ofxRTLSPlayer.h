@@ -4,6 +4,7 @@
 #include "ofxRemoteUIServer.h"
 #include "ofxRTLSEventArgs.h"
 #include "ofxRTLSTypes.h"
+#include "ofxRTLSTake.h"
 #include "Trackable.pb.h"
 using namespace RTLSProtocol;
 #include "ofxRTLSTrackableKey.h"
@@ -11,6 +12,7 @@ using namespace RTLSProtocol;
 #ifdef RTLS_PLAYER
 
 #include "ezc3d_all.h"
+#include "ofxTemporalResampler.h"
 
 class ofxRTLSPlayerDataArgs : public ofEventArgs {
 public:
@@ -45,44 +47,58 @@ public:
 	ofxRTLSPlayer();
 	~ofxRTLSPlayer();
 
-	void setup(string _takeFolder = "", string _takePrefix = "");
+	void setup();
 
-	// Add any number of TrackableFrames...
-	void add(int systemIndex, float systemFPS, RTLSProtocol::TrackableFrame& _frame);
-	// ... Then update the frame counter. 
-	// Also provide the current framerate. The frame rate at the start of a 
-	// recording will be the framerate for the duration of the whole recording.
-	void update(int systemIndex);
+	void setPlayingFile(string filePath);
+	void promptUserOpenFile();
+	string getTakePath() { return takePath; }
+	double getTakeDuration() { return durationSec; }
+	float getTakeFPS() { return fps; }
+
+	void setLooping(bool _bLoop);
+	bool isLooping() { return bLoop; }
+
+	void play();
+	void pause();
+	void reset();
+	void togglePlayback();
+	bool isPlaying() { return bPlaying; }
+	bool isPlaying(RTLSSystemType systemType);
+
+	void setOverrideRealtimeData(bool _bOverride);
+	bool isOverridingRealtimeData() { return bOverridesRealtimeData; }
+
+	// This is called when a recording has been completed.
+	// (Must manually add a listener.)
+	void newRecording(ofxRTLSRecordingCompleteArgs& args);
+
+	// This event is notified when new data is available from the player.
+	ofEvent<ofxRTLSPlayerDataArgs> newPlaybackData;
 
 	string getStatus();
 
-	bool isRecording() { return bRecording; }
-	bool isPlaying() { return bPlaying; }
-
-	void setPlayingFile(string filePath); // absolute path
-	string getPlayingFile() { return thisTakePath; }
-	void promptUserOpenFile();
-	void togglePlayback();
-
-	void newRecording(ofxRTLSRecordingCompleteArgs& args);
-
-	ofEvent<ofxRTLSPlayerDataArgs> newPlaybackData;
-
 private:
 
-	bool bPlaying = false;
+	bool bEnablePlayer = true;
+	bool isSetup = false; // do we need this?
 
-	bool bEnableRecorder = true;
-	bool isSetup = false;
+	atomic<bool> bPlaying = false; // are we currently playing?
+	bool bShouldPlay = false;
+	atomic<bool> flagPlaybackChange = false;
+	set<RTLSSystemType> playingSystems;
 
-	bool bShouldRecord = false; // signal from user
+	bool bLoop = true;
 
-	atomic<bool> bRecording = false; // are we currently recording?
-	string takeFolder = "takes";
-	string takePrefix = "take"; // name will be takePrefix + "_" + timestamp + ".c3d"
+	// Queue of takes to play
+	queue<RTLSPlayerTake*> takeQueue;
 
-	string thisTakePath = "";
-	uint64_t thisTakeStartTimeMS = 0;
+	// Load a take's c3d file into memory
+	bool loadTake(RTLSPlayerTake* take);
+
+	// The currently loaded take path
+	string takePath = "";
+	atomic<float> durationSec = 0;
+	atomic<float> fps = 0;
 
 	void paramChanged(RemoteUIServerCallBackArg& arg);
 
@@ -90,92 +106,18 @@ private:
 	std::condition_variable cv;
 	atomic<bool> flagUnlock = false;
 
-	// Queue holds data that is actively being written to or saved
-	class RTLSTake {
-	public:
+	// Should the player override realtime data
+	// from the same system?
+	bool bOverridesRealtimeData = true;
 
-		// Frame data from a single system
-		struct RTLSTakeSystemData {
-			queue< vector< RTLSProtocol::TrackableFrame* > > frames;
-			vector< RTLSProtocol::TrackableFrame* > nextFrame;
-			void addNextFrame() {
-				frames.push(nextFrame);
-				nextFrame.clear();
-			}
-			void clearAndPopNextFrame() {
-				if (frames.empty()) return;
-				for (int i = 0; i < frames.front().size(); i++) {
-					frames.front()[i]->Clear();
-					delete frames.front()[i];
-				}
-				frames.front().clear();
-				frames.pop();
-			}
-			void clear() {
-				for (auto f : nextFrame) {
-					f->Clear();
-					delete f;
-				}
-				nextFrame.clear();
-				while (!frames.empty()) {
-					clearAndPopNextFrame();
-				}
-			}
-			int size() { return frames.size(); }
-			bool empty() { return frames.empty(); }
-		};
+	// TODO: Flag when a file starts again, so
+	// filters can be restarted
 
-		// All pieces of data present in this take
-		// Map of system index to a queue of frames
-		map<int, RTLSTakeSystemData > data;
-		bool systemExists(int systemIndex) {
-			return data.find(systemIndex) != data.end();
-		}
-		// Start time of this take
-		uint64_t startTimeMS = 0;
-		// Flag whether we want to save this take
-		bool bFlagSave = false;
-		// What is the global FPS for this take?
-		float fps = -1;
+	ofxTemporalResampler resampler;
 
-		// Is this take empty?
-		bool empty() {
-			if (data.size() == 0) return true;
-			for (auto it : data) {
-				if (!it.second.empty()) return false;
-			}
-			return true;
-		}
-
-		// Is this take valid?
-		bool valid() {
-			return fps > 0;
-		}
-
-		// Clear all the data in this take
-		void clear() {
-			auto it = data.begin();
-			while (it != data.end()) {
-				it->second.clear();
-				it = data.erase(it);
-			}
-		}
-
-		// C3D data structure
-		// This cannot be written in real time because all of the trackable (point)
-		// labels must be collected and written to the c3d header before storing
-		// positions, etc.
-		ezc3d::c3d c3d;
-		// Path to save this c3d file
-		string path = "";
-		// What are all of the present labels that describe the points
-		set<string> c3dPointLabels;
-		// What are the descriptions for each label?
-		map<string, string> c3dPointLabels2Desc;
-	};
-	queue< RTLSTake* > takeQueue;
-	
-	bool saveTake(RTLSTake* take);
+	// Get frames from data
+	bool getFrames(RTLSPlayerTake* take);
+	void sendData(RTLSPlayerTake* take);
 };
 
 #endif

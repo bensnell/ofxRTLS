@@ -138,3 +138,16 @@ bool isTrackableIdentifiableByType(const Trackable& t, TrackableKeyType keyType)
 }
 
 // --------------------------------------------------------------
+vector<string> getTrackableKeyTypeDescriptionAll() {
+
+	vector<string> out;
+	for (int i = 0; i < (int(TrackableKeyType::NUM_KEYS) - 1); i++) {
+		TrackableKeyType type = TrackableKeyType(i);
+		out.push_back(getTrackableKeyTypeDescription(type));
+	}
+	return out;
+}
+
+// --------------------------------------------------------------
+
+// --------------------------------------------------------------

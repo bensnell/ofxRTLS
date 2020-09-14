@@ -10,8 +10,12 @@ ofxRTLSPlayer::ofxRTLSPlayer() {
 // --------------------------------------------------------------
 ofxRTLSPlayer::~ofxRTLSPlayer() {
 
+	// Stop playing
+	pause();
+
 	// Flag that we should stop waiting 
 	flagUnlock = true;
+	
 	// Signal the conditional variable
 	cv.notify_one();
 
@@ -20,35 +24,38 @@ ofxRTLSPlayer::~ofxRTLSPlayer() {
 }
 
 // --------------------------------------------------------------
-void ofxRTLSPlayer::setup(string _takeFolder, string _takePrefix) {
-	
-	//if (!_takeFolder.empty()) takeFolder = _takeFolder;
-	//if (!_takePrefix.empty()) takePrefix = _takePrefix;
+void ofxRTLSPlayer::setup() {
 
-	//RUI_NEW_GROUP("ofxRTLSPlayer");
-	//RUI_SHARE_PARAM_WCN("RTLS-R- Enable", bEnableRecorder);
-	//RUI_SHARE_PARAM_WCN("RTLS-R- Record", bShouldRecord);
-	//RUI_SHARE_PARAM_WCN("RTLS-R- Take Folder", takeFolder);
-	//RUI_SHARE_PARAM_WCN("RTLS-R- Take Prefix", takePrefix);
+	RUI_NEW_GROUP("ofxRTLSPlayer");
+	RUI_SHARE_PARAM_WCN("RTLS-P- Enable", bEnablePlayer);
+	RUI_SHARE_PARAM_WCN("RTLS-P- Play", bShouldPlay);
+	RUI_SHARE_PARAM_WCN("RTLS-P- Take Path", takePath);
+	RUI_SHARE_PARAM_WCN("RTLS-P- Loop", bLoop);
+	RUI_SHARE_PARAM_WCN("RTLS-P- Override Realtime Data", bOverridesRealtimeData);
 
-	//bShouldRecord = false;
-	//bRecording = false;
-	//RUI_PUSH_TO_CLIENT();
+	bShouldPlay = false;
+	bPlaying = false;
+	RUI_PUSH_TO_CLIENT();
 
-	//ofAddListener(RUI_GET_OF_EVENT(), this, &ofxRTLSPlayer::paramChanged);
+	ofAddListener(RUI_GET_OF_EVENT(), this, &ofxRTLSPlayer::paramChanged);
 
-	//isSetup = true;
+	isSetup = true;
 
-	//startThread();
+	startThread();
+
+	// If the takePath isn't empty, then add this take to the queue
+	if (!takePath.empty()) setPlayingFile(takePath);
 }
 
 // --------------------------------------------------------------
 void ofxRTLSPlayer::threadedFunction() {
 
-	RTLSTake* take = NULL;
+	// This is the currently loaded take, if any
+	RTLSPlayerTake* take = NULL;
+
 	while (isThreadRunning()) {
 
-		bool bSaveTake = false;
+		bool bWakeup = false;
 		{
 			// Lock the mutex
 			std::unique_lock<std::mutex> lk(mutex);
@@ -57,182 +64,190 @@ void ofxRTLSPlayer::threadedFunction() {
 			// the predicate (whether the queue contains items). If false, the mutex 
 			// is unlocked and waits for the condition variable to receive a signal
 			// to check again. If true, code execution continues.
-			cv.wait(lk, [this] { return flagUnlock || !takeQueue.empty(); });
+			cv.wait(lk, [this] { return flagUnlock || !takeQueue.empty() || flagPlaybackChange; });
 
-			if (!flagUnlock) bSaveTake = true;
+			if (!flagUnlock) bWakeup = true;
 		}
+		// If we're not playing a take, continue.
+		if (!bWakeup) continue;
 
-		// If we're not saving a take, continue.
-		if (!bSaveTake) continue;
+		// Reset the playback flag
+		flagPlaybackChange = false;
 
-		// Save all takes ready to be saved
+		// Reset the dynamic fps resampler
+		resampler.reset();
+
+		// Load the next take
+		//take = NULL; // delete remaining takes? // take should be null
 		while (true) {
 
-			// Check if this take is ready to be saved. If so, pop it.
-			take = NULL;
+			// Check for new takes in the queue.
+			RTLSPlayerTake* nextTake = NULL;
 			{
 				std::lock_guard<std::mutex> lk(mutex);
-				// If there are no more takes, break.
-				if (takeQueue.empty()) break;
-				// Check if the next take should be saved.
-				if (takeQueue.front()->bFlagSave) {
-					// If so, retrieve it and remove it from the queue.
-					take = takeQueue.front();
+				while (!takeQueue.empty()) {
+					nextTake = takeQueue.front();
 					takeQueue.pop();
 				}
-				else {
-					if (takeQueue.size() > 1) {
-						ofLogError("ofxRTLSPlayer") << "Take queue has more than 2 currently recording takes. This should not be happening.";
+			}
+			// If there is a new take ...
+			if (nextTake != NULL) {
+
+				// ... then unload the old one, if any, ...
+				if (take != NULL) {
+					// Stop playing, if playing
+					bPlaying = false;
+					// Clear the take
+					take->clear();
+					delete take;
+					take = NULL;
+				}
+
+				// ... and load this one.
+				take = nextTake;
+				nextTake = NULL;
+				if (loadTake(take)) { // Success loading
+					ofLogNotice("ofxRTLSPlayer") << "Loaded take \"" << take->path << "\"";
+					// Set new take parameters
+					string newPath = "";
+					{
+						std::lock_guard<std::mutex> lk(mutex);
+						newPath = take->path;
+						durationSec = take->getC3dDurationSec();
+						fps = take->getC3dFps();
+						resampler.setDesiredFPS(fps);
+					}
+					if (newPath.compare(takePath) != 0) {
+						takePath = newPath;
+						RUI_PUSH_TO_CLIENT();
 					}
 				}
+				else { // Failure loading
+					take->clear();
+					delete take;
+					take = NULL;
+				}
 			}
 
-			// If the take is null, break from the loop
+			// If there is no take loaded, then break
 			if (take == NULL) break;
 
-			// Save the take to file
-			bool bTakeSaved = false;
-			try {
-				bTakeSaved = saveTake(take);
-			}
-			catch (const std::exception&) {
-				ofLogError("ofxRTLSPlayer") << "Encountered error while trying to save the take.";
-			}
-			if (bTakeSaved) {
-				ofLogNotice("ofxRTLSPlayer") << "Saved take to file \"" << take->path << "\"" << endl;
-			} else
+			// At this point, we know we have a valid, loaded take.
+			// Check if we should start or stop playing.
 			{
-				ofLogNotice("ofxRTLSPlayer") << "Could not save take to file \"" << take->path << "\"" << endl;
+				std::lock_guard<std::mutex> lk(mutex);
+				bPlaying = bShouldPlay;
 			}
 
-			// Delete the take
-			take->clear();
-			delete take;
-		}
-	}
-}
+			// If we're not playing, then break from this loop.
+			if (!bPlaying) break;
 
-// --------------------------------------------------------------
-void ofxRTLSPlayer::add(int systemIndex, float systemFPS, RTLSProtocol::TrackableFrame& _frame) {
-	if (!isSetup) return;
-	if (!bEnableRecorder) return;
-	if (!bRecording) return;
-	if (systemFPS <= 0) return;
+			// Check if we need to stop (if we have a valid frame counter)
+			// (if we're at the end of the loop)
+			if (take->frameCounter >= take->getC3dNumFrames()) {
+				bPlaying = false;
+				take->frameCounter = 0;
+			}
 
-	// Add the element to the appropriate recording
-	std::lock_guard<std::mutex> lk(mutex);
+			// If we're not playing, then break from this loop.
+			if (!bPlaying) break;
 
-	// Only add the frame if there is a take in the queue (this shouldn't need to be checked, but
-	// let's do it for safety).
-	if (takeQueue.empty()) return;
+			// At this point, we have a valid take and are playing.
+			// Attempt to read the next frame and send it.
+			if (getFrames(take)) {
+				sendData(take);
+			}
 
-	// Get the last take
-	auto take = takeQueue.back();
-
-	// Ensure this system has been approved by the take
-	if (!take->systemExists(systemIndex)) {
-		// If not, will it?
-		if (take->fps < 0) take->fps = systemFPS;
-		else if (abs(take->fps - systemFPS) > 0.001) {
-			ofLogWarning("ofxRTLSPlayer") << "Cannot record from multiple systems at once that have different frame rates";
-			return;
-		}
-		// Take can accept system, so add it
-		take->data[systemIndex] = RTLSTake::RTLSTakeSystemData();
-	}
-
-	// If this is the first frame, set the start time
-	if (take->startTimeMS == 0) take->startTimeMS = ofGetElapsedTimeMillis();
-
-	// Get the system data
-	auto& data = take->data[systemIndex];
-
-	// Add this frame
-	RTLSProtocol::TrackableFrame* frame = new RTLSProtocol::TrackableFrame(_frame);
-	data.nextFrame.push_back(frame);
-}
-
-// --------------------------------------------------------------
-void ofxRTLSPlayer::update(int systemIndex) {
-	if (!isSetup) return;
-	if (!bEnableRecorder) return;
-	if (!bRecording) return;
-
-	// Add the element to the appropriate recording
-	std::lock_guard<std::mutex> lk(mutex);
-
-	// Only add the frame if there is a take in the queue (this shouldn't need to be checked, but
-	// let's do it for safety).
-	if (takeQueue.empty()) return;
-
-	// Get the last take
-	auto take = takeQueue.back();
-
-	// Make sure this system is present in the recording
-	if (!take->systemExists(systemIndex)) return;
-
-	// Get this system data
-	auto& data = take->data[systemIndex];
-
-	// Include all trackable keys in the label set
-	for (auto& frame : data.nextFrame) {
-		for (int i = 0; i < frame->trackables_size(); i++) {
-			auto& tk = frame->trackables(i);
-			string key = getTrackableKey(tk);
-			auto ret = take->c3dPointLabels.insert(key);
+			// Increment the frame counter
+			take->frameCounter++;
+			bool _bLoop = false;
+			{
+				std::lock_guard<std::mutex> lk(mutex);
+				_bLoop = bLoop;
+			}
+			if (_bLoop) take->frameCounter = take->frameCounter % take->getC3dNumFrames();
+			// TODO: If we loop, signal that filters need to be reset
 			
-			// Add a description if it is a new element
-			if (ret.second) {
-
-				// Parse the frame-specific context
-				ofJson frameContext;
-				try {
-					frameContext = ofJson::parse(frame->context());
-				}
-				catch (const std::exception&) {
-					// Could not parse
-				}
-				
-				// Parse the trackable-specific context
-				ofJson trackableContext;
-				try {
-					trackableContext = ofJson::parse(frame->trackables(i).context());
-				}
-				catch (const std::exception&) {
-					// Could not parse
-				}
-
-				// Add all information to the descriptions
-				// TODO: Allow both trackable and frame context to pass calibration flags 'm'
-				ofJson js;
-				if (frameContext.find("s") != frameContext.end()) js["context"]["s"] = frameContext["s"];
-				if (frameContext.find("t") != frameContext.end()) js["context"]["t"] = frameContext["t"];
-				if (trackableContext.find("m") != trackableContext.end()) js["context"]["m"] = trackableContext["m"];
-				if (!tk.name().empty()) js["name"] = tk.name();
-				if (!tk.cuid().empty()) js["cuid"] = tk.cuid();
-				if (tk.id() != 0) js["id"] = tk.id();
-				take->c3dPointLabels2Desc[key] = js.dump();
-			}
+			// Update the fps resampler
+			resampler.update();
+			// Sleep according to the resampler
+			sleep(resampler.getSleepDurationMS());
 		}
 	}
+}
 
-	// Add the vector of frames to the queue and clear the vector
-	data.addNextFrame();
+// --------------------------------------------------------------
+void ofxRTLSPlayer::setLooping(bool _bLoop) {
+	
+	if (bLoop == _bLoop) return;
+	bLoop = _bLoop;
+	RUI_PUSH_TO_CLIENT();
+}
+
+// --------------------------------------------------------------
+void ofxRTLSPlayer::play() {
+	if (!isSetup) return;
+
+	if (!bPlaying) {
+		bShouldPlay = true;
+		RUI_PUSH_TO_CLIENT();
+
+		flagPlaybackChange = true;
+		cv.notify_one();
+	}
+}
+
+// --------------------------------------------------------------
+void ofxRTLSPlayer::pause() {
+	if (!isSetup) return;
+
+	if (bPlaying) {
+		bShouldPlay = false;
+		RUI_PUSH_TO_CLIENT();
+
+		// No need to notify thread, because it is already active
+		// (and playing).
+		//flagPlaybackChange = true;
+		//cv.notify_one();
+	}
+}
+
+// --------------------------------------------------------------
+void ofxRTLSPlayer::reset() {
+	if (!isSetup) return;
+
+	// TODO
+	// Move to the start of the file
+
+}
+
+// --------------------------------------------------------------
+void ofxRTLSPlayer::togglePlayback() {
+
+	if (bPlaying) pause();
+	else play();
+}
+
+// --------------------------------------------------------------
+void ofxRTLSPlayer::setOverrideRealtimeData(bool _bOverride) {
+
+	if (bOverridesRealtimeData != _bOverride) {
+		bOverridesRealtimeData = _bOverride;
+		RUI_PUSH_TO_CLIENT();
+	}
 }
 
 // --------------------------------------------------------------
 string ofxRTLSPlayer::getStatus() {
 
 	stringstream ss;
-	if (!isSetup) ss << "Recorder not setup";
+	if (!isSetup) ss << "Player not setup";
 	else {
-		if (!bEnableRecorder) ss << "Recorder is DISABLED";
+		if (!bEnablePlayer) ss << "Player is DISABLED";
 		else {
-			if (!bRecording) ss << "Recording OFF";
+			if (!bPlaying) ss << "Playing OFF";
 			else {
-				ss << "Recording to file " << thisTakePath;
-				ss << setprecision(2);
-				ss << " [" << float(ofGetElapsedTimeMillis() - thisTakeStartTimeMS) / 1000.0 << " sec]";
+				ss << "Playing file " << takePath;
 			}
 		}
 	}
@@ -244,179 +259,69 @@ void ofxRTLSPlayer::paramChanged(RemoteUIServerCallBackArg& arg) {
 	if (!isSetup) return;
 	if (!arg.action == CLIENT_UPDATED_PARAM) return;
 	
-	if (arg.paramName.compare("RTLS-R- Record") == 0) {
-		if (bShouldRecord && !bRecording) {
-			
-			// Begin new recording
-			RTLSTake* take = new RTLSTake();
-			thisTakePath = ofFilePath::getAbsolutePath(ofFilePath::join(takeFolder, takePrefix + "_" + ofGetTimestampString() + ".c3d"));
-			thisTakeStartTimeMS = ofGetElapsedTimeMillis();
-			take->path = thisTakePath;
-
-			std::lock_guard<std::mutex> lk(mutex);
-			takeQueue.push(take);
-			bRecording = true;
-		}
-		else if (!bShouldRecord && bRecording) {
-
-			// Stop recording
-			bRecording = false;
-
-			// Flag that we should save this take
-			std::lock_guard<std::mutex> lk(mutex);
-			takeQueue.back()->bFlagSave = true;
-
-			// Notify that the condition has been met to save the file
-			cv.notify_one();
-		}
-		else if (!bShouldRecord) {
-
-			// Notify anyway
-			cv.notify_one();
-		}
+	if (arg.paramName.compare("RTLS-P- Play") == 0) {
+		if (bShouldPlay && !bPlaying) play();
+		else if (!bShouldPlay && bPlaying) pause();
+	}
+	if (arg.paramName.compare("RTLS-P- Take Path") == 0) {
+		setPlayingFile(takePath);
 	}
 }
 
 // --------------------------------------------------------------
-bool ofxRTLSPlayer::saveTake(RTLSTake* take) {
+bool ofxRTLSPlayer::loadTake(RTLSPlayerTake* take) {
 
 	// Verify the validity of this take
-	if (take == NULL) {
-		ofLogError("ofxRTLSPlayer") << "Cannot save NULL take.";
+	if (take == NULL) return false;
+	if (take->path.empty()) return false;
+
+	// Attempt to load the c3d file
+	bool bSuccess = false;
+	try {
+		if (take->c3d != NULL) { // should not get to this point...
+			take->c3d->~c3d();
+			delete take->c3d;
+		}
+		take->c3d = new ezc3d::c3d(take->path);
+		bSuccess = true;
+	}
+	catch (const std::exception&) {
+		ofLogError("ofxRTLSPlayer") << "Could not read c3d file \"" << take->path << "\"";
+	}
+	if (!bSuccess) return false;
+
+	// Make sure this c3d file has been generated by RTLS and
+	// not another program.
+	// Parameters: MANUFACTURER > SOFTWARE > RTLSServer
+	vector<string> values(take->c3d->parameters().group("MANUFACTURER").parameter("SOFTWARE").valuesAsString());
+	if (values.empty()) return false;
+	string software = ofTrim(ofToLower(values.front()));
+	if (software.compare("rtlsserver") != 0) {
+		ofLogError("ofxRTLSPlayer") << "Cannot play a c3d file generated by a different utility.";
 		return false;
 	}
-	if (take->empty()) {
-		ofLogError("ofxRTLSPlayer") << "Cannot save empty take.";
-		return false;
-	}
-	if (!take->valid()) {
-		ofLogError("ofxRTLSPlayer") << "Cannot save invalid take.";
-		return false;
-	}
 
-	// Proceed with saving the take
-	auto& c3d = take->c3d;
-
-	// Add all point labels
-	for (auto& label : take->c3dPointLabels) {
-		c3d.point(label);
+	// Try to populate the take with template frames
+	bSuccess = false;
+	try {
+		bSuccess = take->populateTemplateFrames();
 	}
-
-	// Create a map from point labels to their index
-	map<string, int> c3dPointLabels2Index;
-	uint64_t counter = 0;
-	for (auto& label : take->c3dPointLabels) {
-		c3dPointLabels2Index[label] = counter;
-		counter++;
+	catch (const std::exception&) {
+		bSuccess = false;
 	}
-	
-	// Set the recording's properties, after adding the points.
-
-	// Point Properties
-	ezc3d::ParametersNS::GroupNS::Parameter pointRate("RATE");
-	pointRate.set(take->fps);
-	c3d.parameter("POINT", pointRate);
-	ezc3d::ParametersNS::GroupNS::Parameter pointScale("SCALE");
-	pointScale.set(-1.0);
-	c3d.parameter("POINT", pointScale);
-	ezc3d::ParametersNS::GroupNS::Parameter pointUnits("UNITS");
-	pointUnits.set("m");
-	c3d.parameter("POINT", pointUnits);
-	ezc3d::ParametersNS::GroupNS::Parameter pointDescriptions("DESCRIPTIONS");
-	vector<string> pointDesc;
-	for (auto& label : take->c3dPointLabels) {
-		if (take->c3dPointLabels2Desc.find(label) != take->c3dPointLabels2Desc.end()) {
-			pointDesc.push_back(take->c3dPointLabels2Desc[label]);
-		}
-		else {
-			pointDesc.push_back("");
+	if (!bSuccess) {
+		ofLogError("ofxRTLSPlayer") << "Could not parse take's data.";
+	}
+	// Store all systems that will be playing
+	if (bSuccess) {
+		std::lock_guard<std::mutex> lk(mutex);
+		playingSystems.clear();
+		for (auto& frame : take->frames) {
+			playingSystems.insert(frame.systemType);
 		}
 	}
-	pointDescriptions.set(pointDesc);
-	c3d.parameter("POINT", pointDescriptions);
 
-	// Manufacturer Properties
-	ezc3d::ParametersNS::GroupNS::Parameter mfrCompany("COMPANY");
-	mfrCompany.set("Local Projects");
-	c3d.parameter("MANUFACTURER", mfrCompany);
-	ezc3d::ParametersNS::GroupNS::Parameter mfrSoftware("SOFTWARE");
-	mfrSoftware.set("RTLSServer");
-	c3d.parameter("MANUFACTURER", mfrSoftware);
-	ezc3d::ParametersNS::GroupNS::Parameter mfrSoftwareDesc("SOFTWARE_DESCRIPTION");
-	mfrSoftwareDesc.set("Real Time Location System Server");
-	c3d.parameter("MANUFACTURER", mfrSoftwareDesc);
-	ezc3d::ParametersNS::GroupNS::Parameter mfrVersion("VERSION_LABEL");
-	mfrVersion.set("1.0"); // arbitrary
-	c3d.parameter("MANUFACTURER", mfrVersion);
-
-	
-	// Add all points
-	// NAN will stand for absent points
-	int nPoints = take->c3dPointLabels.size();
-	while (!take->empty()) {
-
-		// Create a new c3d frame 
-		ezc3d::DataNS::Frame frame;
-
-		// Create points and populate each with NANs
-		ezc3d::DataNS::Points3dNS::Points points;
-		for (int i = 0; i < nPoints; i++) {
-			ezc3d::DataNS::Points3dNS::Point point;
-			point.set(NAN, NAN, NAN);
-			points.point(point);
-		}
-
-		// Iterate through all contributing systems
-		map<int, RTLSTake::RTLSTakeSystemData>::iterator sys;
-		for (sys = take->data.begin(); sys != take->data.end(); sys++) {
-
-			// Get the queue of frames. Each frame is a vector of TrackableFrames (TF's), since
-			// one system can output multiple TF's each frame (for example, Motive can export
-			// both observer and marker points each frame).
-			queue<vector<RTLSProtocol::TrackableFrame*>>& frameQueue = sys->second.frames;
-			// If the frame is empty, then there are no points left to add.
-			if (frameQueue.empty()) continue;
-			
-			// Get the next set of trackable frames
-			vector<RTLSProtocol::TrackableFrame*>& frameSet = frameQueue.front();
-			// Iterate through all of these frames
-			RTLSProtocol::TrackableFrame* tkFrame;
-			for (int frameIndex = 0; frameIndex < frameSet.size(); frameIndex++) {
-				tkFrame = frameSet[frameIndex];
-
-				// For each frame, iterate through all of its trackables
-				for (int i = 0; i < tkFrame->trackables_size(); i++) {
-					
-					// Get the next trackable in this TF
-					auto& tk = tkFrame->trackables(i);
-
-					// Get the key and access the point corresponding with this key.
-					string key = getTrackableKey(tk);
-					auto& point = points.point(c3dPointLabels2Index[key]); // check for valid index?
-					// Set the position
-					point.set(
-						tk.position().x(), 
-						tk.position().y(), 
-						tk.position().z());
-				}
-			}
-
-			// Pop the front value that we just processed from the queue.
-			sys->second.clearAndPopNextFrame();
-		}
-
-		// Add the points to the frame
-		frame.add(points);
-
-		// Add the frame to the take
-		c3d.frame(frame);
-	}
-	
-	// Save the c3d to file
-	ofFilePath::createEnclosingDirectory(thisTakePath);
-	c3d.write(take->path);
-
-	return true;
+	return bSuccess;
 }
 
 // --------------------------------------------------------------
@@ -426,17 +331,6 @@ void ofxRTLSPlayer::promptUserOpenFile() {
 	if (!result.bSuccess) return;
 
 	setPlayingFile(result.filePath);
-}
-
-// --------------------------------------------------------------
-void ofxRTLSPlayer::togglePlayback() {
-
-	// TODO
-
-
-
-
-
 }
 
 // --------------------------------------------------------------
@@ -463,22 +357,102 @@ void ofxRTLSPlayer::setPlayingFile(string filePath) {
 		return;
 	}
 
-	// Load this file
-	ofLogNotice("ofxRTLSPlayer") << "Loaded file \"" << filePath << "\"";
+	// Queue this take to be loaded
+	RTLSPlayerTake* take = new RTLSPlayerTake();
+	take->path = filePath;
+	takeQueue.push(take);
 
-	thisTakePath = filePath;
+	// Notify that we need to load a new take at the next
+	// available opportunity, and pause/unload anything currently
+	// playing or loaded.
+	cv.notify_one();
 }
 
 // --------------------------------------------------------------
 void ofxRTLSPlayer::newRecording(ofxRTLSRecordingCompleteArgs& args) {
 
-	// If we aren't playing, set this file as the playback file
-	if (!bRecording) {
-		setPlayingFile(args.filePath);
+	// Add this file to the queue. It will be loaded at the next
+	// available chance. Any file currently loaded will be 
+	// unloaded
+	setPlayingFile(args.filePath);
+}
+
+// --------------------------------------------------------------
+bool ofxRTLSPlayer::getFrames(RTLSPlayerTake* take) {
+	if (!isSetup) return false;
+	if (take == NULL) return false;
+	if (take->c3d == NULL) return false;
+
+	// Flag all frames as old
+	take->flagAllFramesOld();
+
+	// Fill all newFrames with data, where available
+	for (auto& _f : take->frames) {
+
+		auto& frame = _f.newFrame;
+		auto& refFrame = _f.frame;
+
+		// Prepare the frame for incoming data
+		frame.Clear();
+		frame.CopyFrom(refFrame);
+		frame.clear_trackables();
+
+		// Fill with data from the c3d file
+		auto pts = take->c3d->data().frame(take->frameCounter).points();
+		// If there are no points, move to the next frame
+		if (pts.isEmpty()) continue;
+		// (There should be the same number of points every frame)
+		for (int i = 0; i < pts.nbPoints(); i++) {
+			if (pts.point(i).isValid()) {
+				Trackable* tk = frame.add_trackables();
+				tk->CopyFrom(refFrame.trackables(i));
+				Trackable::Position* position = tk->mutable_position();
+				position->set_x(pts.point(i).x());
+				position->set_y(pts.point(i).y());
+				position->set_z(pts.point(i).z());
+				_f.bNewData = true;
+			}
+		}
+
+		// Set the frame ID
+		frame.set_frame_id(take->frameCounter);
+	}
+
+	return true;
+}
+
+// --------------------------------------------------------------
+void ofxRTLSPlayer::sendData(RTLSPlayerTake* take) {
+	if (!isSetup) return;
+	if (take == NULL) return;
+
+	// Send every frame
+	for (int i = 0; i < take->frames.size(); i++) {
+
+		// Only send frames with new data
+		if (!take->frames[i].bNewData) continue;
+
+		// Copy over data and send it
+		ofxRTLSPlayerDataArgs args;
+		args.frame.CopyFrom(take->frames[i].newFrame);
+		args.systemType = take->frames[i].systemType;
+		args.trackableType = take->frames[i].trackableType;
+		ofNotifyEvent(newPlaybackData, args);
 	}
 }
 
 // --------------------------------------------------------------
+bool ofxRTLSPlayer::isPlaying(RTLSSystemType systemType) {
+	if (!bPlaying) return false;
 
+	std::lock_guard<std::mutex> lk(mutex);
+	return playingSystems.find(systemType) != playingSystems.end();
+}
+
+// --------------------------------------------------------------
+
+// --------------------------------------------------------------
+
+// --------------------------------------------------------------
 
 #endif
