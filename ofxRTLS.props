@@ -56,6 +56,7 @@
       <PreprocessorDefinitions Condition="'$(RTLS_OPENVR)'=='true'">RTLS_OPENVR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(RTLS_POSTPROCESS)'=='true'">RTLS_POSTPROCESS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(RTLS_PLAYER)'=='true'">RTLS_PLAYER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLM_EXT_INCLUDED;GLM_ENABLE_EXPERIMENTAL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
 
