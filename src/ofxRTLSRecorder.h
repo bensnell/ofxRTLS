@@ -51,7 +51,11 @@ public:
 	string getRecordingFile() { return thisTakePath; }
 	void toggleRecording();
 
-	ofEvent<ofxRTLSRecordingCompleteArgs> recordingComplete;
+	// Event notified when a recording
+	// begins or ends.
+	ofEvent<ofxRTLSRecordingArgs> recordingEvent;
+
+	void playbackEvent(ofxRTLSPlaybackArgs& args);
 
 private:
 

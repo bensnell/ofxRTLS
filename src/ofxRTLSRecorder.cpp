@@ -102,9 +102,10 @@ void ofxRTLSRecorder::threadedFunction() {
 				ofLogNotice("ofxRTLSRecorder") << "Saved take to file \"" << take->path << "\"" << endl;
 
 				// Also notify that we successfully saved it
-				ofxRTLSRecordingCompleteArgs args;
+				ofxRTLSRecordingArgs args;
+				args.bRecordingEnded = true;
 				args.filePath = take->path;
-				ofNotifyEvent(recordingComplete, args);
+				ofNotifyEvent(recordingEvent, args);
 			} else
 			{
 				ofLogNotice("ofxRTLSRecorder") << "Could not save take to file \"" << take->path << "\"" << endl;
@@ -258,9 +259,17 @@ void ofxRTLSRecorder::paramChanged(RemoteUIServerCallBackArg& arg) {
 			thisTakeStartTimeMS = ofGetElapsedTimeMillis();
 			take->path = thisTakePath;
 
-			std::lock_guard<std::mutex> lk(mutex);
-			takeQueue.push(take);
-			bRecording = true;
+			{
+				std::lock_guard<std::mutex> lk(mutex);
+				takeQueue.push(take);
+				bRecording = true;
+			}
+
+			// Notify that we started a recording
+			ofxRTLSRecordingArgs args;
+			args.bRecordingBegan = true;
+			args.filePath = take->path;
+			ofNotifyEvent(recordingEvent, args);
 		}
 		else if (!bShouldRecord && bRecording) {
 
@@ -436,6 +445,14 @@ void ofxRTLSRecorder::toggleRecording() {
 	arg.action = CLIENT_UPDATED_PARAM;
 	arg.paramName = "RTLS-R- Record";
 	paramChanged(arg);
+}
+
+// --------------------------------------------------------------
+void ofxRTLSRecorder::playbackEvent(ofxRTLSPlaybackArgs& args) {
+	
+	if (args.bPlay && bRecording) {
+		toggleRecording();
+	}
 }
 
 // --------------------------------------------------------------

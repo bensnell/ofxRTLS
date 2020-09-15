@@ -129,8 +129,13 @@ void ofxRTLSPlayer::threadedFunction() {
 				}
 			}
 
-			// If there is no take loaded, then break
-			if (take == NULL) break;
+			// If there is no take loaded, then pause and break
+			if (take == NULL) {
+				bPlaying = false;
+				bShouldPlay = false;
+				RUI_PUSH_TO_CLIENT();
+				break;
+			}
 
 			// Does this take have any points in it? If not, don't play it
 			if (take->getC3dNumFrames() == 0) {
@@ -209,6 +214,11 @@ void ofxRTLSPlayer::play() {
 		bShouldPlay = true;
 		RUI_PUSH_TO_CLIENT();
 
+		// Notify that we are starting to play
+		ofxRTLSPlaybackArgs args;
+		args.bPlay = true;
+		ofNotifyEvent(playbackEvent, args);
+
 		flagPlaybackChange = true;
 		cv.notify_one();
 	}
@@ -221,6 +231,11 @@ void ofxRTLSPlayer::pause() {
 	if (bPlaying) {
 		bShouldPlay = false;
 		RUI_PUSH_TO_CLIENT();
+
+		// Notify that we have paused
+		ofxRTLSPlaybackArgs args;
+		args.bPause = true;
+		ofNotifyEvent(playbackEvent, args);
 
 		// No need to notify thread, because it is already active
 		// (and playing).
@@ -386,12 +401,18 @@ void ofxRTLSPlayer::setPlayingFile(string filePath) {
 }
 
 // --------------------------------------------------------------
-void ofxRTLSPlayer::newRecording(ofxRTLSRecordingCompleteArgs& args) {
+void ofxRTLSPlayer::recordingEvent(ofxRTLSRecordingArgs& args) {
 
-	// Add this file to the queue. It will be loaded at the next
-	// available chance. Any file currently loaded will be 
-	// unloaded
-	setPlayingFile(args.filePath);
+	if (args.bRecordingEnded) {
+		// Add this file to the queue. It will be loaded at the next
+		// available chance. Any file currently loaded will be 
+		// unloaded
+		setPlayingFile(args.filePath);
+	}
+	else if (args.bRecordingBegan) {
+		// Stop any take that is currently playing
+		pause();
+	}
 }
 
 // --------------------------------------------------------------

@@ -70,13 +70,16 @@ public:
 
 	// This is called when a recording has been completed.
 	// (Must manually add a listener.)
-	void newRecording(ofxRTLSRecordingCompleteArgs& args);
+	void recordingEvent(ofxRTLSRecordingArgs& args);
 
 	// This event is called when the player loops
 	ofEvent<ofxRTLSPlayerLoopedArgs> takeLooped;
 
 	// This event is notified when new data is available from the player.
 	ofEvent<ofxRTLSPlayerDataArgs> newPlaybackData;
+
+	// This event is notified when we pause or play
+	ofEvent<ofxRTLSPlaybackArgs> playbackEvent;
 
 	string getStatus();
 

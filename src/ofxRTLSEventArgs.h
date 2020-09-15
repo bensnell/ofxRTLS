@@ -74,9 +74,10 @@ private:
 };
 
 // Argument when a recording is complete
-class ofxRTLSRecordingCompleteArgs : public ofEventArgs {
+class ofxRTLSRecordingArgs : public ofEventArgs {
 public:
-
+	bool bRecordingBegan = false;
+	bool bRecordingEnded = false;
 	string filePath = "";
 };
 
@@ -84,4 +85,11 @@ class ofxRTLSPlayerLoopedArgs : public ofEventArgs {
 public:
 	// All system and type pairs that have just looped
 	vector< pair<RTLSSystemType, RTLSTrackableType> > systems;
+};
+
+// Argument when a file begins or stops playing
+class ofxRTLSPlaybackArgs : public ofEventArgs {
+public:
+	bool bPlay = false;
+	bool bPause = false;
 };

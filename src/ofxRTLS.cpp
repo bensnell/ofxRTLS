@@ -24,8 +24,10 @@ void ofxRTLS::setup() {
 	// Setup player
 	player.setup();
 
-	// Add a listener for finished recordings
-	ofAddListener(recorder.recordingComplete, &player, &ofxRTLSPlayer::newRecording);
+	// Add a listener for recording started and stopped
+	ofAddListener(recorder.recordingEvent, &player, &ofxRTLSPlayer::recordingEvent);
+	// Add a listener for play and pause playback
+	ofAddListener(player.playbackEvent, &recorder, &ofxRTLSRecorder::playbackEvent);
 	// Add a listener for playing back frames
 	ofAddListener(player.newPlaybackData, this, &ofxRTLS::playerDataReceived);
 #endif
