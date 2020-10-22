@@ -255,10 +255,12 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 	for (int i = 0; i < args.markers.size(); i++) {
 
 		Trackable* trackable = mOutArgs.frame.add_trackables();
-		char byte_array[16];
-		((uint64_t*)byte_array)[0] = args.markers[i].cuid.LowBits();
-		((uint64_t*)byte_array)[1] = args.markers[i].cuid.HighBits();
-		trackable->set_cuid(byte_array, 16);
+		// Instead of setting a char array to the cuid data (which would likely
+		// yield invalid utf-8 strings (that can't be json-dumped), set a string
+		// equal to "[low bits as uint64_t]-[high bits as uint64_t]".
+		string cuid = ofToString(args.markers[i].cuid.LowBits()) + "-" +
+			ofToString(args.markers[i].cuid.HighBits());
+		trackable->set_cuid(cuid);
 		// If the marker is active, set an ID. If passive, don't set the ID.
 		if (isMarkerActive(args.markers[i].cuid)) {
 			trackable->set_id(getActiveMarkerID(args.markers[i].cuid));

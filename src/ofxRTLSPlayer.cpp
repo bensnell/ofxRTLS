@@ -424,6 +424,11 @@ bool ofxRTLSPlayer::getFrames(RTLSPlayerTake* take) {
 	// Flag all frames as old
 	take->flagAllFramesOld();
 
+	// Get points for this take
+	auto pts = take->c3d->data().frame(take->frameCounter).points();
+	// If there are no points, then don't proceed
+	if (pts.isEmpty()) return false;
+
 	// Fill all newFrames with data, where available
 	for (auto& _f : take->frames) {
 
@@ -435,19 +440,18 @@ bool ofxRTLSPlayer::getFrames(RTLSPlayerTake* take) {
 		frame.CopyFrom(refFrame);
 		frame.clear_trackables();
 
-		// Fill with data from the c3d file
-		auto pts = take->c3d->data().frame(take->frameCounter).points();
-		// If there are no points, move to the next frame
-		if (pts.isEmpty()) continue;
-		// (There should be the same number of points every frame)
-		for (int i = 0; i < pts.nbPoints(); i++) {
-			if (pts.point(i).isValid()) {
+		// Set all relevant points, filling the frame with data from the c3d file
+		for (int index = 0; index < _f.dataIndices.size(); index++) {
+			// "index" indicates the index of a trackable in the refFrame
+			// "ptIndex" will indicate the corresponding point in the c3d file's list of points
+			int ptIndex = _f.dataIndices[index];
+			if (pts.point(ptIndex).isValid()) {
 				Trackable* tk = frame.add_trackables();
-				tk->CopyFrom(refFrame.trackables(i));
+				tk->CopyFrom(refFrame.trackables(index));
 				Trackable::Position* position = tk->mutable_position();
-				position->set_x(pts.point(i).x());
-				position->set_y(pts.point(i).y());
-				position->set_z(pts.point(i).z());
+				position->set_x(pts.point(ptIndex).x());
+				position->set_y(pts.point(ptIndex).y());
+				position->set_z(pts.point(ptIndex).z());
 				_f.bNewData = true;
 			}
 		}

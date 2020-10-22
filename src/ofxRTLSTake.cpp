@@ -110,6 +110,7 @@ bool RTLSPlayerTake::populateTemplateFrames() {
 			tk->set_context(js["trackable"]["context"].dump());
 		}
 	}
+
 	return true;
 }
 
