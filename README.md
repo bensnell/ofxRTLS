@@ -121,19 +121,29 @@ Finally, implement your handler, e.g.:
 
 Take a look at the examples for a more in-depth look at using ofxRTLS with ofxMotive and ofxOpenVRTracker.
 
-The data exported over the RTLS-protocol protobuf format is detailed [here](https://github.com/local-projects/rtls-protocol). However, the context field will also contain useful information about the data's source. A trackable's `context` field will be a json string. When parsed, this json object possess the following information in key-value pairs:
+#### Data
 
-| Key                                 | Possible Values (one of the following)                       |
-| ----------------------------------- | ------------------------------------------------------------ |
-| `s` for "system"                    | `0` for Null System<br />`1` for OpenVR<br />`2` for Motive  |
-| `t` for "type"                      | `0` for markers (tracked objects)<br />`1` for reference, contributors, or observers (cameras, base stations, etc.) |
-| `m` for "might need re-calibration" | `0` for false (by default)<br />`1` for true                 |
+The data exported over the RTLS-protocol protobuf format is detailed [here](https://github.com/local-projects/rtls-protocol). 
 
- An `id` of `0` is not allowed, since it is the default field value for the RTLS Protocol protobuf objects. Using 0 may result in unexpected behaviors.
+An `id` of `0` is not allowed, since it is the default field value for the RTLS Protocol protobuf objects. Using 0 may result in unexpected behaviors.
 
+The context field may also contain additional useful information. This field will always be a utf-8 parseable json string. 
 
+The `TrackableFrame`'s context field will always contain information about the data's source. When parsed, this json object possess the following information in key-value pairs:
+
+| Key  | Key Meaning   | Values (one of the following)                                |
+| ---- | ------------- | ------------------------------------------------------------ |
+| `s`  | <u>s</u>ystem | `0` for Null System<br />`1` for OpenVR<br />`2` for Motive  |
+| `t`  | <u>t</u>ype   | `0` for markers (tracked objects)<br />`1` for reference, contributors, or observers (cameras, base stations, etc.) |
+
+The `Trackable`'s context field may or may not contain any information. If it does, these are the possible keys and associated values.
+
+| Key  | Key Meaning                     | Values (one of the following)                |
+| ---- | ------------------------------- | -------------------------------------------- |
+| `m`  | <u>m</u>ight need recalibration | `0` for false (by default)<br />`1` for true |
 
 ## Examples
+
 Examples have been provided with and without postprocessing. Following Setup Step 3 above to change the example's tracking system.
 
 

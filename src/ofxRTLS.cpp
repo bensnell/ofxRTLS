@@ -292,7 +292,10 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 		js.clear();
 		js["s"] = int(RTLS_SYSTEM_TYPE_MOTIVE);
 		js["t"] = int(RTLS_TRACKABLE_TYPE_OBSERVER);
-		js["m"] = int(args.maybeNeedsCalibration);
+		// Passing this information isn't sustainable since it cannot be captured by
+		// a recording to a c3d file. If you want to know whether the system needs re-calibration,
+		// check the individual cameras to see if any need it.
+		//js["m"] = int(args.maybeNeedsCalibration); 
 
 		ofxRTLSEventArgs cOutArgs(latencyCalculated);
 		cOutArgs.setStartAssemblyTime(thisMicros);
