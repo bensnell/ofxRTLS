@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup>
+    <EZC3D_ROOT Condition="'$(EZC3D_ROOT)'==''">$(OF_ROOT)\..\ExternalAddons\ofxRTLS\ezc3d</EZC3D_ROOT>
+  </PropertyGroup>
+
+  <!-- If we were including this library as lib, dll, etc., then we would use something like this: -->
+  <!-- <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(EZC3D_ROOT)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(EZC3D_ROOT)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ezc3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+  	<Content Include="$(EZC3D_ROOT)\bin\ezc3d.dll">
+  		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  		<Visible>false</Visible>
+  	</Content>
+  </ItemGroup> -->
+
+  <!-- Otherwise, we would use something like this to build it from scratch every time: -->
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(EZC3D_ROOT)\include;$(EZC3D_ROOT)\include\math;$(EZC3D_ROOT)\include\modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Filter Include="local_addons" />
+    <Filter Include="local_addons\ofxRTLS" />
+    <Filter Include="local_addons\ofxRTLS\ezc3d" />
+    <Filter Include="local_addons\ofxRTLS\ezc3d\include" />
+    <Filter Include="local_addons\ofxRTLS\ezc3d\include\math" />
+    <Filter Include="local_addons\ofxRTLS\ezc3d\include\modules" />
+    <Filter Include="local_addons\ofxRTLS\ezc3d\src" />
+    <Filter Include="local_addons\ofxRTLS\ezc3d\src\math" />
+    <Filter Include="local_addons\ofxRTLS\ezc3d\src\modules" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(EZC3D_ROOT)\src\ezc3d.cpp">
+      <Filter>local_addons\ofxRTLS\ezc3d\src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(EZC3D_ROOT)\src\ezc3dAnalogs.cpp">
+      <Filter>local_addons\ofxRTLS\ezc3d\src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(EZC3D_ROOT)\src\ezc3dChannel.cpp">
+      <Filter>local_addons\ofxRTLS\ezc3d\src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(EZC3D_ROOT)\src\ezc3dData.cpp">
+      <Filter>local_addons\ofxRTLS\ezc3d\src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(EZC3D_ROOT)\src\ezc3dFrame.cpp">
+      <Filter>local_addons\ofxRTLS\ezc3d\src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(EZC3D_ROOT)\src\ezc3dGroup.cpp">
+      <Filter>local_addons\ofxRTLS\ezc3d\src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(EZC3D_ROOT)\src\ezc3dHeader.cpp">
+      <Filter>local_addons\ofxRTLS\ezc3d\src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(EZC3D_ROOT)\src\ezc3dParameter.cpp">
+      <Filter>local_addons\ofxRTLS\ezc3d\src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(EZC3D_ROOT)\src\ezc3dParameters.cpp">
+      <Filter>local_addons\ofxRTLS\ezc3d\src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(EZC3D_ROOT)\src\ezc3dPoint.cpp">
+      <Filter>local_addons\ofxRTLS\ezc3d\src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(EZC3D_ROOT)\src\ezc3dPoints.cpp">
+      <Filter>local_addons\ofxRTLS\ezc3d\src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(EZC3D_ROOT)\src\ezc3dSubframe.cpp">
+      <Filter>local_addons\ofxRTLS\ezc3d\src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(EZC3D_ROOT)\src\math\ezc3dMatrix.cpp">
+      <Filter>local_addons\ofxRTLS\ezc3d\src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="$(EZC3D_ROOT)\src\math\ezc3dMatrix33.cpp">
+      <Filter>local_addons\ofxRTLS\ezc3d\src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="$(EZC3D_ROOT)\src\math\ezc3dMatrix66.cpp">
+      <Filter>local_addons\ofxRTLS\ezc3d\src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="$(EZC3D_ROOT)\src\math\ezc3dVector3d.cpp">
+      <Filter>local_addons\ofxRTLS\ezc3d\src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="$(EZC3D_ROOT)\src\math\ezc3dVector6d.cpp">
+      <Filter>local_addons\ofxRTLS\ezc3d\src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="$(EZC3D_ROOT)\src\modules\ezc3dForcePlatforms.cpp">
+      <Filter>local_addons\ofxRTLS\ezc3d\src\modules</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(EZC3D_ROOT)\include\ezc3d.h">
+      <Filter>local_addons\ofxRTLS\ezc3d\include</Filter>
+    </ClInclude>
+    <ClInclude Include="$(EZC3D_ROOT)\include\ezc3d_all.h">
+      <Filter>local_addons\ofxRTLS\ezc3d\include</Filter>
+    </ClInclude>
+    <ClInclude Include="$(EZC3D_ROOT)\include\ezc3dAnalogs.h">
+      <Filter>local_addons\ofxRTLS\ezc3d\include</Filter>
+    </ClInclude>
+    <ClInclude Include="$(EZC3D_ROOT)\include\ezc3dChannel.h">
+      <Filter>local_addons\ofxRTLS\ezc3d\include</Filter>
+    </ClInclude>
+    <ClInclude Include="$(EZC3D_ROOT)\include\ezc3dConfig.h">
+      <Filter>local_addons\ofxRTLS\ezc3d\include</Filter>
+    </ClInclude>
+    <ClInclude Include="$(EZC3D_ROOT)\include\ezc3dData.h">
+      <Filter>local_addons\ofxRTLS\ezc3d\include</Filter>
+    </ClInclude>
+    <ClInclude Include="$(EZC3D_ROOT)\include\ezc3dFrame.h">
+      <Filter>local_addons\ofxRTLS\ezc3d\include</Filter>
+    </ClInclude>
+    <ClInclude Include="$(EZC3D_ROOT)\include\ezc3dGroup.h">
+      <Filter>local_addons\ofxRTLS\ezc3d\include</Filter>
+    </ClInclude>
+    <ClInclude Include="$(EZC3D_ROOT)\include\ezc3dHeader.h">
+      <Filter>local_addons\ofxRTLS\ezc3d\include</Filter>
+    </ClInclude>
+    <ClInclude Include="$(EZC3D_ROOT)\include\ezc3dParameter.h">
+      <Filter>local_addons\ofxRTLS\ezc3d\include</Filter>
+    </ClInclude>
+    <ClInclude Include="$(EZC3D_ROOT)\include\ezc3dParameters.h">
+      <Filter>local_addons\ofxRTLS\ezc3d\include</Filter>
+    </ClInclude>
+    <ClInclude Include="$(EZC3D_ROOT)\include\ezc3dPoint.h">
+      <Filter>local_addons\ofxRTLS\ezc3d\include</Filter>
+    </ClInclude>
+    <ClInclude Include="$(EZC3D_ROOT)\include\ezc3dPoints.h">
+      <Filter>local_addons\ofxRTLS\ezc3d\include</Filter>
+    </ClInclude>
+    <ClInclude Include="$(EZC3D_ROOT)\include\ezc3dSubframe.h">
+      <Filter>local_addons\ofxRTLS\ezc3d\include</Filter>
+    </ClInclude>
+    <ClInclude Include="$(EZC3D_ROOT)\include\math\ezc3dMath.h">
+      <Filter>local_addons\ofxRTLS\ezc3d\include\math</Filter>
+    </ClInclude>
+    <ClInclude Include="$(EZC3D_ROOT)\include\math\ezc3dMatrix.h">
+      <Filter>local_addons\ofxRTLS\ezc3d\include\math</Filter>
+    </ClInclude>
+    <ClInclude Include="$(EZC3D_ROOT)\include\math\ezc3dMatrix33.h">
+      <Filter>local_addons\ofxRTLS\ezc3d\include\math</Filter>
+    </ClInclude>
+    <ClInclude Include="$(EZC3D_ROOT)\include\math\ezc3dMatrix66.h">
+      <Filter>local_addons\ofxRTLS\ezc3d\include\math</Filter>
+    </ClInclude>
+    <ClInclude Include="$(EZC3D_ROOT)\include\math\ezc3dVector3d.h">
+      <Filter>local_addons\ofxRTLS\ezc3d\include\math</Filter>
+    </ClInclude>
+    <ClInclude Include="$(EZC3D_ROOT)\include\math\ezc3dVector6d.h">
+      <Filter>local_addons\ofxRTLS\ezc3d\include\math</Filter>
+    </ClInclude>
+    <ClInclude Include="$(EZC3D_ROOT)\include\modules\ezc3dForcePlatforms.h">
+      <Filter>local_addons\ofxRTLS\ezc3d\include\modules</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

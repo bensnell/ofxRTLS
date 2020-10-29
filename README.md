@@ -13,6 +13,8 @@ This addon also supports optional realtime post-processing of the data. Options 
 - Hungarian Algorithm / Tracking
 - etc.
 
+The addon also allows data to be saved and played back from the [C3D](https://www.c3d.org/) file format.
+
 
 ### System Requirements
 
@@ -64,9 +66,9 @@ First, make sure you have properly installed all of the dependencies; there are 
 
 | Tracking System          | Visual Studio Property | Supported <br />Platform | Notes                                                        |
 | ------------------------ | ---------------------- | ------------------------ | ------------------------------------------------------------ |
-| Optitrack Motive Tracker | RTLS_MOTIVE = true     | x64                      | 32-bit (x86) is not supported by Motive.<br />This uses Motive v2.2.0 |
-| OpenVR (e.g. HTC Vive)   | RTLS_OPENVR = true     | x64 (x86?)               |                                                              |
-| Null System              | RTLS_NULL = true       | x64, x86                 | This system exports fake data.                               |
+| Optitrack Motive Tracker | `RTLS_MOTIVE` = true   | x64                      | 32-bit (x86) is not supported by Motive.<br />This uses Motive v2.2.0 |
+| OpenVR (e.g. HTC Vive)   | `RTLS_OPENVR` = true   | x64 (x86?)               |                                                              |
+| Null System              | `RTLS_NULL` = true     | x64, x86                 | This system exports fake data.                               |
 
   There are many ways to set a property in a Visual Studio project. It is important that this property must be defined before property sheets are imported in the project. The easiest way to add a property is to open up your **.vcxproj* file and add the following lines below (following XML structure) before property sheets are imported:
 
@@ -78,8 +80,8 @@ First, make sure you have properly installed all of the dependencies; there are 
   ```
 
 4. In your project *Properties* window, under *Configuration Properties  > C/C++ > Preprocessor > Preprocessor Definitions*, select *Edit* from the dropdown menu on the right and at the bottom of the window, check the box that says *Inherit from parent or project defaults*.
-
 5. If you plan on using any of the postprocessing options (and have already included the appropriate addons according to the instructions in Step 1), pass the macro `RTLS_POSTPROCESS` in the Project Properties' *Preprocessor Definitions* <u>or</u> define `<RTLS_POSTPROCESS>true</RTLS_POSTPROCESS>` in **.vcproj* as above.
+6. If you plan on using the recording or playback functionality, pass the macro `RTLS_PLAYER` in the Project Properties' *Preprocessor Definitions* <u>or</u> define `<RTLS_PLAYER>true</RTLS_PLAYER>` in **.vcproj* as above.
 
 This approach to building ofxRTLS using defined properties allows MSBuild (and CI pipelines like TeamCity) to build any configuration without regenerating project files, by passing different options to the compiler on the command line like so:
 
@@ -87,10 +89,10 @@ This approach to building ofxRTLS using defined properties allows MSBuild (and C
 -p:RTLS_MOTIVE=true
 ```
 
-You can pass multiple options to the compiler like below. This would build the NULL and MOTIVE systems with postprocessing enabled.
+You can pass multiple options to the compiler like below. This would build the NULL and MOTIVE systems with postprocessing and recorder/player enabled.
 
 ```bash
--p:RTLS_NULL=true;RTLS_MOTIVE=true;RTLS_OPENVR=false;RTLS_POSTPROCESS=true
+-p:RTLS_NULL=true;RTLS_MOTIVE=true;RTLS_OPENVR=false;RTLS_POSTPROCESS=true;RTLS_PLAYER=true
 ```
 
 
@@ -119,19 +121,75 @@ Finally, implement your handler, e.g.:
 
 Take a look at the examples for a more in-depth look at using ofxRTLS with ofxMotive and ofxOpenVRTracker.
 
-The data exported over the RTLS-protocol protobuf format is detailed [here](https://github.com/local-projects/rtls-protocol). However, the context field will also contain useful information about the data's source. A trackable's `context` field will be a json string. When parsed, this json object possess the following information in key-value pairs:
+### Data
 
-| Key                                 | Possible Values (one of the following)                       |
-| ----------------------------------- | ------------------------------------------------------------ |
-| `s` for "system"                    | `0` for Null System<br />`1` for OpenVR<br />`2` for Motive  |
-| `t` for "type"                      | `0` for markers (tracked objects)<br />`1` for reference (cameras, base stations, etc.) |
-| `m` for "might need re-calibration" | `0` for false (by default)<br />`1` for true                 |
+The data exported over the RTLS-protocol protobuf format is detailed [here](https://github.com/local-projects/rtls-protocol). However, this addon does not currently make use of all fields in the protocol, since some field data is not provided by certain systems. 
 
- An `id` of `0` is not allowed, since it is the default field value for the RTLS Protocol protobuf objects. Using 0 may result in unexpected behaviors.
+#### TrackableFrame
 
+Data is sent in a `TrackableFrame`, which represents a single frame of data captured at the same time. These frames are sent sequentially; however, if the communication layer is UDP, there is no guarantee of frames arriving sequentially.
 
+A `TrackableFrame` can contain multiple `Trackable`'s. There is no limit to the number of `Trackables` that can be contained within a `TrackableFrame`.
+
+A `TrackableFrame` contains the following parameters:
+
+| Name         | Type                 | Optional? | Description                                                  |
+| ------------ | -------------------- | --------- | ------------------------------------------------------------ |
+| `trackables` | repeated *Trackable* | No        | The list of objects currently being tracked. All objects in this list are presently visible and tracking. |
+| `frame_ID`   | uint64               | No        | This frame's frame number.                                   |
+| `timestamp`  | uint64               | No        | This frame's timestamp.                                      |
+| `context`    | string               | No        | A json-formatted string containing information about the source of this data (see below). |
+
+The `TrackableFrame`'s context field will always contain information about the data's source. When this utf-8 encoded json string is parsed, the json object possess the following information in key-value pairs. 
+
+| Key  | Key Meaning   | Values (one of the following)                                |
+| ---- | ------------- | ------------------------------------------------------------ |
+| `s`  | <u>s</u>ystem | `0` for Null System<br />`1` for OpenVR<br />`2` for Motive  |
+| `t`  | <u>t</u>ype   | `0` for markers (tracked objects)<br />`1` for reference, contributors, or observers (cameras, base stations, etc.) |
+
+The frame context applies to all trackables contained within it. Data from two different systems will never be sent in the same `TrackableFrame`. If multiple types of data are being sent (for example, both marker data {`t`:0} and camera data {`t`:1}), then each will be sent in its own `TrackableFrame`.
+
+#### Trackable
+
+A `Trackable` describes an object that is currently being tracked. In theory, a `Trackable` can also contain other `Trackable`'s; however, this addon only makes use of one level of `Trackable` depth.  In other words, a `Trackable` will never be the child to another `Trackable`.
+
+A `Trackable` contains many parameters. Some of the parameters are used to uniquely identify the trackable. Those parameters include:
+
+| Name   | Type   | Optional? | Description                                                  |
+| ------ | ------ | --------- | ------------------------------------------------------------ |
+| `id`   | int32  | Yes*      | A unique number that permanently identifies this object. An `id` of `0` indicates that this object has no `id`. Only nonzero `id`'s are valid. |
+| `cuid` | string | Yes*      | A unique string used to temporarily persist trackables across frames. An empty `cuid` string indicates that this object has no `cuid`. |
+| `name` | string | Yes*      | The name of this tracked object. An empty `name` string indicates that this object has no `name`. |
+
+*\* The above parameters are optional insofar as at least one of them must be present in any given trackable in order for the trackable to be valid.* 
+
+These "identifiable" parameters are used to identify an object across frames and distinguish it from other objects. The identifiability priority proceeds as follows:
+
+1. The `id` is the most robust indicator of uniqueness, possessing both reliability and persistence. In other words, an object with `id` = `128` will always have this `id`. If this `id` isn't present, then this specific object isn't present. If this object ever re-appears, it will reappear with the same `id`. If valid, this parameter should be used to identify objects. If invalid, proceed to the next parameter:
+2. The `cuid` is a reliable indicator of unqiueness; however, it is not persistent. In other words: an object with `cuid` = `5400-201` may spontaneously change `cuid` at any point, for example, if it becomes temporarily occluded. When this object re-appears, it will have a different `cuid`. Thus, for the duration of time an object retains a given `cuid`, it is trackable across frames. Said another way, if this `cuid` appears on frame *t* and frame *t+1*, then the object represented by this `cuid` on the first frame will be same object represented by this `cuid` on the next frame. `cuid`'s are nonrepeatable, meaning they will never repeat twice during the same session of the application. If valid, use this parameter to identify objects. If not, proceed to the next parameter:
+3. The `name` has no guarantee of being reliable nor persistent; however, it may be used as an efficient measure of uniqueness when all other parameters are invalid. If all other parameters are invalid, then `name` will be a reliable and persistent measure of uniquness. If any other parameters are valid, then `name` will not be a reliable or persistent measure of uniqueness, and will likely contain less immediately relevant information like the informal name of an object, if applicable.  If valid, use this parameter to identify objects. If not, this trackable is not valid.
+
+Location information for a `Trackable` is encoded in the following parameters:
+
+| Name          | Type                       | Optional? | Description                                                  |
+| ------------- | -------------------------- | --------- | ------------------------------------------------------------ |
+| `position`    | *Position* (x, y, z)       | No        | The position of the object. All trackables must contain positional information. |
+| `orientation` | *Orientation* (x, y, z, w) | Yes       | The orientation of the object expressed as a quaternion. This field may not be available, depending on the tracking system. Currently, the only system that supports this is OpenVR (`RTLS_OPENVR`). |
+
+Lastly, the `context` parameter (if available) contains any remaining information about a `Trackable`:
+
+| Name      | Type   | Optional? | Description                                                  |
+| --------- | ------ | --------- | ------------------------------------------------------------ |
+| `context` | string | Yes       | A utf-8 encoded json string containing miscellanous flags and parameters that cannot be described by any of the other RTLS protocol `Trackable` parameters. Invalid if empty. |
+
+If valid, the `context` field once parsed will contain a list of keys and values. Possible pairs include:
+
+| Key  | Key Meaning                                                  | Values (one of the following)                |
+| ---- | ------------------------------------------------------------ | -------------------------------------------- |
+| `m`  | <u>m</u>ight need recalibration<br />*Note: This only applies to `Trackable`'s of type `1` (observers, cameras, etc.)* | `0` for false (by default)<br />`1` for true |
 
 ## Examples
+
 Examples have been provided with and without postprocessing. Following Setup Step 3 above to change the example's tracking system.
 
 

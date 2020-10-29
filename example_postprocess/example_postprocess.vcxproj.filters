@@ -127,6 +127,12 @@
 		<ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSPostprocessor.cpp">
 			<Filter>local_addons\ofxRTLS\src</Filter>
 		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSRecorder.cpp">
+			<Filter>local_addons\ofxRTLS\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSTrackableKey.cpp">
+			<Filter>local_addons\ofxRTLS\src</Filter>
+		</ClCompile>
 		<ClCompile Include="..\..\..\ExternalAddons\ofxRTLS\src\Trackable.pb.cc">
 			<Filter>local_addons\ofxRTLS\src</Filter>
 		</ClCompile>
@@ -202,6 +208,9 @@
 		<ClCompile Include="..\..\..\ExternalAddons\ofxFilter\src\ofxFilterOpKalman.cpp">
 			<Filter>local_addons\ofxFilter\src</Filter>
 		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxFilter\src\ofxFilterOpPersist.cpp">
+			<Filter>local_addons\ofxFilter\src</Filter>
+		</ClCompile>
 		<ClCompile Include="..\..\..\ExternalAddons\ofxFilter\src\ofxFilterUnits.cpp">
 			<Filter>local_addons\ofxFilter\src</Filter>
 		</ClCompile>
@@ -213,6 +222,9 @@
 		</ClCompile>
 		<ClCompile Include="..\..\..\ExternalAddons\ofxHungarian\src\ofxHungarian.cpp">
 			<Filter>local_addons\ofxHungarian\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\ExternalAddons\ofxTemporalResampler\src\ofxTemporalResampler.cpp">
+			<Filter>local_addons\ofxTemporalResampler\src</Filter>
 		</ClCompile>
 	</ItemGroup>
 	<ItemGroup>
@@ -467,6 +479,12 @@
 		</Filter>
 		<Filter Include="local_addons\ofxHungarian\src">
 			<UniqueIdentifier>{7C20F634-43DC-8B0D-AECA-0E41}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxTemporalResampler">
+			<UniqueIdentifier>{89EE5067-E467-8C7F-7866-F0F6}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="local_addons\ofxTemporalResampler\src">
+			<UniqueIdentifier>{5BF50C12-1FF1-048E-25ED-0BEA}</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>
@@ -1478,6 +1496,12 @@
 		<ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSPostprocessor.h">
 			<Filter>local_addons\ofxRTLS\src</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSRecorder.h">
+			<Filter>local_addons\ofxRTLS\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\ofxRTLSTrackableKey.h">
+			<Filter>local_addons\ofxRTLS\src</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\..\ExternalAddons\ofxRTLS\src\Trackable.pb.h">
 			<Filter>local_addons\ofxRTLS\src</Filter>
 		</ClInclude>
@@ -1562,6 +1586,9 @@
 		<ClInclude Include="..\..\..\ExternalAddons\ofxFilter\src\ofxFilterOpKalman.h">
 			<Filter>local_addons\ofxFilter\src</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxFilter\src\ofxFilterOpPersist.h">
+			<Filter>local_addons\ofxFilter\src</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\..\ExternalAddons\ofxFilter\src\ofxFilterUnits.h">
 			<Filter>local_addons\ofxFilter\src</Filter>
 		</ClInclude>
@@ -1576,6 +1603,9 @@
 		</ClInclude>
 		<ClInclude Include="..\..\..\ExternalAddons\ofxHungarian\src\ofxHungarian.h">
 			<Filter>local_addons\ofxHungarian\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\ExternalAddons\ofxTemporalResampler\src\ofxTemporalResampler.h">
+			<Filter>local_addons\ofxTemporalResampler\src</Filter>
 		</ClInclude>
 	</ItemGroup>
 	<ItemGroup>

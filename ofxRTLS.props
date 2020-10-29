@@ -10,6 +10,8 @@
     <RTLS_NULL Condition="('$(RTLS_MOTIVE)'=='false')And('$(RTLS_OPENVR)'=='false')">true</RTLS_NULL>
 
     <RTLS_POSTPROCESS Condition="'$(RTLS_POSTPROCESS)'==''">false</RTLS_POSTPROCESS>
+
+    <RTLS_PLAYER Condition="'$(RTLS_PLAYER)'==''">false</RTLS_PLAYER>
   </PropertyGroup>
 <!--   <ItemGroup>
     <BuildMacro Include="RTLS_MOTIVE">
@@ -34,6 +36,9 @@
     <!-- Depending on the tracking system variable, include the appropriate property sheets-->
     <Import Condition="'$(RTLS_MOTIVE)'=='true'" Project="$(OFXRTLS_ROOT)\..\ofxMotive\ofxMotive.props" />
     <Import Condition="'$(RTLS_OPENVR)'=='true'" Project="$(OFXRTLS_ROOT)\..\ofxOpenVRTracker\ofxOpenVRTracker.props" />
+
+    <!-- Include the recorder/player libraries if enabled -->
+    <Import Condition="'$(RTLS_PLAYER)'=='true'" Project="$(OFXRTLS_ROOT)\EZC3D.props" />
   </ImportGroup>
 
 <!--   <PropertyGroup Label="UserMacros">
@@ -50,6 +55,8 @@
       <PreprocessorDefinitions Condition="'$(RTLS_MOTIVE)'=='true'">RTLS_MOTIVE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(RTLS_OPENVR)'=='true'">RTLS_OPENVR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(RTLS_POSTPROCESS)'=='true'">RTLS_POSTPROCESS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(RTLS_PLAYER)'=='true'">RTLS_PLAYER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLM_EXT_INCLUDED;GLM_ENABLE_EXPERIMENTAL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
 

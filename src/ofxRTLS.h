@@ -7,6 +7,7 @@
 #include "ofMain.h"
 #include "ofxRemoteUIServer.h"
 #include "ofxRTLSEventArgs.h"
+#include "ofxRTLSTypes.h"
 #include "Trackable.pb.h"
 using namespace RTLSProtocol;
 
@@ -22,6 +23,11 @@ using namespace RTLSProtocol;
 
 #ifdef RTLS_POSTPROCESS
 #include "ofxRTLSPostprocessor.h"
+#endif
+
+#ifdef RTLS_PLAYER
+#include "ofxRTLSRecorder.h"
+#include "ofxRTLSPlayer.h"
 #endif
 
 class ofxRTLS : public ofThread {
@@ -45,12 +51,31 @@ public:
 	int isConnected();
 	bool isReceivingData();
 	float getFPS() { return dataFPS; }
+	float getMaxSystemFPS();
+	double getLatencyMS() { return latencyMS; }
 
 	// Event that occurs when new data is received
 	ofEvent< ofxRTLSEventArgs > newFrameReceived;
 
+	// Event that occurs when new latency is calculated
+	ofEvent< ofxRTLSLatencyArgs > latencyCalculated;
+
 	// What systems does this version of RTLS support?
 	string getSupport();
+	string getSupportedSystems();
+	bool isPostprocessSupported();
+	bool isPlayerSupported();
+	bool isRecording();
+	void toggleRecording();
+	bool isPlaying();
+	bool isPlaying(RTLSSystemType systemType);
+	void togglePlayback();
+	void resetPlayback();
+	void promptOpenPlaybackFile();
+	string getRecordingFile();
+	string getPlayingFile();
+
+private:
 
 #ifdef RTLS_NULL
 	ofxRTLSNullSystem nsys;
@@ -87,7 +112,13 @@ public:
 	uint64_t lastSendTime = 0;
 #endif
 
-private:
+#ifdef RTLS_PLAYER
+	ofxRTLSRecorder recorder;
+
+	ofxRTLSPlayer player;
+	void playerDataReceived(ofxRTLSPlayerDataArgs& args);
+	// frame ID?
+#endif
 
 	void threadedFunction();
 
@@ -95,8 +126,17 @@ private:
 	atomic<bool> bReceivingData = false;
 	uint64_t lastReceive = 0;
 	int stopGap = 100; // number of milliseconds before we decide no data is being received
+	// Mark that we received a new frame
+	void markDataReceived();
+	// Send event args given a system and type.
+	// If the provided system is not compiled, will return false.
+	bool sendData(ofxRTLSEventArgs& args, RTLSSystemType systemType, 
+		RTLSTrackableType trackableType);
 
 	// Contains timestamps at which data was received in the last second
 	queue<uint64_t> dataTimestamps;
-	float dataFPS = 0.0;
+	double dataFPS = 0.0;
+
+	atomic<double> latencyMS = 0.0;
+	void newLatencyCalculated(ofxRTLSLatencyArgs& args);
 };

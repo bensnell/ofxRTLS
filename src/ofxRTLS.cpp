@@ -17,6 +17,20 @@ void ofxRTLS::setup() {
 
 	// Setup general RTLS params
 	//RUI_NEW_GROUP("ofxRTLS");
+
+#ifdef RTLS_PLAYER
+	// Setup recorder
+	recorder.setup();
+	// Setup player
+	player.setup();
+
+	// Add a listener for recording started and stopped
+	ofAddListener(recorder.recordingEvent, &player, &ofxRTLSPlayer::recordingEvent);
+	// Add a listener for play and pause playback
+	ofAddListener(player.playbackEvent, &recorder, &ofxRTLSRecorder::playbackEvent);
+	// Add a listener for playing back frames
+	ofAddListener(player.newPlaybackData, this, &ofxRTLS::playerDataReceived);
+#endif
 	
 #ifdef RTLS_NULL
 	// Setup params
@@ -25,17 +39,27 @@ void ofxRTLS::setup() {
 	ofAddListener(nsys.newDataReceived, this, &ofxRTLS::nsysDataReceived);
 	
 #ifdef RTLS_POSTPROCESS
-	nsysPostM.setup("NullSysMarkers", "NM");
+	nsysPostM.setup(RTLS_SYSTEM_TYPE_NULL, RTLS_TRACKABLE_TYPE_SAMPLE, 
+		"NullSysMarkers", "NM");
+#ifdef RTLS_PLAYER
+	ofAddListener(player.takeLooped, &nsysPostM, &ofxRTLSPostprocessor::resetEventReceved);
+#endif
 #endif
 #endif
 
 #ifdef RTLS_OPENVR
+	// Setup Params
+	openvr.setup();
 	// Add listeners for new data
 	ofAddListener(openvr.newDataReceived, this, &ofxRTLS::openvrDataReceived);
 	
 #ifdef RTLS_POSTPROCESS
 	// Setup the postprocessor
-	openvrPostM.setup("OpenVRMarkers", "OM");
+	openvrPostM.setup(RTLS_SYSTEM_TYPE_OPENVR, RTLS_TRACKABLE_TYPE_SAMPLE, 
+		"OpenVRMarkers", "OM");
+#ifdef RTLS_PLAYER
+	ofAddListener(player.takeLooped, &openvrPostM, &ofxRTLSPostprocessor::resetEventReceved);
+#endif
 #endif
 #endif
 
@@ -53,15 +77,21 @@ void ofxRTLS::setup() {
 
 #ifdef RTLS_POSTPROCESS
 	// Setup the postprocessors
-	motivePostM.setup("MotiveMarkers", "MM", "id-dictionary.json", 
+	motivePostM.setup(RTLS_SYSTEM_TYPE_MOTIVE, RTLS_TRACKABLE_TYPE_SAMPLE, 
+		"MotiveMarkers", "MM", "", 
 		"age,axes,kalman,easing,add-rate,continuity,easing");
-	motivePostR.setup("MotiveRef", "MR", "", "axes");
+	motivePostR.setup(RTLS_SYSTEM_TYPE_MOTIVE, RTLS_TRACKABLE_TYPE_OBSERVER,
+		"MotiveRef", "MR", "", "axes");
+#ifdef RTLS_PLAYER
+	ofAddListener(player.takeLooped, &motivePostM, &ofxRTLSPostprocessor::resetEventReceved);
+	ofAddListener(player.takeLooped, &motivePostR, &ofxRTLSPostprocessor::resetEventReceved);
+#endif
 #endif
 #endif
 
-	// Set target frame rate
-	dataFPS = ofGetTargetFrameRate();
-
+	// Add a listener for any new latency measurements
+	ofAddListener(latencyCalculated, this, &ofxRTLS::newLatencyCalculated);
+	
 	startThread();
 }
 
@@ -97,58 +127,59 @@ void ofxRTLS::stop() {
 #ifdef RTLS_NULL
 
 void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
+	if (isPlaying(RTLS_SYSTEM_TYPE_NULL)) return;
 
-	lastReceive = ofGetElapsedTimeMillis();
-	mutex.lock();
-	dataTimestamps.push(lastReceive);
-	mutex.unlock();
+	uint64_t thisMicros = ofGetElapsedTimeMicros();
+
+	markDataReceived();
 
 	// ==============================================
 	// Fake Data
 	// Send every frame
 	// ==============================================
 
-	ofJson js;
-	js["s"] = 0; // system = null
-	js["t"] = 0; // type = marker
+	ofJson js; 
+	js["s"] = args.bOverrideContext ? args.systemOverride : int(RTLS_SYSTEM_TYPE_NULL);
+	js["t"] = args.bOverrideContext ? args.typeOverride : int(RTLS_TRACKABLE_TYPE_SAMPLE);
 
-	ofxRTLSEventArgs outArgs;
+	ofxRTLSEventArgs outArgs(latencyCalculated);
+	outArgs.setStartAssemblyTime(thisMicros);
 	outArgs.frame.set_context(js.dump());
 	outArgs.frame.set_frame_id(nsysFrameID);
 	outArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
 
-	for (int i = 0; i < args.markers.size(); i++) {
+	for (auto& t : args.trackables) {
 
 		Trackable* trackable = outArgs.frame.add_trackables();
-		trackable->set_id(i + 1);
+		if (t.hasId()) trackable->set_id(t.getId());
+		if (t.hasCuid()) trackable->set_cuid(t.getCuid());
 		Trackable::Position* position = trackable->mutable_position();
-		position->set_x(args.markers[i].x);
-		position->set_y(args.markers[i].y);
-		position->set_z(args.markers[i].z);
+		position->set_x(t.getPosition().x);
+		position->set_y(t.getPosition().y);
+		position->set_z(t.getPosition().z);
 	}
 
-#ifdef RTLS_POSTPROCESS
-	// Post-process the data, then send it out when ready
-	nsysPostM.processAndSend(outArgs, newFrameReceived);
-#else
-	// Send out data immediately
-	ofNotifyEvent(newFrameReceived, outArgs);
+#ifdef RTLS_PLAYER
+	// Pass this raw data to the recorder
+	recorder.add(RTLS_SYSTEM_TYPE_NULL, nsys.getFrameRate(), outArgs.frame);
+	recorder.update(RTLS_SYSTEM_TYPE_NULL);
 #endif
+
+	sendData(outArgs, RTLS_SYSTEM_TYPE_NULL, RTLS_TRACKABLE_TYPE_SAMPLE);
 
 	nsysFrameID++;
 }
-
 #endif
 
 // --------------------------------------------------------------
 #ifdef RTLS_OPENVR
 
 void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
+	if (isPlaying(RTLS_SYSTEM_TYPE_OPENVR)) return;
 
-	lastReceive = ofGetElapsedTimeMillis();
-	mutex.lock();
-	dataTimestamps.push(lastReceive);
-	mutex.unlock();
+	uint64_t thisMicros = ofGetElapsedTimeMicros();
+
+	markDataReceived();
 
 	// ==============================================
 	// Generic Tracker Trackables
@@ -156,10 +187,11 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 	// ==============================================
 
 	ofJson js;
-	js["s"] = 1; // system = openvr
-	js["t"] = 0; // type = marker
+	js["s"] = int(RTLS_SYSTEM_TYPE_OPENVR);
+	js["t"] = int(RTLS_TRACKABLE_TYPE_SAMPLE);
 
-	ofxRTLSEventArgs outArgs;
+	ofxRTLSEventArgs outArgs(latencyCalculated);
+	outArgs.setStartAssemblyTime(thisMicros);
 	outArgs.frame.set_context(js.dump());
 	outArgs.frame.set_frame_id(openvrFrameID);
 	outArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
@@ -182,28 +214,27 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 		}
 	}
 
-#ifdef RTLS_POSTPROCESS
-	// Post-process the data, then send it out when ready
-	openvrPostM.processAndSend(outArgs, newFrameReceived);
-#else
-	// Send out data immediately
-	ofNotifyEvent(newFrameReceived, outArgs);
+#ifdef RTLS_PLAYER
+	// Pass this raw data to the recorder
+	recorder.add(RTLS_SYSTEM_TYPE_OPENVR, openvr.getFPS(), outArgs.frame);
+	recorder.update(RTLS_SYSTEM_TYPE_OPENVR);
 #endif
+
+	sendData(outArgs, RTLS_SYSTEM_TYPE_OPENVR, RTLS_TRACKABLE_TYPE_SAMPLE);
 
 	openvrFrameID++;
 }
-
 #endif
 
 // --------------------------------------------------------------
 #ifdef RTLS_MOTIVE
 
 void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
+	if (isPlaying(RTLS_SYSTEM_TYPE_MOTIVE)) return;
 
-	lastReceive = ofGetElapsedTimeMillis();
-	mutex.lock();
-	dataTimestamps.push(lastReceive);
-	mutex.unlock();
+	uint64_t thisMicros = ofGetElapsedTimeMicros();
+
+	markDataReceived();
 
 	// ==============================================
 	// Marker Trackables
@@ -211,11 +242,12 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 	// ==============================================
 
 	ofJson js;
-	js["s"] = 2; // system = motive
-	js["t"] = 0; // type = marker
+	js["s"] = int(RTLS_SYSTEM_TYPE_MOTIVE);
+	js["t"] = int(RTLS_TRACKABLE_TYPE_SAMPLE);
 
 	// Send each identified marker
-	ofxRTLSEventArgs mOutArgs;
+	ofxRTLSEventArgs mOutArgs(latencyCalculated);
+	mOutArgs.setStartAssemblyTime(thisMicros);
 	mOutArgs.frame.set_context(js.dump());
 	mOutArgs.frame.set_frame_id(motiveFrameID);
 	mOutArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
@@ -223,10 +255,12 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 	for (int i = 0; i < args.markers.size(); i++) {
 
 		Trackable* trackable = mOutArgs.frame.add_trackables();
-		char byte_array[16];
-		((uint64_t*)byte_array)[0] = args.markers[i].cuid.LowBits();
-		((uint64_t*)byte_array)[1] = args.markers[i].cuid.HighBits();
-		trackable->set_cuid(byte_array, 16);
+		// Instead of setting a char array to the cuid data (which would likely
+		// yield invalid utf-8 strings (that can't be json-dumped), set a string
+		// equal to "[low bits as uint64_t]-[high bits as uint64_t]".
+		string cuid = ofToString(args.markers[i].cuid.LowBits()) + "-" +
+			ofToString(args.markers[i].cuid.HighBits());
+		trackable->set_cuid(cuid);
 		// If the marker is active, set an ID. If passive, don't set the ID.
 		if (isMarkerActive(args.markers[i].cuid)) {
 			trackable->set_id(getActiveMarkerID(args.markers[i].cuid));
@@ -237,29 +271,34 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 		position->set_z(args.markers[i].position.z);
 	}
 
-#ifdef RTLS_POSTPROCESS
-	// Post-process the data, then send it out when ready
-	motivePostM.processAndSend(mOutArgs, newFrameReceived);
-#else
-	// Send out the data immediately
-	ofNotifyEvent(newFrameReceived, mOutArgs);
+#ifdef RTLS_PLAYER
+	// Pass this raw data to the recorder
+	recorder.add(RTLS_SYSTEM_TYPE_MOTIVE, motive.getMaxFPS(), mOutArgs.frame);
 #endif
 
+	sendData(mOutArgs, RTLS_SYSTEM_TYPE_MOTIVE, RTLS_TRACKABLE_TYPE_SAMPLE);
+
+
 	// ==============================================
-	// Camera Trackables
+	// Observer Trackables
 	// Send with specified period.
 	// ==============================================
 
 	uint64_t thisTime = ofGetElapsedTimeMillis();
-	if (bSendCameraData && ((lastSendTime == 0) || (thisTime - lastSendTime >= cameraDataFrequency*1000.0))) {
+	if (bSendCameraData && ((lastSendTime == 0) || 
+		(thisTime - lastSendTime >= cameraDataFrequency*1000.0))) {
 		lastSendTime = thisTime;
 
 		js.clear();
-		js["s"] = 2; // system = motive
-		js["t"] = 1; // type = reference
-		js["m"] = int(args.maybeNeedsCalibration);
+		js["s"] = int(RTLS_SYSTEM_TYPE_MOTIVE);
+		js["t"] = int(RTLS_TRACKABLE_TYPE_OBSERVER);
+		// Passing this information isn't sustainable since it cannot be captured by
+		// a recording to a c3d file. If you want to know whether the system needs re-calibration,
+		// check the individual cameras to see if any need it.
+		//js["m"] = int(args.maybeNeedsCalibration); 
 
-		ofxRTLSEventArgs cOutArgs;
+		ofxRTLSEventArgs cOutArgs(latencyCalculated);
+		cOutArgs.setStartAssemblyTime(thisMicros);
 		cOutArgs.frame.set_context(js.dump());
 		cOutArgs.frame.set_frame_id(motiveFrameID);
 		cOutArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
@@ -285,18 +324,146 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 			orientation->set_z(args.cameras[i].orientation.z);
 		}
 
-#ifdef RTLS_POSTPROCESS
-		// Post-process the data, then send it out when ready
-		motivePostR.processAndSend(cOutArgs, newFrameReceived);
-#else
-		// Send out camera data immediately
-		ofNotifyEvent(newFrameReceived, cOutArgs);
+#ifdef RTLS_PLAYER
+		// Pass this raw data to the recorder
+		recorder.add(RTLS_SYSTEM_TYPE_MOTIVE, motive.getMaxFPS(), cOutArgs.frame);
 #endif
+
+		sendData(cOutArgs, RTLS_SYSTEM_TYPE_MOTIVE, RTLS_TRACKABLE_TYPE_OBSERVER);
 	}
+
+#ifdef RTLS_PLAYER
+	// Update the recorder
+	recorder.update(RTLS_SYSTEM_TYPE_MOTIVE);
+#endif
 	
 	motiveFrameID++;
 }
 #endif
+
+// --------------------------------------------------------------
+#ifdef RTLS_PLAYER
+void ofxRTLS::playerDataReceived(ofxRTLSPlayerDataArgs& args) {
+
+	uint64_t thisMicros = ofGetElapsedTimeMicros();
+
+	markDataReceived();
+
+	// ==============================================
+	// Playback Data
+	// (Only when playback is active)
+	// ==============================================
+
+	ofxRTLSEventArgs outArgs(latencyCalculated);
+	outArgs.setStartAssemblyTime(thisMicros);
+	outArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
+	outArgs.frame = args.frame;
+
+	// (Don't record played data)
+
+	// Send the data out appropriately
+	sendData(outArgs, args.systemType, args.trackableType);
+}
+#endif
+
+// --------------------------------------------------------------
+bool ofxRTLS::sendData(ofxRTLSEventArgs& args, 
+	RTLSSystemType systemType, RTLSTrackableType trackableType) {
+
+	switch (systemType) {
+
+	// ========================================================================
+	case RTLS_SYSTEM_TYPE_NULL: {
+#ifdef RTLS_NULL 
+		switch (trackableType) {
+
+		// --------------------------------------------------------------------
+		case RTLS_TRACKABLE_TYPE_SAMPLE: {
+#ifdef RTLS_POSTPROCESS
+			// Post-process the data, then send it out when ready
+			nsysPostM.processAndSend(args, newFrameReceived);
+#else
+			// Send out data immediately
+			ofNotifyEvent(newFrameReceived, args);
+#endif
+		}; break;
+
+		// --------------------------------------------------------------------
+		default: {
+			return false; // Invalid trackable type
+		}; break;
+		}
+#else 
+		return false; // Not compiled for Null System
+#endif
+	}; break;
+
+	// ========================================================================
+	case RTLS_SYSTEM_TYPE_OPENVR: {
+#ifdef RTLS_OPENVR
+		switch (trackableType) {
+
+		// --------------------------------------------------------------------
+		case RTLS_TRACKABLE_TYPE_SAMPLE: {
+#ifdef RTLS_POSTPROCESS
+			openvrPostM.processAndSend(args, newFrameReceived);
+#else
+			ofNotifyEvent(newFrameReceived, args);
+#endif
+		}; break;
+
+		// --------------------------------------------------------------------
+		default: {
+			return false; // Invalid trackable type
+		}; break;
+		}
+#else
+		return false; // Not compiled for OpenVR
+#endif
+	}; break;
+
+	// ========================================================================
+	case RTLS_SYSTEM_TYPE_MOTIVE: {
+#ifdef RTLS_MOTIVE
+		switch (trackableType) {
+
+		// --------------------------------------------------------------------
+		case RTLS_TRACKABLE_TYPE_OBSERVER: { // Motive Cameras
+#ifdef RTLS_POSTPROCESS
+			motivePostR.processAndSend(args, newFrameReceived);
+#else
+			ofNotifyEvent(newFrameReceived, args);
+#endif
+		}; break;
+
+		// --------------------------------------------------------------------
+		case RTLS_TRACKABLE_TYPE_SAMPLE: { // Motive markers
+#ifdef RTLS_POSTPROCESS
+			motivePostM.processAndSend(args, newFrameReceived);
+#else
+			ofNotifyEvent(newFrameReceived, args);
+#endif
+		}; break;
+
+		// --------------------------------------------------------------------
+		default: {
+			return false; // Invalid trackable type
+		}; break;
+		}
+#else
+		return false; // Not compiled for Motive
+#endif
+	}; break;
+
+	// ========================================================================
+	case RTLS_SYSTEM_TYPE_INVALID:
+	default: {
+		return false; // Invalid system type
+	}; break;
+	}
+
+	return true;
+}
 
 // --------------------------------------------------------------
 void ofxRTLS::threadedFunction() {
@@ -314,7 +481,7 @@ void ofxRTLS::threadedFunction() {
 		while (!dataTimestamps.empty() && dataTimestamps.front() < (thisTime-1000)) {
 			dataTimestamps.pop();
 		}
-		dataFPS = float(dataTimestamps.size());
+		dataFPS = dataFPS * 0.95 + float(dataTimestamps.size()) * 0.05;
 		mutex.unlock();
 		
 		sleep(16);
@@ -372,8 +539,9 @@ bool ofxRTLS::isReceivingData() {
 }
 
 // --------------------------------------------------------------
-string ofxRTLS::getSupport() {
-	string supportStr = "ofxRTLS compiled to support systems { ";
+string ofxRTLS::getSupportedSystems() {
+
+	string out = "{ ";
 	string systems = "";
 #ifdef RTLS_NULL
 	systems += "NULL, ";
@@ -386,16 +554,146 @@ string ofxRTLS::getSupport() {
 #endif
 	if (systems.empty()) systems = "--";
 	else systems = systems.substr(0, systems.size() - 2);
-	supportStr += systems + " } ";
-	supportStr += "with postprocessing ";
+	out += systems + " }";
+	return out;
+}
+
+// --------------------------------------------------------------
+bool ofxRTLS::isPostprocessSupported() {
 #ifdef RTLS_POSTPROCESS
-	supportStr += "ON";
+	return true;
 #else
-	supportStr += "OFF";
+	return false;
 #endif
+}
+
+// --------------------------------------------------------------
+bool ofxRTLS::isPlayerSupported() {
+#ifdef RTLS_PLAYER
+	return true;
+#else
+	return false;
+#endif
+}
+
+// --------------------------------------------------------------
+string ofxRTLS::getSupport() {
+	string supportStr = "ofxRTLS compiled to support systems ";
+	supportStr += getSupportedSystems();
+	supportStr += " ";
+
+	supportStr += "with postprocessing ";
+	supportStr += isPostprocessSupported() ? "ENABLED" : "DISABLED";
+	supportStr += " ";
+	
+	supportStr += "and player ";
+	supportStr += isPlayerSupported() ? "ENABLED" : "DISABLED";
+	
 	supportStr += ".";
 	return supportStr;
 }
+
+// --------------------------------------------------------------
+float ofxRTLS::getMaxSystemFPS() {
+
+	float maxFPS = 0;
+#ifdef RTLS_NULL
+	maxFPS = max(maxFPS, nsys.getFrameRate());
+#endif
+#ifdef RTLS_OPENVR
+	maxFPS = max(maxFPS, openvr.getFPS());
+#endif
+#ifdef RTLS_MOTIVE
+	maxFPS = max(maxFPS, float(motive.getMaxFPS()));
+#endif
+	return maxFPS;
+}
+
+// --------------------------------------------------------------
+void ofxRTLS::newLatencyCalculated(ofxRTLSLatencyArgs& args) {
+
+	double latency = double(args.stopTimeUS - args.startTimeUS)/1000.0;
+	latencyMS = latencyMS * 0.95 + latency * 0.05;
+}
+
+// --------------------------------------------------------------
+bool ofxRTLS::isRecording() {
+#ifdef RTLS_PLAYER
+	return recorder.isRecording();
+#endif
+	return false;
+}
+
+// --------------------------------------------------------------
+bool ofxRTLS::isPlaying() {
+#ifdef RTLS_PLAYER
+	return player.isPlaying();
+#endif
+	return false;
+}
+
+// --------------------------------------------------------------
+string ofxRTLS::getRecordingFile() {
+#ifdef RTLS_PLAYER
+	return recorder.getRecordingFile();
+#endif
+	return "";
+}
+
+// --------------------------------------------------------------
+string ofxRTLS::getPlayingFile() {
+#ifdef RTLS_PLAYER
+	return player.getTakePath();
+#endif
+	return "";
+}
+
+// --------------------------------------------------------------
+void ofxRTLS::markDataReceived() {
+
+	lastReceive = ofGetElapsedTimeMillis();
+	mutex.lock();
+	dataTimestamps.push(lastReceive);
+	mutex.unlock();
+}
+
+// --------------------------------------------------------------
+bool ofxRTLS::isPlaying(RTLSSystemType systemType) {
+#ifdef RTLS_PLAYER
+	return player.isPlaying(systemType);
+#endif
+	return false;
+}
+
+// --------------------------------------------------------------
+void ofxRTLS::toggleRecording() {
+#ifdef RTLS_PLAYER
+	recorder.toggleRecording();
+#endif
+}
+
+// --------------------------------------------------------------
+void ofxRTLS::togglePlayback() {
+#ifdef RTLS_PLAYER
+	player.togglePlayback();
+#endif
+}
+
+// --------------------------------------------------------------
+void ofxRTLS::resetPlayback() {
+#ifdef RTLS_PLAYER
+	player.reset();
+#endif
+}
+
+// --------------------------------------------------------------
+void ofxRTLS::promptOpenPlaybackFile() {
+#ifdef RTLS_PLAYER
+	player.promptUserOpenFile();
+#endif
+}
+
+// --------------------------------------------------------------
 
 // --------------------------------------------------------------
 

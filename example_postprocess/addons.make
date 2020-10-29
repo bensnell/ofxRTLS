@@ -8,3 +8,4 @@ ofxXmlSettings
 ../../../ExternalAddons/ofxCv
 ../../../ExternalAddons/ofxFilter
 ../../../ExternalAddons/ofxHungarian
+../../../ExternalAddons/ofxTemporalResampler

@@ -20,9 +20,11 @@ ofxRTLSPostprocessor::~ofxRTLSPostprocessor() {
 }
 
 // --------------------------------------------------------------
-void ofxRTLSPostprocessor::setup(string _name, string _abbr, string _dictPath, 
+void ofxRTLSPostprocessor::setup(RTLSSystemType _systemType, RTLSTrackableType _trackableType, string _name, string _abbr, string _dictPath, 
 	string _filterList) {
 
+	systemType = _systemType;
+	trackableType = _trackableType;
 	name = _name;
 	abbr = _abbr;
 	dictPath = _dictPath;
@@ -109,7 +111,7 @@ void ofxRTLSPostprocessor::threadedFunction() {
 			// the predicate (whether the queue contains items). If false, the mutex 
 			// is unlocked and waits for the condition variable to receive a signal
 			// to check again. If true, code execution continues.
-			cv.wait(lk, [this] { return flagUnlock || !dataQueue.empty(); });
+			cv.wait(lk, [this] { return flagUnlock || !dataQueue.empty() || flagReset; });
 			// alt:
 			//cv.wait(lk, [&] { return !dataQueue.empty(); });
 			// alt:
@@ -117,11 +119,17 @@ void ofxRTLSPostprocessor::threadedFunction() {
 			//	cv.wait(lk); // wait for the condition; wait for notification
 			//}
 
-			if (!flagUnlock) {
+			if (!flagUnlock && !dataQueue.empty()) {
 				// The queue contains elements. Get an element.
 				elem = dataQueue.front();
 				dataQueue.pop();
 			}
+		}
+
+		// Reset the postprocessors, if necessary
+		if (flagReset) {
+			flagReset = false;
+			resetInternalStates();
 		}
 
 		// If an element has been received, process it.
@@ -153,7 +161,8 @@ void ofxRTLSPostprocessor::processAndSend(ofxRTLSEventArgs& data,
 
 	// Create a data element
 	DataElem* elem = new DataElem();
-	elem->data = data;
+	elem->data.copyFrom(data); // move over the data
+	data.nullify(); // nullify the original data
 	elem->dataReadyEvent = &dataReadyEvent;
 
 	// Add the element to the queue
@@ -477,113 +486,6 @@ void ofxRTLSPostprocessor::_process_applyFilters(RTLSProtocol::TrackableFrame& f
 }
 
 // --------------------------------------------------------------
-string ofxRTLSPostprocessor::getTrackableKey(const Trackable& t) {
-
-	TrackableKeyType keyType;
-	return getTrackableKey(t, keyType);
-}
-
-// --------------------------------------------------------------
-string ofxRTLSPostprocessor::getTrackableKey(const Trackable& t, TrackableKeyType& keyType) {
-
-	keyType = getTrackableKeyType(t);
-	string data = "";
-	switch (keyType) {
-	case KEY_ID: {
-		data = ofToString(t.id());
-	}; break;
-	case KEY_CUID: {
-		data = t.cuid();
-	}; break;
-	case KEY_NAME: {
-		data = t.name();
-	}; break;
-	case KEY_NONE: default: {
-		data = "";
-	}
-	}
-	return getTrackableKey(keyType, data);
-}
-
-// --------------------------------------------------------------
-string ofxRTLSPostprocessor::getTrackableKey(TrackableKeyType keyType, string data) {
-
-	string prefix = ofToString(int(keyType));
-	return prefix + data;
-}
-
-// --------------------------------------------------------------
-ofxRTLSPostprocessor::TrackableKeyType ofxRTLSPostprocessor::getTrackableKeyType(const Trackable& t) {
-
-	if (t.id() > 0) return KEY_ID;
-	if (!t.cuid().empty()) return KEY_CUID;
-	if (!t.name().empty()) return KEY_NAME;
-	// If an ID is 0, the key will be marked as none.
-	return KEY_NONE;
-}
-
-// --------------------------------------------------------------
-ofxRTLSPostprocessor::TrackableKeyType ofxRTLSPostprocessor::getTrackableKeyType(string key) {
-	if (key.empty()) return KEY_NONE;
-
-	if (key[0] == '0') return KEY_NONE;
-	if (key[0] == '1') return KEY_ID;
-	if (key[0] == '2') return KEY_CUID;
-	if (key[0] == '3') return KEY_NAME;
-	return KEY_NONE;
-}
-
-// --------------------------------------------------------------
-string ofxRTLSPostprocessor::getTrackableKeyData(string key) {
-
-	if (key.empty()) return "";
-	return key.substr(1, string::npos);
-}
-
-// --------------------------------------------------------------
-string ofxRTLSPostprocessor::getTrackableKeyTypeDescription(TrackableKeyType keyType) {
-
-	switch (keyType) {
-	case KEY_ID: return "id";
-	case KEY_CUID: return "cuid";
-	case KEY_NAME: return "name";
-	case KEY_NONE: default: return "none";
-	}
-}
-
-// --------------------------------------------------------------
-bool ofxRTLSPostprocessor::reconcileTrackableWithKey(Trackable& t, string key) {
-
-	// Get the destination's key type
-	TrackableKeyType keyType = getTrackableKeyType(key);
-	//if (keyType == KEY_NONE) return false;
-	string data = getTrackableKeyData(key);
-
-	// Clear ID. Only set this if the ID is the identifiable data source.
-	t.clear_id();
-	if (keyType == KEY_ID) {
-		t.set_id(ofToInt(data));
-		return true;
-	}
-	
-	// Clear CUID. Only set this if CUID is the identifiable data source.
-	t.clear_cuid();
-	if (keyType == KEY_CUID) {
-		t.set_cuid(data);
-		return true;
-	}
-
-	t.clear_name();
-	if (keyType == KEY_NAME) {
-		t.set_name(data);
-		return true;
-	}
-
-	// should not get to this point
-	return false;
-}
-
-// --------------------------------------------------------------
 bool ofxRTLSPostprocessor::isIncludedInHungarianMapping(TrackableKeyType keyType, HungarianMapping mapping) {
 
 	if (mapping == HungarianMapping::TEMPORARY || mapping == HungarianMapping::TEMPORARY_AND_PERMANENT) {
@@ -598,40 +500,45 @@ bool ofxRTLSPostprocessor::isIncludedInHungarianMapping(TrackableKeyType keyType
 }
 
 // --------------------------------------------------------------
-bool ofxRTLSPostprocessor::isTrackableIdentifiable(const Trackable& t) {
-
-	return isTrackableIdentifiable(getTrackableKeyType(t));
+void ofxRTLSPostprocessor::reset() {
+	flagReset = true;
+	cv.notify_one();
 }
 
 // --------------------------------------------------------------
-bool ofxRTLSPostprocessor::isTrackableIdentifiable(string& key) {
+void ofxRTLSPostprocessor::resetInternalStates() {
 
-	return isTrackableIdentifiable(getTrackableKeyType(key));
+	//while (!dataQueue.empty()) { // ?
+	//	delete dataQueue.front();
+	//	dataQueue.pop();
+	//}
+
+	lastFrame.Clear();
+
+	// Clear and reset keyTypes?
+
+	keyMappings.clear();
+
+	filters.reset();
 }
 
 // --------------------------------------------------------------
-bool ofxRTLSPostprocessor::isTrackableIdentifiable(TrackableKeyType keyType) {
+void ofxRTLSPostprocessor::resetEventReceved(ofxRTLSPlayerLoopedArgs& args) {
+	
+	// Only proceed if internal types are valid
+	if (systemType == RTLS_SYSTEM_TYPE_INVALID) return;
+	if (trackableType == RTLS_TRACKABLE_TYPE_INVALID) return;
 
-	return keyType != KEY_NONE;
+	// Check if this postprocessor needs to reset
+	for (auto& it : args.systems) {
+		if (it.first == systemType && it.second == trackableType) {
+			reset();
+			return;
+		}
+	}
 }
 
 // --------------------------------------------------------------
-bool ofxRTLSPostprocessor::isTrackableIDValid(const Trackable& t) {
 
-	return t.id() > 0;
-}
-
-// --------------------------------------------------------------
-bool ofxRTLSPostprocessor::isTrackableIdentifiableByType(const Trackable& t, TrackableKeyType keyType) {
-
-	return getTrackableKeyType(t) == keyType;
-
-}
-
-// --------------------------------------------------------------
-
-// --------------------------------------------------------------
-
-// --------------------------------------------------------------
 
 #endif
