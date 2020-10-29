@@ -66,9 +66,9 @@ First, make sure you have properly installed all of the dependencies; there are 
 
 | Tracking System          | Visual Studio Property | Supported <br />Platform | Notes                                                        |
 | ------------------------ | ---------------------- | ------------------------ | ------------------------------------------------------------ |
-| Optitrack Motive Tracker | RTLS_MOTIVE = true     | x64                      | 32-bit (x86) is not supported by Motive.<br />This uses Motive v2.2.0 |
-| OpenVR (e.g. HTC Vive)   | RTLS_OPENVR = true     | x64 (x86?)               |                                                              |
-| Null System              | RTLS_NULL = true       | x64, x86                 | This system exports fake data.                               |
+| Optitrack Motive Tracker | `RTLS_MOTIVE` = true   | x64                      | 32-bit (x86) is not supported by Motive.<br />This uses Motive v2.2.0 |
+| OpenVR (e.g. HTC Vive)   | `RTLS_OPENVR` = true   | x64 (x86?)               |                                                              |
+| Null System              | `RTLS_NULL` = true     | x64, x86                 | This system exports fake data.                               |
 
   There are many ways to set a property in a Visual Studio project. It is important that this property must be defined before property sheets are imported in the project. The easiest way to add a property is to open up your **.vcxproj* file and add the following lines below (following XML structure) before property sheets are imported:
 
@@ -121,26 +121,72 @@ Finally, implement your handler, e.g.:
 
 Take a look at the examples for a more in-depth look at using ofxRTLS with ofxMotive and ofxOpenVRTracker.
 
-#### Data
+### Data
 
-The data exported over the RTLS-protocol protobuf format is detailed [here](https://github.com/local-projects/rtls-protocol). 
+The data exported over the RTLS-protocol protobuf format is detailed [here](https://github.com/local-projects/rtls-protocol). However, this addon does not currently make use of all fields in the protocol, since some field data is not provided by certain systems. 
 
-An `id` of `0` is not allowed, since it is the default field value for the RTLS Protocol protobuf objects. Using 0 may result in unexpected behaviors.
+#### TrackableFrame
 
-The context field may also contain additional useful information. This field will always be a utf-8 parseable json string. 
+Data is sent in a `TrackableFrame`, which represents a single frame of data captured at the same time. These frames are sent sequentially; however, if the communication layer is UDP, there is no guarantee of frames arriving sequentially.
 
-The `TrackableFrame`'s context field will always contain information about the data's source. When parsed, this json object possess the following information in key-value pairs:
+A `TrackableFrame` can contain multiple `Trackable`'s. There is no limit to the number of `Trackables` that can be contained within a `TrackableFrame`.
+
+A `TrackableFrame` contains the following parameters:
+
+| Name         | Type                 | Optional? | Description                                                  |
+| ------------ | -------------------- | --------- | ------------------------------------------------------------ |
+| `trackables` | repeated *Trackable* | No        | The list of objects currently being tracked. All objects in this list are presently visible and tracking. |
+| `frame_ID`   | uint64               | No        | This frame's frame number.                                   |
+| `timestamp`  | uint64               | No        | This frame's timestamp.                                      |
+| `context`    | string               | No        | A json-formatted string containing information about the source of this data (see below). |
+
+The `TrackableFrame`'s context field will always contain information about the data's source. When this utf-8 encoded json string is parsed, the json object possess the following information in key-value pairs. 
 
 | Key  | Key Meaning   | Values (one of the following)                                |
 | ---- | ------------- | ------------------------------------------------------------ |
 | `s`  | <u>s</u>ystem | `0` for Null System<br />`1` for OpenVR<br />`2` for Motive  |
 | `t`  | <u>t</u>ype   | `0` for markers (tracked objects)<br />`1` for reference, contributors, or observers (cameras, base stations, etc.) |
 
-The `Trackable`'s context field may or may not contain any information. If it does, these are the possible keys and associated values.
+The frame context applies to all trackables contained within it. Data from two different systems will never be sent in the same `TrackableFrame`. If multiple types of data are being sent (for example, both marker data {`t`:0} and camera data {`t`:1}), then each will be sent in its own `TrackableFrame`.
 
-| Key  | Key Meaning                     | Values (one of the following)                |
-| ---- | ------------------------------- | -------------------------------------------- |
-| `m`  | <u>m</u>ight need recalibration | `0` for false (by default)<br />`1` for true |
+#### Trackable
+
+A `Trackable` describes an object that is currently being tracked. In theory, a `Trackable` can also contain other `Trackable`'s; however, this addon only makes use of one level of `Trackable` depth.  In other words, a `Trackable` will never be the child to another `Trackable`.
+
+A `Trackable` contains many parameters. Some of the parameters are used to uniquely identify the trackable. Those parameters include:
+
+| Name   | Type   | Optional? | Description                                                  |
+| ------ | ------ | --------- | ------------------------------------------------------------ |
+| `id`   | int32  | Yes*      | A unique number that permanently identifies this object. An `id` of `0` indicates that this object has no `id`. Only nonzero `id`'s are valid. |
+| `cuid` | string | Yes*      | A unique string used to temporarily persist trackables across frames. An empty `cuid` string indicates that this object has no `cuid`. |
+| `name` | string | Yes*      | The name of this tracked object. An empty `name` string indicates that this object has no `name`. |
+
+*\* The above parameters are optional insofar as at least one of them must be present in any given trackable in order for the trackable to be valid.* 
+
+These "identifiable" parameters are used to identify an object across frames and distinguish it from other objects. The identifiability priority proceeds as follows:
+
+1. The `id` is the most robust indicator of uniqueness, possessing both reliability and persistence. In other words, an object with `id` = `128` will always have this `id`. If this `id` isn't present, then this specific object isn't present. If this object ever re-appears, it will reappear with the same `id`. If valid, this parameter should be used to identify objects. If invalid, proceed to the next parameter:
+2. The `cuid` is a reliable indicator of unqiueness; however, it is not persistent. In other words: an object with `cuid` = `5400-201` may spontaneously change `cuid` at any point, for example, if it becomes temporarily occluded. When this object re-appears, it will have a different `cuid`. Thus, for the duration of time an object retains a given `cuid`, it is trackable across frames. Said another way, if this `cuid` appears on frame *t* and frame *t+1*, then the object represented by this `cuid` on the first frame will be same object represented by this `cuid` on the next frame. `cuid`'s are nonrepeatable, meaning they will never repeat twice during the same session of the application. If valid, use this parameter to identify objects. If not, proceed to the next parameter:
+3. The `name` has no guarantee of being reliable nor persistent; however, it may be used as an efficient measure of uniqueness when all other parameters are invalid. If all other parameters are invalid, then `name` will be a reliable and persistent measure of uniquness. If any other parameters are valid, then `name` will not be a reliable or persistent measure of uniqueness, and will likely contain less immediately relevant information like the informal name of an object, if applicable.  If valid, use this parameter to identify objects. If not, this trackable is not valid.
+
+Location information for a `Trackable` is encoded in the following parameters:
+
+| Name          | Type                       | Optional? | Description                                                  |
+| ------------- | -------------------------- | --------- | ------------------------------------------------------------ |
+| `position`    | *Position* (x, y, z)       | No        | The position of the object. All trackables must contain positional information. |
+| `orientation` | *Orientation* (x, y, z, w) | Yes       | The orientation of the object expressed as a quaternion. This field may not be available, depending on the tracking system. Currently, the only system that supports this is OpenVR (`RTLS_OPENVR`). |
+
+Lastly, the `context` parameter (if available) contains any remaining information about a `Trackable`:
+
+| Name      | Type   | Optional? | Description                                                  |
+| --------- | ------ | --------- | ------------------------------------------------------------ |
+| `context` | string | Yes       | A utf-8 encoded json string containing miscellanous flags and parameters that cannot be described by any of the other RTLS protocol `Trackable` parameters. Invalid if empty. |
+
+If valid, the `context` field once parsed will contain a list of keys and values. Possible pairs include:
+
+| Key  | Key Meaning                                                  | Values (one of the following)                |
+| ---- | ------------------------------------------------------------ | -------------------------------------------- |
+| `m`  | <u>m</u>ight need recalibration<br />*Note: This only applies to `Trackable`'s of type `1` (observers, cameras, etc.)* | `0` for false (by default)<br />`1` for true |
 
 ## Examples
 
