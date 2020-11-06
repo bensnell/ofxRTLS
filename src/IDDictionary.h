@@ -15,7 +15,6 @@ public:
 	// Lookup a value mapping
 	int lookup(int value);
 
-
 private:
 
 	// The path at which the dictionary is loaded

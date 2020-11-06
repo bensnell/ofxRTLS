@@ -39,7 +39,12 @@ string getTrackableKey(TrackableKeyType keyType, string data) {
 // --------------------------------------------------------------
 TrackableKeyType getTrackableKeyType(const Trackable& t) {
 
-	if (t.id() > 0) return KEY_ID;
+	// Unidentifiable trackables have negative IDs
+	if (isTrackableFlaggedUnidentifiable(t)) return KEY_NONE;
+	// An ID of 0 indicates that the trackable, if identifiable,
+	// is not identifiable via the ID parameter, but might be
+	// identifiable via another parameter.
+	if (isTrackableIDValid(t)) return KEY_ID;
 	if (!t.cuid().empty()) return KEY_CUID;
 	if (!t.name().empty()) return KEY_NAME;
 	// If an ID is 0, the key will be marked as none.
@@ -129,6 +134,18 @@ bool isTrackableIdentifiable(TrackableKeyType keyType) {
 bool isTrackableIDValid(const Trackable& t) {
 
 	return t.id() > 0;
+}
+
+// --------------------------------------------------------------
+bool isTrackableIDEmpty(const Trackable& t) {
+
+	return t.id() == 0;
+}
+
+// --------------------------------------------------------------
+bool isTrackableFlaggedUnidentifiable(const Trackable& t) {
+
+	return t.id() < 0;
 }
 
 // --------------------------------------------------------------
