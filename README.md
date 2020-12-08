@@ -188,6 +188,10 @@ If valid, the `context` field once parsed will contain a list of keys and values
 | ---- | ------------------------------------------------------------ | -------------------------------------------- |
 | `m`  | <u>m</u>ight need recalibration<br />*Note: This only applies to `Trackable`'s of type `1` (observers, cameras, etc.)* | `0` for false (by default)<br />`1` for true |
 
+### Recording and Playback
+
+Raw data coming directly from the tracking systems can be recorded and played back, as long as the application is built with the appropriate build support (`RTLS_PLAYER=true `). Data is saved as a [C3D](https://www.c3d.org/) file. Postprocessing options for this data can be changed later on. A recorded file must be played back with an application compiled with corresponding tracking system support. For example, a take recorded using the Motive system cannot be played back on a server that has only been compiled with OpenVR support.
+
 ## Examples
 
 Examples have been provided with and without postprocessing. Following Setup Step 3 above to change the example's tracking system.
