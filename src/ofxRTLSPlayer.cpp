@@ -426,8 +426,8 @@ bool ofxRTLSPlayer::getFrames(RTLSPlayerTake* take) {
 
 	// Get points for this take
 	auto pts = take->c3d->data().frame(take->frameCounter).points();
-	// If there are no points, then don't proceed
-	if (pts.isEmpty()) return false;
+	// Proceed even if it's empty (pts.isEmpty()), so frames without
+	// data can still be processed by the postprocessor, if enabled.
 
 	// Fill all newFrames with data, where available
 	for (auto& _f : take->frames) {
@@ -471,8 +471,8 @@ void ofxRTLSPlayer::sendData(RTLSPlayerTake* take) {
 	// Send every frame
 	for (int i = 0; i < take->frames.size(); i++) {
 
-		// Only send frames with new data
-		if (!take->frames[i].bNewData) continue;
+		// Send data whether or not it's new.
+		// (New frames bear the marker take->frames[i].bNewData)
 
 		// Copy over data and send it
 		ofxRTLSPlayerDataArgs args;

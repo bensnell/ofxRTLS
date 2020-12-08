@@ -369,7 +369,7 @@ void ofxRTLS::playerDataReceived(ofxRTLSPlayerDataArgs& args) {
 // --------------------------------------------------------------
 bool ofxRTLS::sendData(ofxRTLSEventArgs& args, 
 	RTLSSystemType systemType, RTLSTrackableType trackableType) {
-
+	
 	switch (systemType) {
 
 	// ========================================================================

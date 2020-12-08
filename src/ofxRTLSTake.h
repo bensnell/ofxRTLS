@@ -138,6 +138,11 @@ public:
 	struct Frame {
 		TrackableFrame frame; // template
 		TrackableFrame newFrame; // new frame
+		// Is this new data?
+		// This parameter is currently unused and unnecessary, since frames
+		// should be processed whether or not they have data. We must do this since
+		// the postprocessor should be called to process() data, even if
+		// any isn't presently valid.
 		bool bNewData = false;
 		RTLSSystemType systemType = RTLS_SYSTEM_TYPE_INVALID;
 		RTLSTrackableType trackableType = RTLS_TRACKABLE_TYPE_INVALID;
