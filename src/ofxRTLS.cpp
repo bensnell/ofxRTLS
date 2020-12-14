@@ -138,15 +138,18 @@ void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
 	// Send every frame
 	// ==============================================
 
-	ofJson js; 
-	js["s"] = args.bOverrideContext ? args.systemOverride : int(RTLS_SYSTEM_TYPE_NULL);
-	js["t"] = args.bOverrideContext ? args.typeOverride : int(RTLS_TRACKABLE_TYPE_SAMPLE);
-
 	ofxRTLSEventArgs outArgs(latencyCalculated);
 	outArgs.setStartAssemblyTime(thisMicros);
-	outArgs.frame.set_context(js.dump());
 	outArgs.frame.set_frame_id(nsysFrameID);
 	outArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
+	outArgs.systemType = args.bOverrideContext ? (RTLSSystemType)args.systemOverride : RTLS_SYSTEM_TYPE_NULL;
+	outArgs.trackableType = args.bOverrideContext ? (RTLSTrackableType)args.typeOverride : RTLS_TRACKABLE_TYPE_SAMPLE;
+	{
+		ofJson js;
+		js["s"] = int(outArgs.systemType);
+		js["t"] = int(outArgs.trackableType);
+		outArgs.frame.set_context(js.dump());
+	}
 
 	for (auto& t : args.trackables) {
 
@@ -165,7 +168,7 @@ void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
 	recorder.update(RTLS_SYSTEM_TYPE_NULL);
 #endif
 
-	sendData(outArgs, RTLS_SYSTEM_TYPE_NULL, RTLS_TRACKABLE_TYPE_SAMPLE);
+	sendData(outArgs);
 
 	nsysFrameID++;
 }
@@ -186,16 +189,19 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 	// Send every frame
 	// ==============================================
 
-	ofJson js;
-	js["s"] = int(RTLS_SYSTEM_TYPE_OPENVR);
-	js["t"] = int(RTLS_TRACKABLE_TYPE_SAMPLE);
-
 	ofxRTLSEventArgs outArgs(latencyCalculated);
 	outArgs.setStartAssemblyTime(thisMicros);
-	outArgs.frame.set_context(js.dump());
 	outArgs.frame.set_frame_id(openvrFrameID);
 	outArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
-
+	outArgs.systemType = RTLS_SYSTEM_TYPE_OPENVR;
+	outArgs.trackableType = RTLS_TRACKABLE_TYPE_SAMPLE;
+	{
+		ofJson js;
+		js["s"] = int(outArgs.systemType);
+		js["t"] = int(outArgs.trackableType);
+		outArgs.frame.set_context(js.dump());
+	}
+		
 	for (int i = 0; i < (*args.devices->getTrackers()).size(); i++) {
 
 		Device* tkr = (*args.devices->getTrackers())[i];
@@ -220,7 +226,7 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 	recorder.update(RTLS_SYSTEM_TYPE_OPENVR);
 #endif
 
-	sendData(outArgs, RTLS_SYSTEM_TYPE_OPENVR, RTLS_TRACKABLE_TYPE_SAMPLE);
+	sendData(outArgs);
 
 	openvrFrameID++;
 }
@@ -241,16 +247,19 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 	// Send every frame
 	// ==============================================
 
-	ofJson js;
-	js["s"] = int(RTLS_SYSTEM_TYPE_MOTIVE);
-	js["t"] = int(RTLS_TRACKABLE_TYPE_SAMPLE);
-
 	// Send each identified marker
 	ofxRTLSEventArgs mOutArgs(latencyCalculated);
 	mOutArgs.setStartAssemblyTime(thisMicros);
-	mOutArgs.frame.set_context(js.dump());
 	mOutArgs.frame.set_frame_id(motiveFrameID);
 	mOutArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
+	mOutArgs.systemType = RTLS_SYSTEM_TYPE_MOTIVE;
+	mOutArgs.trackableType = RTLS_TRACKABLE_TYPE_SAMPLE;
+	{
+		ofJson js;
+		js["s"] = int(mOutArgs.systemType);
+		js["t"] = int(mOutArgs.trackableType);
+		mOutArgs.frame.set_context(js.dump());
+	}
 
 	for (int i = 0; i < args.markers.size(); i++) {
 
@@ -276,7 +285,7 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 	recorder.add(RTLS_SYSTEM_TYPE_MOTIVE, motive.getMaxFPS(), mOutArgs.frame);
 #endif
 
-	sendData(mOutArgs, RTLS_SYSTEM_TYPE_MOTIVE, RTLS_TRACKABLE_TYPE_SAMPLE);
+	sendData(mOutArgs);
 
 
 	// ==============================================
@@ -289,24 +298,27 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 		(thisTime - lastSendTime >= cameraDataFrequency*1000.0))) {
 		lastSendTime = thisTime;
 
-		js.clear();
-		js["s"] = int(RTLS_SYSTEM_TYPE_MOTIVE);
-		js["t"] = int(RTLS_TRACKABLE_TYPE_OBSERVER);
-		// Passing this information isn't sustainable since it cannot be captured by
-		// a recording to a c3d file. If you want to know whether the system needs re-calibration,
-		// check the individual cameras to see if any need it.
-		//js["m"] = int(args.maybeNeedsCalibration); 
-
 		ofxRTLSEventArgs cOutArgs(latencyCalculated);
 		cOutArgs.setStartAssemblyTime(thisMicros);
-		cOutArgs.frame.set_context(js.dump());
 		cOutArgs.frame.set_frame_id(motiveFrameID);
 		cOutArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
+		cOutArgs.systemType = RTLS_SYSTEM_TYPE_MOTIVE;
+		cOutArgs.trackableType = RTLS_TRACKABLE_TYPE_OBSERVER;
+		{
+			ofJson js;
+			js["s"] = int(cOutArgs.systemType);
+			js["t"] = int(cOutArgs.trackableType);
+			// Passing this information isn't sustainable since it cannot be captured by
+			// a recording to a c3d file. If you want to know whether the system needs re-calibration,
+			// check the individual cameras to see if any need it.
+			//js["m"] = int(args.maybeNeedsCalibration); 
+			cOutArgs.frame.set_context(js.dump());
+		}
 
 		// Add all cameras (after postprocessing)
 		for (int i = 0; i < args.cameras.size(); i++) {
 
-			js.clear();
+			ofJson js;
 			js["m"] = int(args.cameras[i].maybeNeedsCalibration);
 
 			Trackable* trackable = cOutArgs.frame.add_trackables();
@@ -329,7 +341,7 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 		recorder.add(RTLS_SYSTEM_TYPE_MOTIVE, motive.getMaxFPS(), cOutArgs.frame);
 #endif
 
-		sendData(cOutArgs, RTLS_SYSTEM_TYPE_MOTIVE, RTLS_TRACKABLE_TYPE_OBSERVER);
+		sendData(cOutArgs);
 	}
 
 #ifdef RTLS_PLAYER
@@ -358,24 +370,26 @@ void ofxRTLS::playerDataReceived(ofxRTLSPlayerDataArgs& args) {
 	outArgs.setStartAssemblyTime(thisMicros);
 	outArgs.frame.set_timestamp(ofGetElapsedTimeMillis());
 	outArgs.frame = args.frame;
+	outArgs.systemType = args.systemType;
+	outArgs.trackableType = args.trackableType;
+	// Context has already been set
 
 	// (Don't record played data)
 
 	// Send the data out appropriately
-	sendData(outArgs, args.systemType, args.trackableType);
+	sendData(outArgs);
 }
 #endif
 
 // --------------------------------------------------------------
-bool ofxRTLS::sendData(ofxRTLSEventArgs& args, 
-	RTLSSystemType systemType, RTLSTrackableType trackableType) {
+bool ofxRTLS::sendData(ofxRTLSEventArgs& args) {
 	
-	switch (systemType) {
+	switch (args.systemType) {
 
 	// ========================================================================
 	case RTLS_SYSTEM_TYPE_NULL: {
 #ifdef RTLS_NULL 
-		switch (trackableType) {
+		switch (args.trackableType) {
 
 		// --------------------------------------------------------------------
 		case RTLS_TRACKABLE_TYPE_SAMPLE: {
@@ -401,7 +415,7 @@ bool ofxRTLS::sendData(ofxRTLSEventArgs& args,
 	// ========================================================================
 	case RTLS_SYSTEM_TYPE_OPENVR: {
 #ifdef RTLS_OPENVR
-		switch (trackableType) {
+		switch (args.trackableType) {
 
 		// --------------------------------------------------------------------
 		case RTLS_TRACKABLE_TYPE_SAMPLE: {
@@ -425,7 +439,7 @@ bool ofxRTLS::sendData(ofxRTLSEventArgs& args,
 	// ========================================================================
 	case RTLS_SYSTEM_TYPE_MOTIVE: {
 #ifdef RTLS_MOTIVE
-		switch (trackableType) {
+		switch (args.trackableType) {
 
 		// --------------------------------------------------------------------
 		case RTLS_TRACKABLE_TYPE_OBSERVER: { // Motive Cameras

@@ -130,8 +130,7 @@ private:
 	void markDataReceived();
 	// Send event args given a system and type.
 	// If the provided system is not compiled, will return false.
-	bool sendData(ofxRTLSEventArgs& args, RTLSSystemType systemType, 
-		RTLSTrackableType trackableType);
+	bool sendData(ofxRTLSEventArgs& args);
 
 	// Contains timestamps at which data was received in the last second
 	queue<uint64_t> dataTimestamps;
