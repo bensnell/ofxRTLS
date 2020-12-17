@@ -67,6 +67,8 @@ public:
 	bool isPlayerSupported();
 	bool isRecording();
 	void toggleRecording();
+	bool isSavingRecording();
+	float getSavingRecordingPercentComplete();
 	bool isPlaying();
 	bool isPlaying(RTLSSystemType systemType);
 	void togglePlayback();

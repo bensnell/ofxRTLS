@@ -308,6 +308,11 @@ bool ofxRTLSRecorder::saveTake(RTLSTake* take) {
 		return false;
 	}
 
+	// Flag that we have begun saving
+	takeSavingFramesTotal = take->getNumFrames();
+	takeSavingFramesSaved = 0;
+	isTakeSaving = true;
+	
 	// Proceed with saving the take
 	auto& c3d = take->c3d;
 
@@ -424,11 +429,17 @@ bool ofxRTLSRecorder::saveTake(RTLSTake* take) {
 
 		// Add the frame to the take
 		c3d.frame(frame);
+
+		// Increment the number of frames saved
+		++takeSavingFramesSaved;
 	}
 	
 	// Save the c3d to file
 	ofFilePath::createEnclosingDirectory(take->path);
 	c3d.write(take->path);
+
+	// Flag that we are done saving
+	isTakeSaving = false;
 
 	return true;
 }
@@ -453,6 +464,13 @@ void ofxRTLSRecorder::playbackEvent(ofxRTLSPlaybackArgs& args) {
 	if (args.bPlay && bRecording) {
 		toggleRecording();
 	}
+}
+
+// --------------------------------------------------------------
+float ofxRTLSRecorder::getSavingPercentageComplete()
+{
+	if (!isSaving()) return 0;
+	return float(takeSavingFramesSaved) / float(takeSavingFramesTotal) * 0.95F;
 }
 
 // --------------------------------------------------------------

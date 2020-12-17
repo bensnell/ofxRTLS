@@ -639,6 +639,22 @@ bool ofxRTLS::isRecording() {
 }
 
 // --------------------------------------------------------------
+bool ofxRTLS::isSavingRecording() {
+#ifdef RTLS_PLAYER
+	return recorder.isSaving();
+#endif
+	return false;
+}
+
+// --------------------------------------------------------------
+float ofxRTLS::getSavingRecordingPercentComplete() {
+#ifdef RTLS_PLAYER
+	return recorder.getSavingPercentageComplete();
+#endif
+	return 0;
+}
+
+// --------------------------------------------------------------
 bool ofxRTLS::isPlaying() {
 #ifdef RTLS_PLAYER
 	return player.isPlaying();

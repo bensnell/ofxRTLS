@@ -51,6 +51,10 @@ public:
 	string getRecordingFile() { return thisTakePath; }
 	void toggleRecording();
 
+	// Is there a take currently being saved?
+	bool isSaving() { return isTakeSaving; }
+	float getSavingPercentageComplete();
+
 	// Event notified when a recording
 	// begins or ends.
 	ofEvent<ofxRTLSRecordingArgs> recordingEvent;
@@ -70,6 +74,10 @@ private:
 
 	string thisTakePath = "";
 	uint64_t thisTakeStartTimeMS = 0;
+
+	atomic<bool> isTakeSaving = false;
+	atomic<int> takeSavingFramesSaved = 0;
+	atomic<int> takeSavingFramesTotal = 0;
 
 	void paramChanged(RemoteUIServerCallBackArg& arg);
 
@@ -148,6 +156,20 @@ private:
 			}
 		}
 
+		// What is the number of frames for this take?
+		// Note: This reports the current, not absolute
+		// number of frames. As such, this is only valid is data
+		// has not already been removed in the saving process.
+		int getNumFrames()
+		{
+			int nFrames = 0;
+			for (auto& item : data)
+			{
+				if (item.second.size() > nFrames) nFrames = item.second.size();
+			}
+			return nFrames;
+		}
+		
 		// C3D data structure
 		// This cannot be written in real time because all of the trackable (point)
 		// labels must be collected and written to the c3d header before storing
