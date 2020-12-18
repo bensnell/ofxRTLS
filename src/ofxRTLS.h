@@ -74,6 +74,8 @@ public:
 	void togglePlayback();
 	void resetPlayback();
 	void promptOpenPlaybackFile();
+	float getPlayingPercentComplete();
+	float getPlayingFileDuration();
 	string getRecordingFile();
 	string getPlayingFile();
 

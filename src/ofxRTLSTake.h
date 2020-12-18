@@ -156,7 +156,7 @@ public:
 	bool populateTemplateFrames();
 
 	// Current frame (time) index
-	uint64_t frameCounter = 0;
+	                                                                 uint64_t frameCounter = 0;
 };
 
 #endif

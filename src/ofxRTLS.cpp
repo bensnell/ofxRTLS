@@ -724,9 +724,20 @@ void ofxRTLS::promptOpenPlaybackFile() {
 }
 
 // --------------------------------------------------------------
+float ofxRTLS::getPlayingPercentComplete() {
+#ifdef RTLS_PLAYER
+	return player.getTakePercentComplete();
+#endif
+	return 0;
+}
 
 // --------------------------------------------------------------
-
+float ofxRTLS::getPlayingFileDuration() {
+#ifdef RTLS_PLAYER
+	return player.getTakeDuration();
+#endif
+	return 0;
+}
 // --------------------------------------------------------------
 
 // --------------------------------------------------------------

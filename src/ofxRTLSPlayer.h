@@ -54,7 +54,8 @@ public:
 	string getTakePath() { return takePath; }
 	double getTakeDuration() { return durationSec; }
 	float getTakeFPS() { return fps; }
-
+	uint64_t getTakeNumFrames() { return numFrames; }
+	float getTakePercentComplete();
 	void setLooping(bool _bLoop);
 	bool isLooping() { return bLoop; }
 
@@ -106,6 +107,8 @@ private:
 	string takePath = "";
 	atomic<float> durationSec = 0;
 	atomic<float> fps = 0;
+	atomic<uint64_t> numFrames = 0;
+	atomic<uint64_t> frameCounter = 0;
 
 	void paramChanged(RemoteUIServerCallBackArg& arg);
 

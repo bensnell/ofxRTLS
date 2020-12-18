@@ -115,6 +115,7 @@ void ofxRTLSPlayer::threadedFunction() {
 						newPath = take->path;
 						durationSec = take->getC3dDurationSec();
 						fps = take->getC3dFps();
+						numFrames = take->getC3dNumFrames();
 						resampler.setDesiredFPS(fps);
 					}
 					if (newPath.compare(takePath) != 0) {
@@ -167,6 +168,7 @@ void ofxRTLSPlayer::threadedFunction() {
 				flagReset = false;
 				bPlaying = false;
 				take->frameCounter = 0;
+				frameCounter = take->frameCounter;
 
 				// Signal that filters need to be reset
 				notifyResetPostprocessors(take);
@@ -188,6 +190,7 @@ void ofxRTLSPlayer::threadedFunction() {
 			if (_bLoop && take->getC3dNumFrames() > 0) {
 				take->frameCounter = take->frameCounter % take->getC3dNumFrames();
 			}
+			frameCounter = take->frameCounter;
 			// TODO: If we loop, signal that filters need to be reset
 			
 			// Update the fps resampler
@@ -502,6 +505,11 @@ void ofxRTLSPlayer::notifyResetPostprocessors(RTLSPlayerTake* take) {
 }
 
 // --------------------------------------------------------------
+float ofxRTLSPlayer::getTakePercentComplete()
+{
+	if (numFrames <= 1) return 0;
+	return float(frameCounter) / float(numFrames-1);
+}
 
 // --------------------------------------------------------------
 
