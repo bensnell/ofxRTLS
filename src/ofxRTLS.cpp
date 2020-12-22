@@ -703,6 +703,13 @@ void ofxRTLS::toggleRecording() {
 }
 
 // --------------------------------------------------------------
+void ofxRTLS::toggleRecordingWithSavePrompt() {
+#ifdef RTLS_PLAYER
+	recorder.toggleRecordingWithSavePrompt();
+#endif
+}
+
+// --------------------------------------------------------------
 void ofxRTLS::togglePlayback() {
 #ifdef RTLS_PLAYER
 	player.togglePlayback();

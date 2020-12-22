@@ -255,7 +255,12 @@ void ofxRTLSRecorder::paramChanged(RemoteUIServerCallBackArg& arg) {
 			
 			// Begin new recording
 			RTLSTake* take = new RTLSTake();
-			thisTakePath = ofFilePath::getAbsolutePath(ofFilePath::join(takeFolder, takePrefix + "_" + ofGetTimestampString() + ".c3d"));
+			// Check if user supplied a path
+			{
+				lock_guard<ofMutex> guard(userSavePathMutex);
+				thisTakePath = (userSavePath.empty() ? generateTakePath() : userSavePath);
+				userSavePath = "";
+			}			
 			thisTakeStartTimeMS = ofGetElapsedTimeMillis();
 			take->path = thisTakePath;
 
@@ -276,8 +281,20 @@ void ofxRTLSRecorder::paramChanged(RemoteUIServerCallBackArg& arg) {
 			// Stop recording
 			bRecording = false;
 
+			// If the user selected a new path to save to, get it
+			string pathOverride = "";
+			{
+				lock_guard<ofMutex> guard(userSavePathMutex);
+				pathOverride = userSavePath;
+				userSavePath = "";
+			}
+
 			// Flag that we should save this take
 			std::lock_guard<std::mutex> lk(mutex);
+			if (!pathOverride.empty()) {
+				thisTakePath = pathOverride;
+				takeQueue.back()->path = pathOverride;
+			}
 			takeQueue.back()->bFlagSave = true;
 
 			// Notify that the condition has been met to save the file
@@ -459,6 +476,38 @@ void ofxRTLSRecorder::toggleRecording() {
 }
 
 // --------------------------------------------------------------
+void ofxRTLSRecorder::toggleRecordingWithSavePrompt()
+{
+	// Attempt to get a path to save this recording as
+	auto result = ofSystemSaveDialog(generateTakePath(), "Save recording as");
+	if (result.bSuccess)
+	{
+		// Confirm that path ends in .c3d
+		string path = result.filePath;
+		if (result.fileName.empty())
+		{
+			// This isn't currently supporting:
+			path = ofFilePath::join(path, generateTakeName());
+		}
+		else {
+			string lower = ofToLower(result.fileName);
+			if (lower.size() < 4 || lower.find(".c3d", lower.size() - 4) == string::npos)
+			{
+				path += ".c3d";
+			}
+		}
+		
+		// Save this path
+		{
+			lock_guard<ofMutex> guard(userSavePathMutex);
+			userSavePath = path;
+		}
+	}
+
+	toggleRecording();
+}
+
+// --------------------------------------------------------------
 void ofxRTLSRecorder::playbackEvent(ofxRTLSPlaybackArgs& args) {
 	
 	if (args.bPlay && bRecording) {
@@ -478,6 +527,18 @@ float ofxRTLSRecorder::getRecordingDuration()
 {
 	if (!bRecording) return 0;
 	return float(ofGetElapsedTimeMillis() - thisTakeStartTimeMS) / 1000.0F;
+}
+
+// --------------------------------------------------------------
+string ofxRTLSRecorder::generateTakePath()
+{
+	return ofFilePath::getAbsolutePath(ofFilePath::join(takeFolder, generateTakeName()));
+}
+
+// --------------------------------------------------------------
+string ofxRTLSRecorder::generateTakeName()
+{
+	return takePrefix + "_" + ofGetTimestampString() + ".c3d";
 }
 
 // --------------------------------------------------------------

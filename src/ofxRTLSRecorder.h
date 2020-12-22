@@ -50,6 +50,7 @@ public:
 	bool isRecording() { return bRecording; }
 	string getRecordingFile() { return thisTakePath; }
 	void toggleRecording();
+	void toggleRecordingWithSavePrompt();
 	float getRecordingDuration(); // length of current recording (if currently recording)
 
 	// Is there a take currently being saved?
@@ -72,6 +73,11 @@ private:
 	atomic<bool> bRecording = false; // are we currently recording?
 	string takeFolder = "takes";
 	string takePrefix = "take"; // name will be takePrefix + "_" + timestamp + ".c3d"
+	string generateTakePath();
+	string generateTakeName();
+
+	string userSavePath = ""; // chosen by user
+	ofMutex userSavePathMutex;
 
 	string thisTakePath = "";
 	uint64_t thisTakeStartTimeMS = 0;

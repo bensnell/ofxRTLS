@@ -361,7 +361,7 @@ bool ofxRTLSPlayer::loadTake(RTLSPlayerTake* take) {
 
 // --------------------------------------------------------------
 void ofxRTLSPlayer::promptUserOpenFile() {
-
+	
 	ofFileDialogResult result = ofSystemLoadDialog("Select a .c3d file to playback", false, ofFilePath::getCurrentExeDir());
 	if (!result.bSuccess) return;
 

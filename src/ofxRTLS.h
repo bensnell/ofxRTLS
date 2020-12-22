@@ -67,6 +67,7 @@ public:
 	bool isPlayerSupported();
 	bool isRecording();
 	void toggleRecording();
+	void toggleRecordingWithSavePrompt();
 	float getRecordingDuration();
 	bool isSavingRecording();
 	float getSavingRecordingPercentComplete();
