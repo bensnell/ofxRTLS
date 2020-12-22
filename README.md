@@ -192,6 +192,8 @@ If valid, the `context` field once parsed will contain a list of keys and values
 
 Raw data coming directly from the tracking systems can be recorded and played back, as long as the application is built with the appropriate build support (`RTLS_PLAYER=true `). Data is saved as a [C3D](https://www.c3d.org/) file. Postprocessing options for this data can be changed later on. A recorded file must be played back with an application compiled with corresponding tracking system support. For example, a take recorded using the Motive system cannot be played back on a server that has only been compiled with OpenVR support.
 
+C3D file data can be passively viewed using the third-party visualization utility [Mokka](https://biomechanical-toolkit.github.io/mokka/).
+
 ## Examples
 
 Examples have been provided with and without postprocessing. Following Setup Step 3 above to change the example's tracking system.
