@@ -50,6 +50,7 @@ public:
 	bool isRecording() { return bRecording; }
 	string getRecordingFile() { return thisTakePath; }
 	void toggleRecording();
+	float getRecordingDuration(); // length of current recording (if currently recording)
 
 	// Is there a take currently being saved?
 	bool isSaving() { return isTakeSaving; }

@@ -738,6 +738,13 @@ float ofxRTLS::getPlayingFileDuration() {
 #endif
 	return 0;
 }
+
 // --------------------------------------------------------------
+float ofxRTLS::getRecordingDuration() {
+#ifdef RTLS_PLAYER
+	return recorder.getRecordingDuration();
+#endif
+	return 0;
+}
 
 // --------------------------------------------------------------

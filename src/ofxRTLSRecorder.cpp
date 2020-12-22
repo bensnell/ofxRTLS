@@ -474,5 +474,12 @@ float ofxRTLSRecorder::getSavingPercentageComplete()
 }
 
 // --------------------------------------------------------------
+float ofxRTLSRecorder::getRecordingDuration()
+{
+	if (!bRecording) return 0;
+	return float(ofGetElapsedTimeMillis() - thisTakeStartTimeMS) / 1000.0F;
+}
+
+// --------------------------------------------------------------
 
 #endif
