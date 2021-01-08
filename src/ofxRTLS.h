@@ -9,6 +9,7 @@
 #include "ofxRTLSEventArgs.h"
 #include "ofxRTLSTypes.h"
 #include "Trackable.pb.h"
+#include "ofxRTLSConfigManager.h"
 using namespace RTLSProtocol;
 
 #ifdef RTLS_NULL

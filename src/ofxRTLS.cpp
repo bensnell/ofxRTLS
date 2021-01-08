@@ -13,6 +13,11 @@ ofxRTLS::~ofxRTLS() {
 
 // --------------------------------------------------------------
 void ofxRTLS::setup() {
+
+	// Load the configuration file
+	ofxRTLSConfigManager::one()->load();
+	
+	// Print support
 	ofLogNotice("ofxRTLS") << getSupport();
 
 	// Setup general RTLS params
