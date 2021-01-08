@@ -25,10 +25,10 @@ private:
 
 	string config_path_ = "configs/rtls-config.json";
 	bool loaded_ = false;
-
-	bool motive_ = false;
-	bool openvr_ = false;
+	
 	bool null_ = false;
+	bool openvr_ = false;
+	bool motive_ = false;
 	bool postprocess_ = false;
 	bool player_ = false;
 };

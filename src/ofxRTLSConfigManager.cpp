@@ -49,12 +49,12 @@ bool ofxRTLSConfigManager::load(string config_path)
 			{
 				auto system = js.find("systems")->at(i).get<string>();
 				system = ofToLower(system);
-				if (system == "motive")
-					motive_ = true;
+				if (system == "null")
+					null_ = true;
 				else if (system == "openvr")
 					openvr_ = true;
-				else if (system == "null")
-					null_ = true;
+				else if (system == "motive")
+					motive_ = true;
 				else
 					n_invalid_systems++;
 			}
