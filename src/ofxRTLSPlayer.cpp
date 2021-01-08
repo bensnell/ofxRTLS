@@ -1,7 +1,5 @@
 #include "ofxRTLSPlayer.h"
 
-#ifdef RTLS_PLAYER
-
 // --------------------------------------------------------------
 ofxRTLSPlayer::ofxRTLSPlayer() {
 
@@ -512,5 +510,3 @@ float ofxRTLSPlayer::getTakePercentComplete()
 }
 
 // --------------------------------------------------------------
-
-#endif

@@ -8,8 +8,10 @@ public:
 
 	static ofxRTLSConfigManager* one();
 
+	// Load the rtls configuration
 	bool load(string config_path = "");
 
+	// Check if options are enabled
 	bool motive() const { return motive_; }
 	bool openvr() const { return openvr_; }
 	bool null() const { return null_; }

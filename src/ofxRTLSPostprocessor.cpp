@@ -1,7 +1,5 @@
 #include "ofxRTLSPostprocessor.h"
 
-#ifdef RTLS_POSTPROCESS
-
 // --------------------------------------------------------------
 ofxRTLSPostprocessor::ofxRTLSPostprocessor() {
 
@@ -539,6 +537,3 @@ void ofxRTLSPostprocessor::resetEventReceved(ofxRTLSPlayerLoopedArgs& args) {
 }
 
 // --------------------------------------------------------------
-
-
-#endif

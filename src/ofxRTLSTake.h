@@ -7,8 +7,6 @@ using namespace RTLSProtocol;
 #include "ofxRTLSTrackableKey.h"
 #include "ofxRTLSTypes.h"
 
-#ifdef RTLS_PLAYER
-
 #include "ezc3d_all.h"
 
 // Frame data from a single system
@@ -156,7 +154,5 @@ public:
 	bool populateTemplateFrames();
 
 	// Current frame (time) index
-	                                                                 uint64_t frameCounter = 0;
+	uint64_t frameCounter = 0;
 };
-
-#endif
