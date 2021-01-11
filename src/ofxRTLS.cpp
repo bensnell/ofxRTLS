@@ -87,10 +87,9 @@ void ofxRTLS::setup() {
 		if (RTLS_POSTPROCESS()) {
 			// Setup the postprocessors
 			motivePostM.setup(RTLS_SYSTEM_TYPE_MOTIVE, RTLS_TRACKABLE_TYPE_SAMPLE,
-				"MotiveMarkers", "MM", "",
-				"age,axes,kalman,easing,add-rate,continuity,easing");
+				"MotiveMarkers", "MM");
 			motivePostR.setup(RTLS_SYSTEM_TYPE_MOTIVE, RTLS_TRACKABLE_TYPE_OBSERVER,
-				"MotiveRef", "MR", "", "axes");
+				"MotiveRef", "MR");
 			if (RTLS_PLAYER()) {
 				ofAddListener(player.takeLooped, &motivePostM, &ofxRTLSPostprocessor::resetEventReceved);
 				ofAddListener(player.takeLooped, &motivePostR, &ofxRTLSPostprocessor::resetEventReceved);
