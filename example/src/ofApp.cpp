@@ -2,6 +2,7 @@
 
 //--------------------------------------------------------------
 void ofApp::setup() {
+	
 	oscThread.setup();
 	oscThread.startThread();
 }
@@ -31,7 +32,6 @@ void OSCThread::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
 
-
 }
 
 //--------------------------------------------------------------
@@ -41,15 +41,15 @@ void ofApp::draw(){
 
 	ofSetColor(0);
 	oscThread.drawStatus(10, 20);
-
 }
 
+//--------------------------------------------------------------
 void ofApp::exit() {
 
 	oscThread.exit();
-
 }
 
+//--------------------------------------------------------------
 void OSCThread::RTLSFrameReceived(ofxRTLSEventArgs& args) {
 
 	// cout << args.frame.DebugString() << endl;
@@ -77,9 +77,7 @@ void OSCThread::RTLSFrameReceived(ofxRTLSEventArgs& args) {
 
 		//cout << m << endl;
 
-		// should this also send whether it's new data or old data? (keep alive)
-		// should this send time?
-
+		// Send the message
 		sender.sendMessage(m, false);
 
 		// Log this data
@@ -96,8 +94,11 @@ void OSCThread::drawStatus(int x, int y) {
 	stringstream ss;
 	ss << "Sending OSC over " << oscHost << " : " << ofToString(oscPort) << "\n";
 	ss << "Message address: \"" << messageAddress << "\"\n";
+	ss << "Systems:\t" << "{ " << (RTLS_NULL() ? "NULL " : "") << (RTLS_OPENVR() ? "OPENVR " : "") << (RTLS_MOTIVE() ? "MOTIVE " : "") << "}" << "\n";
 	ss << "Connected?\t" << (tracker.isConnected() ? "TRUE" : "FALSE") << "\n";
 	ss << "Sending?\t" << (bSending ? "TRUE" : "FALSE") << "\n";
+	ss << "Postprocess?\t" << (RTLS_POSTPROCESS() ? "TRUE" : "FALSE") << "\n";
+	ss << "Player?\t\t" << (RTLS_PLAYER() ? "TRUE" : "FALSE") << "\n";
 	//if (bSending) { // throws errors
 	//	ofxOscMessage tmp = lastMessage;
 	//	ss << "Last Message:\n";
@@ -117,7 +118,6 @@ void OSCThread::threadedFunction() {
 		// Determine whether we are actively sending any messages in the last
 		// stopGap milliseconds
 		bSending = ofGetElapsedTimeMillis() - lastSend < stopGap;
-
 	}
 }
 
@@ -151,11 +151,11 @@ bool OSCThread::isOscEnabled() {
 	return bOscEnabled;
 }
 
+//--------------------------------------------------------------
 void OSCThread::exit() {
 
 	stopThread();
 	tracker.exit();
-
 }
 
 //--------------------------------------------------------------
