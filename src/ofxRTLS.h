@@ -17,6 +17,8 @@ using namespace RTLSProtocol;
 #include "ofxRTLSRecorder.h"
 #include "ofxRTLSPlayer.h"
 
+#include "ofxRTLSMacros.h"
+
 class ofxRTLS : public ofThread {
 public:
 

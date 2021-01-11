@@ -23,7 +23,7 @@ void ofxRTLS::setup() {
 	// Setup general RTLS params
 	//RUI_NEW_GROUP("ofxRTLS");
 
-	if (ofxRTLSConfigManager::one()->player()) {
+	if (RTLS_PLAYER()) {
 		
 		// Setup recorder
 		recorder.setup();
@@ -38,40 +38,40 @@ void ofxRTLS::setup() {
 		ofAddListener(player.newPlaybackData, this, &ofxRTLS::playerDataReceived);
 	}
 	
-	if (ofxRTLSConfigManager::one()->null()) {
+	if (RTLS_NULL()) {
 		
 		// Setup params
 		nsys.setup();
 		// Add listener for new data
 		ofAddListener(nsys.newDataReceived, this, &ofxRTLS::nsysDataReceived);
 
-		if (ofxRTLSConfigManager::one()->postprocess()) {
+		if (RTLS_POSTPROCESS()) {
 			nsysPostM.setup(RTLS_SYSTEM_TYPE_NULL, RTLS_TRACKABLE_TYPE_SAMPLE,
 				"NullSysMarkers", "NM");
-			if (ofxRTLSConfigManager::one()->player()) {
+			if (RTLS_PLAYER()) {
 				ofAddListener(player.takeLooped, &nsysPostM, &ofxRTLSPostprocessor::resetEventReceved);
 			}
 		}
 	}
 
-	if (ofxRTLSConfigManager::one()->openvr()) {
+	if (RTLS_OPENVR()) {
 		
 		// Setup Params
 		openvr.setup();
 		// Add listeners for new data
 		ofAddListener(openvr.newDataReceived, this, &ofxRTLS::openvrDataReceived);
 
-		if (ofxRTLSConfigManager::one()->postprocess()) {
+		if (RTLS_POSTPROCESS()) {
 			// Setup the postprocessor
 			openvrPostM.setup(RTLS_SYSTEM_TYPE_OPENVR, RTLS_TRACKABLE_TYPE_SAMPLE,
 				"OpenVRMarkers", "OM");
-			if (ofxRTLSConfigManager::one()->player()) {
+			if (RTLS_PLAYER()) {
 				ofAddListener(player.takeLooped, &openvrPostM, &ofxRTLSPostprocessor::resetEventReceved);
 			}
 		}
 	}
 	
-	if (ofxRTLSConfigManager::one()->motive()) {
+	if (RTLS_MOTIVE()) {
 
 		// Setup parameters for Motive
 		motive.setupParams();
@@ -84,14 +84,14 @@ void ofxRTLS::setup() {
 		// Add listeners for new data
 		ofAddListener(motive.newDataReceived, this, &ofxRTLS::motiveDataReceived);
 
-		if (ofxRTLSConfigManager::one()->postprocess()) {
+		if (RTLS_POSTPROCESS()) {
 			// Setup the postprocessors
 			motivePostM.setup(RTLS_SYSTEM_TYPE_MOTIVE, RTLS_TRACKABLE_TYPE_SAMPLE,
 				"MotiveMarkers", "MM", "",
 				"age,axes,kalman,easing,add-rate,continuity,easing");
 			motivePostR.setup(RTLS_SYSTEM_TYPE_MOTIVE, RTLS_TRACKABLE_TYPE_OBSERVER,
 				"MotiveRef", "MR", "", "axes");
-			if (ofxRTLSConfigManager::one()->player()) {
+			if (RTLS_PLAYER()) {
 				ofAddListener(player.takeLooped, &motivePostM, &ofxRTLSPostprocessor::resetEventReceved);
 				ofAddListener(player.takeLooped, &motivePostR, &ofxRTLSPostprocessor::resetEventReceved);
 			}
@@ -108,15 +108,15 @@ void ofxRTLS::setup() {
 void ofxRTLS::start() {
 	// Start communications with the trackers
 	
-	if (ofxRTLSConfigManager::one()->null()) {
+	if (RTLS_NULL()) {
 		nsys.start();
 	}
 	
-	if (ofxRTLSConfigManager::one()->openvr()) {
+	if (RTLS_OPENVR()) {
 		openvr.connect();
 	}
 	
-	if (ofxRTLSConfigManager::one()->motive()) {
+	if (RTLS_MOTIVE()) {
 		motive.start();
 	}
 }
@@ -124,15 +124,15 @@ void ofxRTLS::start() {
 // --------------------------------------------------------------
 void ofxRTLS::stop() {
 	// Stop communication with the trackers
-	if (ofxRTLSConfigManager::one()->null()) {
+	if (RTLS_NULL()) {
 		nsys.stop();
 	}
 
-	if (ofxRTLSConfigManager::one()->openvr()) {
+	if (RTLS_OPENVR()) {
 		openvr.disconnect();
 	}
 
-	if (ofxRTLSConfigManager::one()->motive()) {
+	if (RTLS_MOTIVE()) {
 		motive.stop();
 	}
 }
@@ -174,7 +174,7 @@ void ofxRTLS::nsysDataReceived(NullSystemEventArgs& args) {
 		position->set_z(t.getPosition().z);
 	}
 
-	if (ofxRTLSConfigManager::one()->player()) {
+	if (RTLS_PLAYER()) {
 		// Pass this raw data to the recorder
 		recorder.add(RTLS_SYSTEM_TYPE_NULL, nsys.getFrameRate(), outArgs.frame);
 		recorder.update(RTLS_SYSTEM_TYPE_NULL);
@@ -229,7 +229,7 @@ void ofxRTLS::openvrDataReceived(ofxOpenVRTrackerEventArgs& args) {
 		}
 	}
 
-	if (ofxRTLSConfigManager::one()->player()) {
+	if (RTLS_PLAYER()) {
 		// Pass this raw data to the recorder
 		recorder.add(RTLS_SYSTEM_TYPE_OPENVR, openvr.getFPS(), outArgs.frame);
 		recorder.update(RTLS_SYSTEM_TYPE_OPENVR);
@@ -286,7 +286,7 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 		position->set_z(args.markers[i].position.z);
 	}
 
-	if (ofxRTLSConfigManager::one()->player()) {
+	if (RTLS_PLAYER()) {
 		// Pass this raw data to the recorder
 		recorder.add(RTLS_SYSTEM_TYPE_MOTIVE, motive.getMaxFPS(), mOutArgs.frame);
 	}
@@ -342,7 +342,7 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 			orientation->set_z(args.cameras[i].orientation.z);
 		}
 
-		if (ofxRTLSConfigManager::one()->player()) {
+		if (RTLS_PLAYER()) {
 			// Pass this raw data to the recorder
 			recorder.add(RTLS_SYSTEM_TYPE_MOTIVE, motive.getMaxFPS(), cOutArgs.frame);
 		}
@@ -350,7 +350,7 @@ void ofxRTLS::motiveDataReceived(MotiveEventArgs& args) {
 		sendData(cOutArgs);
 	}
 
-	if (ofxRTLSConfigManager::one()->player()) {
+	if (RTLS_PLAYER()) {
 		// Update the recorder
 		recorder.update(RTLS_SYSTEM_TYPE_MOTIVE);
 	}
@@ -391,10 +391,10 @@ bool ofxRTLS::sendData(ofxRTLSEventArgs& args) {
 
 	// ========================================================================
 	case RTLS_SYSTEM_TYPE_NULL: {
-		if (ofxRTLSConfigManager::one()->null()) {
+		if (RTLS_NULL()) {
 			switch (args.trackableType) {
 			case RTLS_TRACKABLE_TYPE_SAMPLE: {
-				if (ofxRTLSConfigManager::one()->postprocess())
+				if (RTLS_POSTPROCESS())
 					// Post-process the data, then send it out when ready
 					nsysPostM.processAndSend(args, newFrameReceived);
 				else
@@ -413,10 +413,10 @@ bool ofxRTLS::sendData(ofxRTLSEventArgs& args) {
 
 	// ========================================================================
 	case RTLS_SYSTEM_TYPE_OPENVR: {
-		if (ofxRTLSConfigManager::one()->openvr()) {
+		if (RTLS_OPENVR()) {
 			switch (args.trackableType) {
 			case RTLS_TRACKABLE_TYPE_SAMPLE: {
-				if (ofxRTLSConfigManager::one()->postprocess())
+				if (RTLS_POSTPROCESS())
 					openvrPostM.processAndSend(args, newFrameReceived);
 				else 
 					ofNotifyEvent(newFrameReceived, args);
@@ -433,16 +433,16 @@ bool ofxRTLS::sendData(ofxRTLSEventArgs& args) {
 
 	// ========================================================================
 	case RTLS_SYSTEM_TYPE_MOTIVE: {
-		if (ofxRTLSConfigManager::one()->motive()) {
+		if (RTLS_MOTIVE()) {
 			switch (args.trackableType) {
 			case RTLS_TRACKABLE_TYPE_OBSERVER: { // Motive Cameras
-				if (ofxRTLSConfigManager::one()->postprocess())
+				if (RTLS_POSTPROCESS())
 					motivePostR.processAndSend(args, newFrameReceived);
 				else
 					ofNotifyEvent(newFrameReceived, args);
 			}; break;
 			case RTLS_TRACKABLE_TYPE_SAMPLE: { // Motive markers
-				if (ofxRTLSConfigManager::one()->postprocess())
+				if (RTLS_POSTPROCESS())
 					motivePostM.processAndSend(args, newFrameReceived);
 				else
 					ofNotifyEvent(newFrameReceived, args);
@@ -493,23 +493,23 @@ void ofxRTLS::threadedFunction() {
 // --------------------------------------------------------------
 void ofxRTLS::exit() {
 
-	if (ofxRTLSConfigManager::one()->null()) {
-		if (ofxRTLSConfigManager::one()->postprocess()) {
+	if (RTLS_NULL()) {
+		if (RTLS_POSTPROCESS()) {
 			nsysPostM.exit();
 		}
 		ofRemoveListener(nsys.newDataReceived, this, &ofxRTLS::nsysDataReceived);
 		nsys.stop();
 	}
-	if (ofxRTLSConfigManager::one()->openvr()) {
-		if (ofxRTLSConfigManager::one()->postprocess()) {
+	if (RTLS_OPENVR()) {
+		if (RTLS_POSTPROCESS()) {
 			openvrPostM.exit();
 		}
 		// Remove listener for new device data
 		ofRemoveListener(openvr.newDataReceived, this, &ofxRTLS::openvrDataReceived);
 		openvr.exit();
 	}
-	if (ofxRTLSConfigManager::one()->motive()) {
-		if (ofxRTLSConfigManager::one()->postprocess()) {
+	if (RTLS_MOTIVE()) {
+		if (RTLS_POSTPROCESS()) {
 			motivePostM.exit();
 			motivePostR.exit();
 		}
@@ -522,13 +522,13 @@ int ofxRTLS::isConnected() {
 
 	int nConnections = 0;
 
-	if (ofxRTLSConfigManager::one()->null()) {
+	if (RTLS_NULL()) {
 		nConnections += int(nsys.isConnected());
 	}
-	if (ofxRTLSConfigManager::one()->openvr()) {
+	if (RTLS_OPENVR()) {
 		nConnections += int(openvr.isConnected());
 	}
-	if (ofxRTLSConfigManager::one()->motive()) {
+	if (RTLS_MOTIVE()) {
 		nConnections += int(motive.isConnected());
 	}
 
@@ -545,13 +545,13 @@ string ofxRTLS::getSupportedSystems() {
 
 	string out = "{ ";
 	string systems = "";
-	if (ofxRTLSConfigManager::one()->null()) {
+	if (RTLS_NULL()) {
 		systems += "NULL, ";
 	}
-	if (ofxRTLSConfigManager::one()->openvr()) {
+	if (RTLS_OPENVR()) {
 		systems += "OPENVR, ";
 	}
-	if (ofxRTLSConfigManager::one()->motive()) {
+	if (RTLS_MOTIVE()) {
 		systems += "MOTIVE, ";
 	}
 	if (systems.empty()) systems = "--";
@@ -562,12 +562,12 @@ string ofxRTLS::getSupportedSystems() {
 
 // --------------------------------------------------------------
 bool ofxRTLS::isPostprocessSupported() {
-	return ofxRTLSConfigManager::one()->postprocess();
+	return RTLS_POSTPROCESS();
 }
 
 // --------------------------------------------------------------
 bool ofxRTLS::isPlayerSupported() {
-	return ofxRTLSConfigManager::one()->player();
+	return RTLS_PLAYER();
 }
 
 // --------------------------------------------------------------
@@ -591,11 +591,11 @@ string ofxRTLS::getSupport() {
 float ofxRTLS::getMaxSystemFPS() {
 
 	float maxFPS = 0;
-	if (ofxRTLSConfigManager::one()->null())
+	if (RTLS_NULL())
 		maxFPS = max(maxFPS, nsys.getFrameRate());
-	if (ofxRTLSConfigManager::one()->openvr())
+	if (RTLS_OPENVR())
 		maxFPS = max(maxFPS, openvr.getFPS());
-	if (ofxRTLSConfigManager::one()->motive())
+	if (RTLS_MOTIVE())
 		maxFPS = max(maxFPS, float(motive.getMaxFPS()));
 	return maxFPS;
 }
@@ -609,7 +609,7 @@ void ofxRTLS::newLatencyCalculated(ofxRTLSLatencyArgs& args) {
 
 // --------------------------------------------------------------
 bool ofxRTLS::isRecording() {
-	if (ofxRTLSConfigManager::one()->player())
+	if (RTLS_PLAYER())
 		return recorder.isRecording();
 	else
 		return false;
@@ -617,7 +617,7 @@ bool ofxRTLS::isRecording() {
 
 // --------------------------------------------------------------
 bool ofxRTLS::isSavingRecording() {
-	if (ofxRTLSConfigManager::one()->player())
+	if (RTLS_PLAYER())
 		return recorder.isSaving();
 	else
 		return false;
@@ -625,7 +625,7 @@ bool ofxRTLS::isSavingRecording() {
 
 // --------------------------------------------------------------
 float ofxRTLS::getSavingRecordingPercentComplete() {
-	if (ofxRTLSConfigManager::one()->player())
+	if (RTLS_PLAYER())
 		return recorder.getSavingPercentageComplete();
 	else
 		return 0;
@@ -633,7 +633,7 @@ float ofxRTLS::getSavingRecordingPercentComplete() {
 
 // --------------------------------------------------------------
 bool ofxRTLS::isPlaying() {
-	if (ofxRTLSConfigManager::one()->player())
+	if (RTLS_PLAYER())
 		return player.isPlaying();
 	else
 		return false;
@@ -641,7 +641,7 @@ bool ofxRTLS::isPlaying() {
 
 // --------------------------------------------------------------
 string ofxRTLS::getRecordingFile() {
-	if (ofxRTLSConfigManager::one()->player())
+	if (RTLS_PLAYER())
 		return recorder.getRecordingFile();
 	else
 		return "";
@@ -649,7 +649,7 @@ string ofxRTLS::getRecordingFile() {
 
 // --------------------------------------------------------------
 string ofxRTLS::getPlayingFile() {
-	if (ofxRTLSConfigManager::one()->player())
+	if (RTLS_PLAYER())
 		return player.getTakePath();
 	else
 		return "";
@@ -666,7 +666,7 @@ void ofxRTLS::markDataReceived() {
 
 // --------------------------------------------------------------
 bool ofxRTLS::isPlaying(RTLSSystemType systemType) {
-	if (ofxRTLSConfigManager::one()->player())
+	if (RTLS_PLAYER())
 		return player.isPlaying(systemType);
 	else
 		return false;
@@ -674,37 +674,37 @@ bool ofxRTLS::isPlaying(RTLSSystemType systemType) {
 
 // --------------------------------------------------------------
 void ofxRTLS::toggleRecording() {
-	if (ofxRTLSConfigManager::one()->player())
+	if (RTLS_PLAYER())
 		recorder.toggleRecording();
 }
 
 // --------------------------------------------------------------
 void ofxRTLS::toggleRecordingWithSavePrompt() {
-	if (ofxRTLSConfigManager::one()->player())
+	if (RTLS_PLAYER())
 		recorder.toggleRecordingWithSavePrompt();
 }
 
 // --------------------------------------------------------------
 void ofxRTLS::togglePlayback() {
-	if (ofxRTLSConfigManager::one()->player())
+	if (RTLS_PLAYER())
 		player.togglePlayback();
 }
 
 // --------------------------------------------------------------
 void ofxRTLS::resetPlayback() {
-	if (ofxRTLSConfigManager::one()->player())
+	if (RTLS_PLAYER())
 		player.reset();
 }
 
 // --------------------------------------------------------------
 void ofxRTLS::promptOpenPlaybackFile() {
-	if (ofxRTLSConfigManager::one()->player())
+	if (RTLS_PLAYER())
 		player.promptUserOpenFile();
 }
 
 // --------------------------------------------------------------
 float ofxRTLS::getPlayingPercentComplete() {
-	if (ofxRTLSConfigManager::one()->player())
+	if (RTLS_PLAYER())
 		return player.getTakePercentComplete();
 	else
 		return 0;
@@ -712,7 +712,7 @@ float ofxRTLS::getPlayingPercentComplete() {
 
 // --------------------------------------------------------------
 float ofxRTLS::getPlayingFileDuration() {
-	if (ofxRTLSConfigManager::one()->player())
+	if (RTLS_PLAYER())
 		return player.getTakeDuration();
 	else
 		return 0;
@@ -720,7 +720,7 @@ float ofxRTLS::getPlayingFileDuration() {
 
 // --------------------------------------------------------------
 float ofxRTLS::getRecordingDuration() {
-	if (ofxRTLSConfigManager::one()->player())
+	if (RTLS_PLAYER())
 		return recorder.getRecordingDuration();
 	else
 		return 0;
