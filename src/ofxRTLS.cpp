@@ -572,7 +572,7 @@ bool ofxRTLS::isPlayerSupported() {
 
 // --------------------------------------------------------------
 string ofxRTLS::getSupport() {
-	string supportStr = "ofxRTLS compiled to support systems ";
+	string supportStr = "ofxRTLS configured to support systems ";
 	supportStr += getSupportedSystems();
 	supportStr += " ";
 
