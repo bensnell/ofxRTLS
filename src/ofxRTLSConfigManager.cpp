@@ -70,6 +70,25 @@ bool ofxRTLSConfigManager::load(string config_path)
 	
 	if (js.find("player") != js.end())
 		player_ = js.find("player")->get<bool>();
+
+	// Try to get the optional parameters
+	if (js.find("project_metadata") != js.end())
+	{
+		if (js["project_metadata"].find("name") != js["project_metadata"].end())
+			project_name_ = js["project_metadata"]["name"].get<string>();
+		
+		if (js["project_metadata"].find("version") != js["project_metadata"].end())
+			project_version_ = js["project_metadata"]["version"].get<string>();
+
+		if (js["project_metadata"].find("commit") != js["project_metadata"].end())
+			project_commit_ = js["project_metadata"]["commit"].get<string>();
+
+		if (js["project_metadata"].find("repo") != js["project_metadata"].end())
+			project_repo_ = js["project_metadata"]["repo"].get<string>();
+
+		project_metadata_exists_ = !project_name_.empty() || !project_version_.empty()
+			|| !project_commit_.empty() || !project_repo_.empty();
+	}
 	
 	ofLogNotice("ofxRTLSConfigManager") << "Configuration file loaded from \"" << config_path_ << "\"";
 
