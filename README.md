@@ -270,7 +270,9 @@ Parameters include:
 | `Allow Remap From Perm`   | Are remappings from permanent key types allowed? If so, it is highly recommended that you remove matching keys before solve, since this will prevent permanent IDs from separating during tracking. By default, this value is `false`. Setting to `true` under most circumstances defeats the purpose of distinguishing temporary and permanent key types. |
 | `Allow Remap To Perm`     | Are remappings to permanent key types allowed? By default, this value is `false`. Setting to `true` under most circumstances defeats the purpose of distinguishing temporary and permanent key types. |
 
-
+Hungarian FAQ:
+- _Can I use this Hungarian algorithm to assign a more permanent `id` to points with `cuid`s that flicker in and our intermittently?_ Yes and no... `id` parameters are permanently linked to a marker object; They define the object and they are unchanging over the lifespan of the object, whether or not it is actively tracking. `cuid` parameters are used to temporarily identify a marker object whose `id` is unknown or who doesn't have a permanent way to identify itself. Therefore, it is not possible to assign an object best described by a `cuid` with a higher level identifiable `id`. However, it is possible to persist an object with a `cuid` so its `cuid` does not change as it flashes in and out of view. In this scenario, the first seen `cuid` will be persisted and used as its "semi-permanent" identifiable information.
+- _This algorithm isn't working when I enable it--Why is that?_ The most likely cause is that both the previous object and the newly seen object must be present at neighboring frames in order for identifiable information to be persisted. This means that 99% of applications using the Hungarian algorithm also require Filters to be applied with at an operator that offers persistence and whose persistence is enabled (e.g. `persist` or `continuity` operators). 
 
 ### Apply Filters
 
