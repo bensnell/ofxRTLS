@@ -114,9 +114,10 @@ Desktop.ini
 # Libs for motive in the bin folder of any examples
 #/example*/bin/
 #/example/bin/*
+/example*/bin/*
 !*/example*/bin/data/example.cal
 !*/example*/bin/data/example.motive
-/example*/bin/*
+!*/example*/bin/data/configs/rtls-config.json
 *.VC.db
 *.VC.opendb
 /.vs/*

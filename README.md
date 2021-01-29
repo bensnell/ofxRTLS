@@ -2,7 +2,13 @@
 
 ## Introduction
 
-This addon is intended to act as a manager for any "Real Time Location System" and exports tracking information in a standardized format via the [`rtls-protocol`](https://github.com/local-projects/rtls-protocol). Currently, this addon supports Optitrack Motive's API and the OpenVR API.
+This addon is intended to act as a manager for any "Real Time Location System" and exports tracking information in a standardized format via the [`rtls-protocol`](https://github.com/local-projects/rtls-protocol). Supported tracking systems include:
+
+| Tracking System          | Supported <br />Platform | Notes                                                        |
+| ------------------------ | ------------------------ | ------------------------------------------------------------ |
+| Optitrack Motive Tracker | x64                      | 32-bit (x86) is not supported by Motive.<br />This uses Motive v2.2.0 |
+| OpenVR (e.g. HTC Vive)   | x64 (x86?)               |                                                              |
+| Null System              | x64, x86                 | This system exports fake data.                               |
 
 This addon also supports optional realtime post-processing of the data. Options include:
 
@@ -40,7 +46,7 @@ This has been developed with OpenFrameworks version 0.11.0
 
 #### Post-Processing Dependencies
 
-If the macro `RTLS_POSTPROCESS` is defined, then ofxRTLS expects a number of additional dependencies. Make sure they are included in the *addons.make* file of your project. See the *example_motive_postprocess/addons.make* for an example using Motive.
+ofxRTLS expects a number of additional dependencies for postprocessing. Make sure they are included in the *addons.make* file of your project. See the *example_motive_postprocess/addons.make* for an example using Motive.
 
 - ofxOpenCv (this comes with OF v0.11.0)
 - [ofxCv](https://github.com/local-projects/ofxCv/tree/project/lp.rtls-server) (branch: `project/lp.rtls-server`)
@@ -56,46 +62,34 @@ First, make sure you have properly installed all of the dependencies; there are 
 
 1. Include the relative path to `ofxRTLS` in your *addons.make* file, as usual. However, <u>do not</u> include the path to `ofxMotive` or `ofxOpenVRTracker` in your *addons.make* file. Then, regenerate your project files using OpenFrameworks' ProjectGenerator.
 
-   *Note: If you plan on using any of the postprocessing options, include all of the Postprocessing-dependent addons defined above to the addons.make file.*
-
 2. In Visual Studios, in the *Property Manager*, right click your entire project and select *Add Existing Property Sheet...*. Then, choose `ofxRTLS.props`. <u>Do not</u> include any other RTLS-related property sheets.
 
    *If your application does not directly interface with a tracking system, but instead receives data in the protobuf format, use only the `Protobuf.props` sheet instead.*
 
-3. Instruct RTLS to build the tracking systems of your choice by passing the appropriate properties to MSBuild. Currently available tracking systems and their corresponding properties include those listed below. Tracking systems whose property equals `true` will be built. If a property equals `false`, it will not be built. Multiple systems can be built at once. If no systems are defined, ofxRTLS defaults to the Null System. Available systems include:
-
-| Tracking System          | Visual Studio Property | Supported <br />Platform | Notes                                                        |
-| ------------------------ | ---------------------- | ------------------------ | ------------------------------------------------------------ |
-| Optitrack Motive Tracker | `RTLS_MOTIVE` = true   | x64                      | 32-bit (x86) is not supported by Motive.<br />This uses Motive v2.2.0 |
-| OpenVR (e.g. HTC Vive)   | `RTLS_OPENVR` = true   | x64 (x86?)               |                                                              |
-| Null System              | `RTLS_NULL` = true     | x64, x86                 | This system exports fake data.                               |
-
-  There are many ways to set a property in a Visual Studio project. It is important that this property must be defined before property sheets are imported in the project. The easiest way to add a property is to open up your **.vcxproj* file and add the following lines below (following XML structure) before property sheets are imported:
-
-  ```xml
-  <PropertyGroup>
-      <!-- Instruct RTLS to build support for ofxMotive: -->
-      <RTLS_MOTIVE>true</RTLS_MOTIVE>
-  </PropertyGroup>
-  ```
 
 4. In your project *Properties* window, under *Configuration Properties  > C/C++ > Preprocessor > Preprocessor Definitions*, select *Edit* from the dropdown menu on the right and at the bottom of the window, check the box that says *Inherit from parent or project defaults*.
-5. If you plan on using any of the postprocessing options (and have already included the appropriate addons according to the instructions in Step 1), pass the macro `RTLS_POSTPROCESS` in the Project Properties' *Preprocessor Definitions* <u>or</u> define `<RTLS_POSTPROCESS>true</RTLS_POSTPROCESS>` in **.vcproj* as above.
-6. If you plan on using the recording or playback functionality, pass the macro `RTLS_PLAYER` in the Project Properties' *Preprocessor Definitions* <u>or</u> define `<RTLS_PLAYER>true</RTLS_PLAYER>` in **.vcproj* as above.
 
-This approach to building ofxRTLS using defined properties allows MSBuild (and CI pipelines like TeamCity) to build any configuration without regenerating project files, by passing different options to the compiler on the command line like so:
+This will build support for all tracking systems, postprocessing and recording/playback. However, use of these modules is optional and described in the next step.
 
-```bash
--p:RTLS_MOTIVE=true
+### Configuration
+
+The addon is configured via a configuration file `rtls-config.json` in the folder *bin/data/configs*. This file has a similar form to this:
+
+```json
+{
+	"systems" : [
+		"Null",
+		"OpenVR",
+		"Motive"
+	],
+	"postprocess" : true,
+	"player" : true
+}
 ```
 
-You can pass multiple options to the compiler like below. This would build the NULL and MOTIVE systems with postprocessing and recorder/player enabled.
+List the names of any systems (case-insensitive) which you would like supported by the application. You can include support for any number and combination of systems. All systems listed will try to connect once the application starts. Also list whether you would like postprocessing and recording/playback supported. If no options are defined or this file is missing, then there is no support for any of these modules. 
 
-```bash
--p:RTLS_NULL=true;RTLS_MOTIVE=true;RTLS_OPENVR=false;RTLS_POSTPROCESS=true;RTLS_PLAYER=true
-```
-
-
+*Note: This file must be set before running the application. These settings cannot be changed while the app is running.*
 
 ### Usage
 
@@ -190,15 +184,13 @@ If valid, the `context` field once parsed will contain a list of keys and values
 
 ### Recording and Playback
 
-Raw data coming directly from the tracking systems can be recorded and played back, as long as the application is built with the appropriate build support (`RTLS_PLAYER=true `). Data is saved as a [C3D](https://www.c3d.org/) file. Postprocessing options for this data can be changed later on. A recorded file must be played back with an application compiled with corresponding tracking system support. For example, a take recorded using the Motive system cannot be played back on a server that has only been compiled with OpenVR support.
+Raw data coming directly from the tracking systems can be recorded and played back, as long as the application includes recording/playback support (`"player" : true`). Data is saved as a [C3D](https://www.c3d.org/) file. Postprocessing options for this data can be changed later on. A recorded file must be played back with an application that supports the corresponding tracking system. For example, a take recorded using the Motive system cannot be played back on a server that has only has OpenVR support.
 
 C3D file data can be passively viewed using the third-party visualization utility [Mokka](https://biomechanical-toolkit.github.io/mokka/).
 
 ## Examples
 
-Examples have been provided with and without postprocessing. Following Setup Step 3 above to change the example's tracking system.
-
-
+An example as been provided in the folder *example*.
 
 ## Postprocessing Options
 
@@ -277,8 +269,6 @@ Hungarian FAQ:
 ### Apply Filters
 
 Filter parameters are documented [here](https://github.com/local-projects/ofxFilter).
-
-
 
 
 ## Troubleshooting

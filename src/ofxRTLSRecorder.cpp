@@ -1,7 +1,5 @@
 #include "ofxRTLSRecorder.h"
 
-#ifdef RTLS_PLAYER
-
 // --------------------------------------------------------------
 ofxRTLSRecorder::ofxRTLSRecorder() {
 
@@ -542,5 +540,3 @@ string ofxRTLSRecorder::generateTakeName()
 }
 
 // --------------------------------------------------------------
-
-#endif

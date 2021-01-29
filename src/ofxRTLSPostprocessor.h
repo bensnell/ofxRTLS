@@ -7,8 +7,6 @@
 using namespace RTLSProtocol;
 #include "ofxRTLSTrackableKey.h"
 
-#ifdef RTLS_POSTPROCESS
-
 #include "IDDictionary.h"
 #include "ofxFDeep.h"
 #include "ofxFilterGroup.h"
@@ -153,5 +151,3 @@ private:
 	atomic<bool> flagReset = false;
 	void resetInternalStates();
 };
-
-#endif

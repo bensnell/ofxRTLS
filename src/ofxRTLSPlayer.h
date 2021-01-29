@@ -9,8 +9,6 @@
 using namespace RTLSProtocol;
 #include "ofxRTLSTrackableKey.h"
 
-#ifdef RTLS_PLAYER
-
 #include "ezc3d_all.h"
 #include "ofxTemporalResampler.h"
 
@@ -133,5 +131,3 @@ private:
 	// their filters for the types of this take.
 	void notifyResetPostprocessors(RTLSPlayerTake* take);
 };
-
-#endif

@@ -8,8 +8,6 @@
 using namespace RTLSProtocol;
 #include "ofxRTLSTrackableKey.h"
 
-#ifdef RTLS_PLAYER
-
 #include "ezc3d_all.h"
 
 // Locking with Condition Variables, Queues and Mutex follows the 
@@ -193,5 +191,3 @@ private:
 	
 	bool saveTake(RTLSTake* take);
 };
-
-#endif
