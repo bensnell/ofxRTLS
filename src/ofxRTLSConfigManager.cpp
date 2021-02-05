@@ -97,6 +97,23 @@ bool ofxRTLSConfigManager::load(string config_path)
 }
 
 // ----------------------------------------------------------------------------
+string ofxRTLSConfigManager::project_metadata()
+{
+	stringstream ss;
+	if (project_metadata_exists())
+	{
+		ss << "ofxRTLS configured";
+		if (!project_name().empty()) ss << " for project " << project_name() << "";
+		if (!project_version().empty()) ss << " with version " << project_version() << "";
+		if (!project_commit().empty()) ss << " at commit " << project_commit() << "";
+		if (!project_repo().empty()) ss << " using repository " << project_repo() << "";
+		ss << ".";
+	} else
+	{
+		ss << "ofxRTLS not configured for specific project.";
+	}
+	return ss.str();
+}
 
 // ----------------------------------------------------------------------------
 

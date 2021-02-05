@@ -20,6 +20,9 @@ void ofxRTLS::setup() {
 	// Print support
 	ofLogNotice("ofxRTLS") << getSupport();
 
+	// Print project configuration info
+	ofLogNotice("ofxRTLS") << RTLS_CONFIG()->project_metadata();
+
 	// Setup general RTLS params
 	//RUI_NEW_GROUP("ofxRTLS");
 
