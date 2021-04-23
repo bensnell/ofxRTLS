@@ -1,7 +1,5 @@
 #include "ofxRTLSRecorder.h"
 
-#ifdef RTLS_PLAYER
-
 // --------------------------------------------------------------
 ofxRTLSRecorder::ofxRTLSRecorder() {
 
@@ -255,7 +253,12 @@ void ofxRTLSRecorder::paramChanged(RemoteUIServerCallBackArg& arg) {
 			
 			// Begin new recording
 			RTLSTake* take = new RTLSTake();
-			thisTakePath = ofFilePath::getAbsolutePath(ofFilePath::join(takeFolder, takePrefix + "_" + ofGetTimestampString() + ".c3d"));
+			// Check if user supplied a path
+			{
+				lock_guard<ofMutex> guard(userSavePathMutex);
+				thisTakePath = (userSavePath.empty() ? generateTakePath() : userSavePath);
+				userSavePath = "";
+			}			
 			thisTakeStartTimeMS = ofGetElapsedTimeMillis();
 			take->path = thisTakePath;
 
@@ -276,8 +279,20 @@ void ofxRTLSRecorder::paramChanged(RemoteUIServerCallBackArg& arg) {
 			// Stop recording
 			bRecording = false;
 
+			// If the user selected a new path to save to, get it
+			string pathOverride = "";
+			{
+				lock_guard<ofMutex> guard(userSavePathMutex);
+				pathOverride = userSavePath;
+				userSavePath = "";
+			}
+
 			// Flag that we should save this take
 			std::lock_guard<std::mutex> lk(mutex);
+			if (!pathOverride.empty()) {
+				thisTakePath = pathOverride;
+				takeQueue.back()->path = pathOverride;
+			}
 			takeQueue.back()->bFlagSave = true;
 
 			// Notify that the condition has been met to save the file
@@ -308,6 +323,11 @@ bool ofxRTLSRecorder::saveTake(RTLSTake* take) {
 		return false;
 	}
 
+	// Flag that we have begun saving
+	takeSavingFramesTotal = take->getNumFrames();
+	takeSavingFramesSaved = 0;
+	isTakeSaving = true;
+	
 	// Proceed with saving the take
 	auto& c3d = take->c3d;
 
@@ -424,11 +444,17 @@ bool ofxRTLSRecorder::saveTake(RTLSTake* take) {
 
 		// Add the frame to the take
 		c3d.frame(frame);
+
+		// Increment the number of frames saved
+		++takeSavingFramesSaved;
 	}
 	
 	// Save the c3d to file
 	ofFilePath::createEnclosingDirectory(take->path);
 	c3d.write(take->path);
+
+	// Flag that we are done saving
+	isTakeSaving = false;
 
 	return true;
 }
@@ -448,6 +474,38 @@ void ofxRTLSRecorder::toggleRecording() {
 }
 
 // --------------------------------------------------------------
+void ofxRTLSRecorder::toggleRecordingWithSavePrompt()
+{
+	// Attempt to get a path to save this recording as
+	auto result = ofSystemSaveDialog(generateTakePath(), "Save recording as");
+	if (result.bSuccess)
+	{
+		// Confirm that path ends in .c3d
+		string path = result.filePath;
+		if (result.fileName.empty())
+		{
+			// This isn't currently supporting:
+			path = ofFilePath::join(path, generateTakeName());
+		}
+		else {
+			string lower = ofToLower(result.fileName);
+			if (lower.size() < 4 || lower.find(".c3d", lower.size() - 4) == string::npos)
+			{
+				path += ".c3d";
+			}
+		}
+		
+		// Save this path
+		{
+			lock_guard<ofMutex> guard(userSavePathMutex);
+			userSavePath = path;
+		}
+	}
+
+	toggleRecording();
+}
+
+// --------------------------------------------------------------
 void ofxRTLSRecorder::playbackEvent(ofxRTLSPlaybackArgs& args) {
 	
 	if (args.bPlay && bRecording) {
@@ -456,5 +514,29 @@ void ofxRTLSRecorder::playbackEvent(ofxRTLSPlaybackArgs& args) {
 }
 
 // --------------------------------------------------------------
+float ofxRTLSRecorder::getSavingPercentageComplete()
+{
+	if (!isSaving()) return 0;
+	return float(takeSavingFramesSaved) / float(takeSavingFramesTotal) * 0.95F;
+}
 
-#endif
+// --------------------------------------------------------------
+float ofxRTLSRecorder::getRecordingDuration()
+{
+	if (!bRecording) return 0;
+	return float(ofGetElapsedTimeMillis() - thisTakeStartTimeMS) / 1000.0F;
+}
+
+// --------------------------------------------------------------
+string ofxRTLSRecorder::generateTakePath()
+{
+	return ofFilePath::getAbsolutePath(ofFilePath::join(takeFolder, generateTakeName()));
+}
+
+// --------------------------------------------------------------
+string ofxRTLSRecorder::generateTakeName()
+{
+	return takePrefix + "_" + ofGetTimestampString() + ".c3d";
+}
+
+// --------------------------------------------------------------

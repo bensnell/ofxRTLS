@@ -30,6 +30,11 @@ public:
 	// Data that will be sent
 	TrackableFrame frame;
 
+	// System and type (for ease of access, since the only other
+	// way of getting this information is by parsing a string to json)
+	RTLSSystemType systemType = RTLS_SYSTEM_TYPE_INVALID;
+	RTLSTrackableType trackableType = RTLS_TRACKABLE_TYPE_INVALID;
+
 	// (Optional, for more accuracy)
 	// Set the time this data was first being assembled.
 	void flagStartAssembly() {
@@ -57,6 +62,8 @@ public:
 		latency = other.latency;
 		bSent = other.bSent;
 		bValid = other.bValid;
+		systemType = other.systemType;
+		trackableType = other.trackableType;
 	}
 
 private:

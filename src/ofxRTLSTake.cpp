@@ -1,7 +1,5 @@
 #include "ofxRTLSTake.h"
 
-#ifdef RTLS_PLAYER
-
 // --------------------------------------------------------------
 bool RTLSPlayerTake::populateTemplateFrames() {
 	if (c3d == NULL) return false;
@@ -119,5 +117,3 @@ bool RTLSPlayerTake::populateTemplateFrames() {
 // --------------------------------------------------------------
 
 // --------------------------------------------------------------
-
-#endif

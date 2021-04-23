@@ -1,7 +1,5 @@
 #include "ofxRTLSPlayer.h"
 
-#ifdef RTLS_PLAYER
-
 // --------------------------------------------------------------
 ofxRTLSPlayer::ofxRTLSPlayer() {
 
@@ -115,6 +113,7 @@ void ofxRTLSPlayer::threadedFunction() {
 						newPath = take->path;
 						durationSec = take->getC3dDurationSec();
 						fps = take->getC3dFps();
+						numFrames = take->getC3dNumFrames();
 						resampler.setDesiredFPS(fps);
 					}
 					if (newPath.compare(takePath) != 0) {
@@ -167,6 +166,7 @@ void ofxRTLSPlayer::threadedFunction() {
 				flagReset = false;
 				bPlaying = false;
 				take->frameCounter = 0;
+				frameCounter = take->frameCounter;
 
 				// Signal that filters need to be reset
 				notifyResetPostprocessors(take);
@@ -188,6 +188,7 @@ void ofxRTLSPlayer::threadedFunction() {
 			if (_bLoop && take->getC3dNumFrames() > 0) {
 				take->frameCounter = take->frameCounter % take->getC3dNumFrames();
 			}
+			frameCounter = take->frameCounter;
 			// TODO: If we loop, signal that filters need to be reset
 			
 			// Update the fps resampler
@@ -358,7 +359,7 @@ bool ofxRTLSPlayer::loadTake(RTLSPlayerTake* take) {
 
 // --------------------------------------------------------------
 void ofxRTLSPlayer::promptUserOpenFile() {
-
+	
 	ofFileDialogResult result = ofSystemLoadDialog("Select a .c3d file to playback", false, ofFilePath::getCurrentExeDir());
 	if (!result.bSuccess) return;
 
@@ -426,8 +427,8 @@ bool ofxRTLSPlayer::getFrames(RTLSPlayerTake* take) {
 
 	// Get points for this take
 	auto pts = take->c3d->data().frame(take->frameCounter).points();
-	// If there are no points, then don't proceed
-	if (pts.isEmpty()) return false;
+	// Proceed even if it's empty (pts.isEmpty()), so frames without
+	// data can still be processed by the postprocessor, if enabled.
 
 	// Fill all newFrames with data, where available
 	for (auto& _f : take->frames) {
@@ -471,8 +472,8 @@ void ofxRTLSPlayer::sendData(RTLSPlayerTake* take) {
 	// Send every frame
 	for (int i = 0; i < take->frames.size(); i++) {
 
-		// Only send frames with new data
-		if (!take->frames[i].bNewData) continue;
+		// Send data whether or not it's new.
+		// (New frames bear the marker take->frames[i].bNewData)
 
 		// Copy over data and send it
 		ofxRTLSPlayerDataArgs args;
@@ -502,7 +503,10 @@ void ofxRTLSPlayer::notifyResetPostprocessors(RTLSPlayerTake* take) {
 }
 
 // --------------------------------------------------------------
+float ofxRTLSPlayer::getTakePercentComplete()
+{
+	if (numFrames <= 1) return 0;
+	return float(frameCounter) / float(numFrames-1);
+}
 
 // --------------------------------------------------------------
-
-#endif

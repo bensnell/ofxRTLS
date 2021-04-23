@@ -1,34 +1,23 @@
 #pragma once
 
-//#if !defined(RTLS_OPENVR) && !defined(RTLS_MOTIVE)
-//#error "ofxRTLS: Please add one of the following definitions to your project RTLS_OPENVR, RTLS_MOTIVE"
-//#endif
-
 #include "ofMain.h"
 #include "ofxRemoteUIServer.h"
 #include "ofxRTLSEventArgs.h"
 #include "ofxRTLSTypes.h"
 #include "Trackable.pb.h"
+#include "ofxRTLSConfigManager.h"
 using namespace RTLSProtocol;
 
-#ifdef RTLS_NULL
 #include "ofxRTLSNullSystem.h"
-#endif
-#ifdef RTLS_OPENVR
 #include "ofxOpenVRTracker.h"
-#endif
-#ifdef RTLS_MOTIVE
 #include "ofxMotive.h"
-#endif
 
-#ifdef RTLS_POSTPROCESS
 #include "ofxRTLSPostprocessor.h"
-#endif
 
-#ifdef RTLS_PLAYER
 #include "ofxRTLSRecorder.h"
 #include "ofxRTLSPlayer.h"
-#endif
+
+#include "ofxRTLSMacros.h"
 
 class ofxRTLS : public ofThread {
 public:
@@ -67,58 +56,46 @@ public:
 	bool isPlayerSupported();
 	bool isRecording();
 	void toggleRecording();
+	void toggleRecordingWithSavePrompt();
+	float getRecordingDuration();
+	bool isSavingRecording();
+	float getSavingRecordingPercentComplete();
 	bool isPlaying();
 	bool isPlaying(RTLSSystemType systemType);
 	void togglePlayback();
 	void resetPlayback();
 	void promptOpenPlaybackFile();
+	float getPlayingPercentComplete();
+	float getPlayingFileDuration();
 	string getRecordingFile();
 	string getPlayingFile();
 
 private:
 
-#ifdef RTLS_NULL
 	ofxRTLSNullSystem nsys;
 	void nsysDataReceived(NullSystemEventArgs& args);
 	uint64_t nsysFrameID = 0;
-
-#ifdef RTLS_POSTPROCESS
 	ofxRTLSPostprocessor nsysPostM;
-#endif
-#endif
 
-#ifdef RTLS_OPENVR
 	ofxOpenVRTracker openvr;
 	void openvrDataReceived(ofxOpenVRTrackerEventArgs& args);
 	uint64_t openvrFrameID = 0; 
-
-#ifdef RTLS_POSTPROCESS
 	ofxRTLSPostprocessor openvrPostM; // marker postprocessor
-#endif
-#endif
 
-#ifdef RTLS_MOTIVE
 	ofxMotive motive;
 	void motiveDataReceived(MotiveEventArgs& args);
 	uint64_t motiveFrameID = 0; // increment for every packet sent
-
-#ifdef RTLS_POSTPROCESS
 	ofxRTLSPostprocessor motivePostM;	// marker postprocessor
 	ofxRTLSPostprocessor motivePostR;	// reference (camera) postprocessor
-#endif
-
 	bool bSendCameraData = true;
 	float cameraDataFrequency = 10.0; // what is the sending period in seconds?
 	uint64_t lastSendTime = 0;
-#endif
 
-#ifdef RTLS_PLAYER
 	ofxRTLSRecorder recorder;
 
 	ofxRTLSPlayer player;
 	void playerDataReceived(ofxRTLSPlayerDataArgs& args);
 	// frame ID?
-#endif
 
 	void threadedFunction();
 
@@ -130,8 +107,7 @@ private:
 	void markDataReceived();
 	// Send event args given a system and type.
 	// If the provided system is not compiled, will return false.
-	bool sendData(ofxRTLSEventArgs& args, RTLSSystemType systemType, 
-		RTLSTrackableType trackableType);
+	bool sendData(ofxRTLSEventArgs& args);
 
 	// Contains timestamps at which data was received in the last second
 	queue<uint64_t> dataTimestamps;

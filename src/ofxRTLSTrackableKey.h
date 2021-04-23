@@ -4,7 +4,6 @@
 #include "Trackable.pb.h"
 using namespace RTLSProtocol;
 
-
 // In order to identify trackables, each trackable must have a unique key.
 // Note: The trackable ID cannot be zero.
 // Keys consist of two pieces of information:
@@ -49,5 +48,10 @@ bool isTrackableIdentifiable(TrackableKeyType keyType);
 // Is a trackable identifiable by a specific type?
 bool isTrackableIdentifiableByType(const Trackable& t, TrackableKeyType keyType);
 
-// Is a trackable identifiable by ID valid?
+// The ID field in a trackable is multipurpose.
+// If positive, the ID is valid.
+// Zero ID indicates the field is empty.
+// Negative ID is a flag for unidentifiability.
 bool isTrackableIDValid(const Trackable& t);
+bool isTrackableIDEmpty(const Trackable& t);
+bool isTrackableFlaggedUnidentifiable(const Trackable& t);

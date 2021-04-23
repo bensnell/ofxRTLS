@@ -1,6 +1,11 @@
+ofxOpenCv
 ofxOsc
 ofxPoco
 ofxXmlSettings
 ../../../ExternalAddons/ofxRemoteUI
 ../../../ExternalAddons/ofxRTLS
+../../../ExternalAddons/ofxFDeep
+../../../ExternalAddons/ofxCv
+../../../ExternalAddons/ofxFilter
+../../../ExternalAddons/ofxHungarian
 ../../../ExternalAddons/ofxTemporalResampler

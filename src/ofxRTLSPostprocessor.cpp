@@ -1,7 +1,5 @@
 #include "ofxRTLSPostprocessor.h"
 
-#ifdef RTLS_POSTPROCESS
-
 // --------------------------------------------------------------
 ofxRTLSPostprocessor::ofxRTLSPostprocessor() {
 
@@ -176,7 +174,7 @@ void ofxRTLSPostprocessor::processAndSend(ofxRTLSEventArgs& data,
 
 // --------------------------------------------------------------
 void ofxRTLSPostprocessor::_process(RTLSProtocol::TrackableFrame& frame) {
-
+	
 	if (bMapIDs) _process_mapIDs(frame);
 
 	if (bRemoveUnidentifiableBeforeHungarian) _process_removeUnidentifiable(frame);
@@ -539,6 +537,3 @@ void ofxRTLSPostprocessor::resetEventReceved(ofxRTLSPlayerLoopedArgs& args) {
 }
 
 // --------------------------------------------------------------
-
-
-#endif

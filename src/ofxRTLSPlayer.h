@@ -9,8 +9,6 @@
 using namespace RTLSProtocol;
 #include "ofxRTLSTrackableKey.h"
 
-#ifdef RTLS_PLAYER
-
 #include "ezc3d_all.h"
 #include "ofxTemporalResampler.h"
 
@@ -54,7 +52,8 @@ public:
 	string getTakePath() { return takePath; }
 	double getTakeDuration() { return durationSec; }
 	float getTakeFPS() { return fps; }
-
+	uint64_t getTakeNumFrames() { return numFrames; }
+	float getTakePercentComplete();
 	void setLooping(bool _bLoop);
 	bool isLooping() { return bLoop; }
 
@@ -106,6 +105,8 @@ private:
 	string takePath = "";
 	atomic<float> durationSec = 0;
 	atomic<float> fps = 0;
+	atomic<uint64_t> numFrames = 0;
+	atomic<uint64_t> frameCounter = 0;
 
 	void paramChanged(RemoteUIServerCallBackArg& arg);
 
@@ -130,5 +131,3 @@ private:
 	// their filters for the types of this take.
 	void notifyResetPostprocessors(RTLSPlayerTake* take);
 };
-
-#endif
