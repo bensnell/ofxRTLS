@@ -30,8 +30,8 @@ void ofxRTLSPlayer::setup() {
 	RUI_SHARE_PARAM_WCN("RTLS-P- Take Path", takePath);
 	RUI_SHARE_PARAM_WCN("RTLS-P- Loop", bLoop);
 	RUI_SHARE_PARAM_WCN("RTLS-P- Override Realtime Data", bOverridesRealtimeData);
-	RUI_SHARE_PARAM_WCN("RTLS-P- Window Start Time", windowStartTime, 0, 3600);
-	RUI_SHARE_PARAM_WCN("RTLS-P- Window Stop Time", windowStopTime, 0, 3600);
+	RUI_SHARE_PARAM_WCN("RTLS-P- Window Start Time", windowStartTime, 0, 1000);
+	RUI_SHARE_PARAM_WCN("RTLS-P- Window Stop Time", windowStopTime, 0, 1000);
 
 	bShouldPlay = false;
 	bPlaying = false;
@@ -546,8 +546,10 @@ void ofxRTLSPlayer::validateWindow(RTLSPlayerTake* take) {
 	if (bPushToClient) RUI_PUSH_TO_CLIENT();
 
 	// Set frames
-	windowStartFrame = round(windowStartTime * take->getC3dFps());
 	windowStopFrame = MIN(round(windowStopTime * take->getC3dFps()), take->getC3dNumFrames());
+	windowStartFrame = MIN(
+		round(windowStartTime * take->getC3dFps()),
+		MAX(windowStopFrame - 1, 0));
 	windowNumFrames = windowStopFrame - windowStartFrame;
 }
 
