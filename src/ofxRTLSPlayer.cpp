@@ -30,6 +30,8 @@ void ofxRTLSPlayer::setup() {
 	RUI_SHARE_PARAM_WCN("RTLS-P- Take Path", takePath);
 	RUI_SHARE_PARAM_WCN("RTLS-P- Loop", bLoop);
 	RUI_SHARE_PARAM_WCN("RTLS-P- Override Realtime Data", bOverridesRealtimeData);
+	RUI_SHARE_PARAM_WCN("RTLS-P- Window Start Time", windowStartTime, 0, 3600);
+	RUI_SHARE_PARAM_WCN("RTLS-P- Window Stop Time", windowStopTime, 0, 3600);
 
 	bShouldPlay = false;
 	bPlaying = false;
@@ -108,6 +110,8 @@ void ofxRTLSPlayer::threadedFunction() {
 					ofLogNotice("ofxRTLSPlayer") << "Loaded take \"" << take->path << "\"";
 					// Set new take parameters
 					string newPath = "";
+					float oldWindowStartTime = windowStartTime;
+					float oldWindowStopTime = windowStopTime;
 					{
 						std::lock_guard<std::mutex> lk(mutex);
 						newPath = take->path;
@@ -115,8 +119,12 @@ void ofxRTLSPlayer::threadedFunction() {
 						fps = take->getC3dFps();
 						numFrames = take->getC3dNumFrames();
 						resampler.setDesiredFPS(fps);
+						windowStartTime = 0;
+						windowStopTime = take->getC3dDurationSec();
 					}
-					if (newPath.compare(takePath) != 0) {
+					if (newPath.compare(takePath) != 0 ||
+						windowStartTime != oldWindowStartTime ||
+						windowStopTime != oldWindowStopTime) {
 						takePath = newPath;
 						RUI_PUSH_TO_CLIENT();
 					}
@@ -155,27 +163,33 @@ void ofxRTLSPlayer::threadedFunction() {
 			// If we're not playing, then break from this loop.
 			if (!bPlaying) break;
 
+			// Validate the window frame range and set frame variables.
+			validateWindow(take);
+
 			// Check if we aren't looping and need to stop,
 			// since we've reached the end of the file.
 			// Also check if we have a signal to stop playing and reset the
 			// frame counter.
-			if ((!_bLoop && take->frameCounter >= take->getC3dNumFrames())
-				|| flagReset) {
+			if ((!_bLoop && frameExceedsWindow(take->frameCounter))	// Playback ended
+				|| flagReset										// User-initiated reset
+				|| windowNumFrames == 0) {							// Window size too small
 
 				// Reset the take
 				flagReset = false;
 				bPlaying = false;
-				take->frameCounter = 0;
+				take->frameCounter = windowStartFrame;
+				// Update atomic external-facing variables
 				frameCounter = take->frameCounter;
 
 				// Signal that filters need to be reset
 				notifyResetPostprocessors(take);
+
+				// We've stopped playing, so break from this loop.
+				break;
 			}
-			// If we're not playing, then break from this loop.
-			if (!bPlaying) break;
 
 			// If this frame is zero, reset the postprocessors
-			if (take->frameCounter == 0) notifyResetPostprocessors(take);
+			if (take->frameCounter == windowStartFrame) notifyResetPostprocessors(take);
 
 			// At this point, we have a valid take and are playing.
 			// Attempt to read the next frame and send it.
@@ -185,9 +199,11 @@ void ofxRTLSPlayer::threadedFunction() {
 
 			// Increment the frame counter
 			take->frameCounter++;
-			if (_bLoop && take->getC3dNumFrames() > 0) {
-				take->frameCounter = take->frameCounter % take->getC3dNumFrames();
+			if (_bLoop && windowNumFrames > 0) {
+				auto tmp = take->frameCounter - windowStartFrame;
+				take->frameCounter = windowStartFrame + tmp % windowNumFrames;
 			}
+			// Update atomic external-facing variables
 			frameCounter = take->frameCounter;
 			// TODO: If we loop, signal that filters need to be reset
 			
@@ -508,5 +524,40 @@ float ofxRTLSPlayer::getTakePercentComplete()
 	if (numFrames <= 1) return 0;
 	return float(frameCounter) / float(numFrames-1);
 }
+
+// --------------------------------------------------------------
+void ofxRTLSPlayer::validateWindow(RTLSPlayerTake* take) {
+	if (take == NULL) return;
+	
+	// Validate times
+	bool bPushToClient = false;
+	if (windowStartTime < 0) {
+		windowStartTime = 0;
+		bPushToClient = true;
+	}
+	if (windowStopTime > take->getC3dDurationSec()) {
+		windowStopTime = take->getC3dDurationSec();
+		bPushToClient = true;
+	}
+	if (windowStartTime > windowStopTime) {
+		windowStartTime = windowStopTime;
+		bPushToClient = true;
+	}
+	if (bPushToClient) RUI_PUSH_TO_CLIENT();
+
+	// Set frames
+	windowStartFrame = round(windowStartTime * take->getC3dFps());
+	windowStopFrame = MIN(round(windowStopTime * take->getC3dFps()), take->getC3dNumFrames());
+	windowNumFrames = windowStopFrame - windowStartFrame;
+}
+
+// --------------------------------------------------------------
+bool ofxRTLSPlayer::frameExceedsWindow(uint64_t counter)
+{
+	return counter < windowStartFrame ||
+		counter >= windowStopFrame; // TODO: >= or > ?
+}
+
+// --------------------------------------------------------------
 
 // --------------------------------------------------------------
