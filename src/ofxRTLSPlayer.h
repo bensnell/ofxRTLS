@@ -148,6 +148,12 @@ private:
 	// Get frames from data
 	bool getFrames(RTLSPlayerTake* take);
 	void sendData(RTLSPlayerTake* take);
+	// Allow certain types of data through
+	struct Allow {
+		bool allow = true;
+	};
+	vector<Allow> allowSystemTypes;
+	vector<Allow> allowTrackableTypes;
 
 	// Let the postprocessors know to reset
 	// their filters for the types of this take.

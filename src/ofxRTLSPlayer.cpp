@@ -32,6 +32,18 @@ void ofxRTLSPlayer::setup() {
 	RUI_SHARE_PARAM_WCN("RTLS-P- Override Realtime Data", bOverridesRealtimeData);
 	RUI_SHARE_PARAM_WCN("RTLS-P- Window Start Time", windowStartTime, 0, 1000);
 	RUI_SHARE_PARAM_WCN("RTLS-P- Window Stop Time", windowStopTime, 0, 1000);
+	allowSystemTypes.resize(int(NUM_RTLS_SYSTEM_TYPES));
+	for (int i = 0; i < int(NUM_RTLS_SYSTEM_TYPES); i++) {
+		RUI_SHARE_PARAM_WCN("RTLS-P- Allow System " +
+			getRTLSSystemTypeDescription(static_cast<RTLSSystemType>(i)), 
+			allowSystemTypes[i].allow);
+	}
+	allowTrackableTypes.resize(int(NUM_RTLS_TRACKABLE_TYPES));
+	for (int i = 0; i < int(NUM_RTLS_TRACKABLE_TYPES); i++) {
+		RUI_SHARE_PARAM_WCN("RTLS-P- Allow Trackable " +
+			getRTLSTrackableTypeDescription(static_cast<RTLSTrackableType>(i)),
+			allowTrackableTypes[i].allow);
+	}
 
 	bShouldPlay = false;
 	bPlaying = false;
@@ -449,6 +461,17 @@ bool ofxRTLSPlayer::getFrames(RTLSPlayerTake* take) {
 	// Fill all newFrames with data, where available
 	for (auto& _f : take->frames) {
 
+		// Check to make sure this frame contains data that has been
+		// allowed through the playback system filters.
+		bool bContinue = false;
+		for (int i = 0; i < allowSystemTypes.size(); i++) {
+			bContinue |= (!allowSystemTypes[i].allow && i == int(_f.systemType));
+		}
+		for (int i = 0; i < allowTrackableTypes.size(); i++) {
+			bContinue |= (!allowTrackableTypes[i].allow && i == int(_f.trackableType));
+		}
+		if (bContinue) continue;
+
 		auto& frame = _f.newFrame;
 		auto& refFrame = _f.frame;
 
@@ -456,7 +479,6 @@ bool ofxRTLSPlayer::getFrames(RTLSPlayerTake* take) {
 		frame.Clear();
 		frame.CopyFrom(refFrame);
 		frame.clear_trackables();
-
 		// Set all relevant points, filling the frame with data from the c3d file
 		for (int index = 0; index < _f.dataIndices.size(); index++) {
 			// "index" indicates the index of a trackable in the refFrame
