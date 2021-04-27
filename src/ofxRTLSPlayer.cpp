@@ -119,8 +119,8 @@ void ofxRTLSPlayer::threadedFunction() {
 						fps = take->getC3dFps();
 						numFrames = take->getC3dNumFrames();
 						resampler.setDesiredFPS(fps);
-						windowStartTime = 0;
-						windowStopTime = take->getC3dDurationSec();
+						windowStartTime = MIN(oldWindowStartTime, take->getC3dDurationSec());
+						windowStopTime = MIN(oldWindowStopTime, take->getC3dDurationSec());
 					}
 					if (newPath.compare(takePath) != 0 ||
 						windowStartTime != oldWindowStartTime ||
