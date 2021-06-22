@@ -95,13 +95,35 @@ private:
 
 	bool bLoop = true;
 
+	// Start and stop times for playback window (in seconds).
+	// These variables are connected to RUI. We cannot trust that they won't
+	// change during program execution.
+	float windowStartTime = 0;
+	float windowStopTime = 1;
+	// Validate the window size, checking to make sure the start
+	// time is less than the stop time, and copy these values into the variables below,
+	// which serve as a single-source of truth while executing a loop 
+	// in this thread.
+	void validateWindow(RTLSPlayerTake* take);
+	uint64_t windowStartFrame = 0;
+	uint64_t windowStopFrame = 0;
+	uint64_t windowNumFrames = 0;
+
+	// Check if the frame counter exists outside of the window
+	bool frameExceedsWindow(uint64_t counter);
+
+
+
 	// Queue of takes to play
 	queue<RTLSPlayerTake*> takeQueue;
 
 	// Load a take's c3d file into memory
 	bool loadTake(RTLSPlayerTake* take);
 
-	// The currently loaded take path
+	// The currently loaded take parameters
+	// (These parameters are not the single source of truth; 
+	// they exist solely for the purposes of being
+	// accessible to external threads at any point in time.)
 	string takePath = "";
 	atomic<float> durationSec = 0;
 	atomic<float> fps = 0;
@@ -126,6 +148,12 @@ private:
 	// Get frames from data
 	bool getFrames(RTLSPlayerTake* take);
 	void sendData(RTLSPlayerTake* take);
+	// Allow certain types of data through
+	struct Allow {
+		bool allow = true;
+	};
+	vector<Allow> allowSystemTypes;
+	vector<Allow> allowTrackableTypes;
 
 	// Let the postprocessors know to reset
 	// their filters for the types of this take.
