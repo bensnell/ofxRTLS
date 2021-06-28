@@ -139,7 +139,7 @@ The `TrackableFrame`'s context field will always contain information about the d
 | Key  | Key Meaning   | Values (one of the following)                                |
 | ---- | ------------- | ------------------------------------------------------------ |
 | `s`  | <u>s</u>ystem | `0` for Null System<br />`1` for OpenVR<br />`2` for Motive  |
-| `t`  | <u>t</u>ype   | `0` for markers (tracked objects)<br />`1` for reference, contributors, or observers (cameras, base stations, etc.) |
+| `t`  | <u>t</u>ype   | `0` for samples (markers, tracked objects) (e.g. IR LEDs, Retroreflective Objects, etc.)<br />`1` for observers (references, contributors) (e.g. cameras, base stations, etc.) |
 
 The frame context applies to all trackables contained within it. Data from two different systems will never be sent in the same `TrackableFrame`. If multiple types of data are being sent (for example, both marker data {`t`:0} and camera data {`t`:1}), then each will be sent in its own `TrackableFrame`.
 
