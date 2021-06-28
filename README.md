@@ -139,7 +139,7 @@ The `TrackableFrame`'s context field will always contain information about the d
 | Key  | Key Meaning   | Values (one of the following)                                |
 | ---- | ------------- | ------------------------------------------------------------ |
 | `s`  | <u>s</u>ystem | `0` for Null System<br />`1` for OpenVR<br />`2` for Motive  |
-| `t`  | <u>t</u>ype   | `0` for markers (tracked objects)<br />`1` for reference, contributors, or observers (cameras, base stations, etc.) |
+| `t`  | <u>t</u>ype   | `0` for samples (markers, tracked objects) (e.g. IR LEDs, Retroreflective Objects, etc.)<br />`1` for observers (references, contributors) (e.g. cameras, base stations, etc.) |
 
 The frame context applies to all trackables contained within it. Data from two different systems will never be sent in the same `TrackableFrame`. If multiple types of data are being sent (for example, both marker data {`t`:0} and camera data {`t`:1}), then each will be sent in its own `TrackableFrame`.
 
@@ -151,7 +151,7 @@ A `Trackable` contains many parameters. Some of the parameters are used to uniqu
 
 | Name   | Type   | Optional? | Description                                                  |
 | ------ | ------ | --------- | ------------------------------------------------------------ |
-| `id`   | int32  | Yes*      | A unique number that permanently identifies this object. An `id` of `0` indicates that this object has no `id`. Only nonzero `id`'s are valid. |
+| `id`   | int32  | Yes*      | A unique number that permanently identifies this object at least over the server's lifetime. An `id` of `0` indicates that this object has no `id`. Only nonzero `id`'s are valid. |
 | `cuid` | string | Yes*      | A unique string used to temporarily persist trackables across frames. An empty `cuid` string indicates that this object has no `cuid`. |
 | `name` | string | Yes*      | The name of this tracked object. An empty `name` string indicates that this object has no `name`. |
 
@@ -198,10 +198,10 @@ If postprocessing is enabled, the following actions are available and can be ind
 
 | Action                                 | Description                                                  |
 | -------------------------------------- | ------------------------------------------------------------ |
-| Map IDs                                | Map the `ID` parameter from one value to another, using a json dictionary supplied in the data folder. |
+| Map IDs                                | Map the `ID` parameter from one value to another, using a json dictionary supplied in the data folder. This mapping supports many-to-one and one-to-one mappings. |
 | Remove Unidentifiable Before Hungarian | Remove trackables that are unable to be identified. A trackable with an `id <= 0`, no `cuid`, and no `name`, will be considered unidentifiable. |
 | Apply Hungarian                        | Use the Hungarian (linear assignment) algorithm to track objects and provide continuity to identifiable information. See below for a detailed explanation of options. |
-| Remove Unidentifiable Before Filters   | Same as above, but applied again, before Filters.            |
+| Remove Unidentifiable Before Filters   | Same as above, but applied again, before Filters. It is highly reocmmended that this is enabled (there are few, if any, use cases to the contrary).           |
 | Apply Filters                          | Apply smoothing and filtering to all remaining trackables with adjustable sets of filter operators. |
 
 ### Map IDs
